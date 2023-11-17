@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #fff59d;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.calendlygui.controller.RegisterController">
+   <children>
+      <AnchorPane prefHeight="75.0" prefWidth="700.0" style="-fx-background-color: #e91e63;">
+         <children>
+            <ImageView fitHeight="57.0" fitWidth="58.0" layoutX="32.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../assets/logo/logo3.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="89.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="User registration">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <Label layoutX="125.0" layoutY="86.0" style="-fx-font-weight: 700;" text="Username">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <TextField fx:id="usernameTextField" layoutX="125.0" layoutY="106.0" prefHeight="25.0" prefWidth="429.0" promptText="Username" />
+      <Label layoutX="125.0" layoutY="151.0" style="-fx-font-weight: 700;" text="Email">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <TextField fx:id="emailTextField" layoutX="125.0" layoutY="171.0" prefHeight="25.0" prefWidth="429.0" promptText="Email" />
+      <Label layoutX="125.0" layoutY="216.0" style="-fx-font-weight: 700;" text="Password">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="125.0" layoutY="281.0" style="-fx-font-weight: 700;" text="Confirm Password">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="125.0" layoutY="352.0" style="-fx-font-weight: 700;" text="Gender">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="412.0" layoutY="352.0" style="-fx-font-weight: 700;" text="You are">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <RadioButton fx:id="maleGender" layoutX="130.0" layoutY="375.0" mnemonicParsing="false" selected="true" text="Male">
+         <toggleGroup>
+            <ToggleGroup fx:id="gender" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="femaleGender" layoutX="130.0" layoutY="397.0" mnemonicParsing="false" text="Female" toggleGroup="$gender" />
+      <RadioButton fx:id="studentOccupation" layoutX="417.0" layoutY="375.0" mnemonicParsing="false" selected="true" text="Student">
+         <toggleGroup>
+            <ToggleGroup fx:id="occupation" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="teacherOccupation" layoutX="417.0" layoutY="397.0" mnemonicParsing="false" text="Teacher" toggleGroup="$occupation" />
+      <Button fx:id="registerButton" layoutX="166.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: green; -fx-font-weight: bold;" text="Register" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button fx:id="closeButton" layoutX="365.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: grey; -fx-font-weight: bold;" text="Close" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <PasswordField fx:id="passwordPasswordField" layoutX="125.0" layoutY="236.0" prefHeight="25.0" prefWidth="429.0" promptText="Password" />
+      <PasswordField fx:id="confirmPasswordField" layoutX="125.0" layoutY="301.0" prefHeight="25.0" prefWidth="429.0" promptText="Confirm Password" />
+      <Pane layoutX="230.0" layoutY="511.0" prefHeight="32.0" prefWidth="219.0">
+         <children>
+            <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Already have an accout ?">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="signInButton" layoutX="168.0" layoutY="19.0" onMouseClicked="#navigateToSignInPage" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Sign in" underline="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <effect>
+                  <Lighting>
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                     <light>
+                        <Light.Distant />
+                     </light>
+                  </Lighting>
+               </effect>
+            </Text>
+         </children>
+      </Pane>
+      <Text fx:id="usernameText" fill="RED" layoutX="125.0" layoutY="144.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Text fx:id="emailText" fill="RED" layoutX="125.0" layoutY="209.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Text fx:id="comfirmPasswordText" fill="RED" layoutX="125.0" layoutY="340.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Text fx:id="passwordText" fill="RED" layoutX="125.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Text fx:id="errorText" fill="RED" layoutX="244.0" layoutY="439.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="212.19268798828114" />
+   </children>
+</AnchorPane>
