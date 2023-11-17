@@ -58,7 +58,9 @@ public class LoginController implements Initializable {
         String email = emailTextField.getText();
         String password = passwordTextField.getText();
         String request = "/login " + email + " " + password;
-        CalendlyApplication.out.println(request);
+        if (dealWithErrorMessageFromUI(email, password)) {
+            CalendlyApplication.out.println(request);
+        }
     }
 
     @FXML
@@ -89,7 +91,7 @@ public class LoginController implements Initializable {
                     receivedData = CalendlyApplication.inObject.readObject();
                     if (receivedData instanceof String receivedMessage) {
                         System.out.println(receivedMessage);
-                        if (dealWithErrorMessage(receivedMessage)) {
+                        if (dealWithErrorMessageFromDatabase(receivedMessage)) {
                             navigateToHomePage();
                         }
                     } else if (receivedData instanceof User receivedUser) {
@@ -106,7 +108,7 @@ public class LoginController implements Initializable {
         receiveThread.start();
     }
 
-    private boolean dealWithErrorMessage(String message) {
+    private boolean dealWithErrorMessageFromDatabase(String message) {
         switch (message) {
             case LoginMessage.LOGIN_SERVER_WRONG -> {
                 errorText.setText(LoginMessage.LOGIN_SERVER_WRONG);
@@ -127,10 +129,30 @@ public class LoginController implements Initializable {
         }
         return false;
     }
+
+    private boolean dealWithErrorMessageFromUI(String email, String password) {
+        boolean isValidEmail = false;
+        boolean isValidPassword = false;
+        if (email.trim().isEmpty()) {
+            emailText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
+        }else{
+            emailText.setText("");
+            isValidEmail = true;
+        }
+        if (password.isEmpty()) {
+            passwordText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
+        }else{
+            passwordText.setText("");
+            isValidPassword = true;
+        }
+
+        return isValidEmail && isValidPassword;
+    }
+
     private void navigateToHomePage() throws IOException {
         //Allow to execute a Runnable object in the JavaFX Application Thread asynchronously
-        if(CalendlyApplication.user == null) return;
-        if(CalendlyApplication.user.isTeacher())
+        if (CalendlyApplication.user == null) return;
+        if (CalendlyApplication.user.isTeacher())
             Controller.navigateToOtherStage(signInButton, "teacher.fxml", "Teacher");
         else
             Controller.navigateToOtherStage(signInButton, "student.fxml", "Student");

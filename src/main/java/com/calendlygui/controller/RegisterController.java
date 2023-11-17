@@ -164,38 +164,41 @@ public class RegisterController implements Initializable {
     }
 
     private boolean dealWithErrorMessageFromUI(String email, String username, String password, String confirmedPassword) {
-        boolean isValid = false;
-        if (email.isEmpty()) {
+        boolean isValidEmail = false;
+        boolean isValidPassword = false;
+        boolean isValidPasswordConfirmation = false;
+        boolean isValidUsername = false;
+        if (email.trim().isEmpty()) {
             emailText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
         } else if (!Validate.checkEmailFormat(email)) {
             emailText.setText(RegisterMessage.REGISTER_EMAIL_NOT_VALID);
         } else {
             emailText.setText("");
-            isValid = true;
+            isValidEmail = true;
         }
         if (password.isEmpty()) {
             passwordText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
         } else if (password.length() < 6) {
             passwordText.setText(RegisterMessage.REGISTER_PASSWORD_NOT_STRONG);
         } else {
-            if (!password.equals(confirmedPassword)) {
-                comfirmPasswordText.setText(RegisterMessage.REGISTER_PASSWORD_CONFIRMATION_NOT_MATCH);
-            } else {
-                comfirmPasswordText.setText("");
-                passwordText.setText("");
-                isValid = true;
-            }
-
+            passwordText.setText("");
+            isValidPassword = true;
         }
-        if (username.isEmpty()) {
+        if (isValidPassword && !password.equals(confirmedPassword)) {
+            comfirmPasswordText.setText(RegisterMessage.REGISTER_PASSWORD_CONFIRMATION_NOT_MATCH);
+        } else {
+            comfirmPasswordText.setText("");
+            isValidPasswordConfirmation = true;
+        }
+        if (username.trim().isEmpty()) {
             usernameText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
         } else if (!Validate.checkName(username)) {
             usernameText.setText(RegisterMessage.REGISTER_USERNAME_NOT_VALID);
         } else {
             usernameText.setText("");
-            isValid = true;
+            isValidUsername = true;
         }
-        return isValid;
+        return isValidUsername && isValidEmail && isValidPassword && isValidPasswordConfirmation;
     }
 
     private void navigateToHomePage() throws IOException {
