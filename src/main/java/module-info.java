@@ -12,4 +12,8 @@ module com.example.calendlygui {
     exports com.calendlygui.controller;
     opens com.calendlygui.controller to javafx.fxml;
     exports com.calendlygui;
+    exports com.calendlygui.controller.student;
+    opens com.calendlygui.controller.student to javafx.fxml;
+    exports com.calendlygui.controller.teacher;
+    opens com.calendlygui.controller.teacher to javafx.fxml;
 }

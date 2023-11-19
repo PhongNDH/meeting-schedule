@@ -22,14 +22,14 @@ public class Manipulate {
                 String username = loginInfo[2];
                 String password = loginInfo[3];
                 boolean gender = loginInfo[4].equals("true");
-                boolean isTeacher = loginInfo[4].equals("true");
+                boolean isTeacher = loginInfo[5].equals("true");
                 Outcome result = Authenticate.register(email, username, password, gender, isTeacher);
                 if (result == null) {
-                    System.out.println("Someone fail at register");
+                    System.out.println("Someone fails at register");
                     outObject.writeObject(RegisterMessage.REGISTER_SERVER_WRONG);
                 } else if (result.getUser() == null) {
                     if (result.getError().getContent().equals(RegisterMessage.REGISTER_EMAIL_EXIST)) {
-                        System.out.println("Someone fail at register because of using existent email");
+                        System.out.println("Someone fails at register because of using existent email");
                         outObject.writeObject(RegisterMessage.REGISTER_EMAIL_EXIST);
                     }
                 } else {
@@ -52,16 +52,16 @@ public class Manipulate {
             String password = loginInfo[2];
             Outcome result = Authenticate.signIn(email, password);
             if (result == null) {
-                System.out.println("Someone fail at sign in");
+                System.out.println("Someone fails at sign in");
                 outObject.writeObject(LoginMessage.LOGIN_SERVER_WRONG);
             } else if (result.getUser() == null) {
                 if (result.getError().getContent().equals(LoginMessage.LOGIN_EMAIL_NOT_EXIST)) {
-                    System.out.println("Someone fail at sign in because of using email that does not exist");
+                    System.out.println("Someone fails at sign in because of using email that does not exist");
                     outObject.writeObject(LoginMessage.LOGIN_EMAIL_NOT_EXIST);
                 }
 
                 if (result.getError().getContent().equals(LoginMessage.LOGIN_PASSWORD_NOT_MATCH)) {
-                    System.out.println("Someone fail at sign in because password does not match");
+                    System.out.println("Someone fails at sign in because password does not match");
                     outObject.writeObject(LoginMessage.LOGIN_PASSWORD_NOT_MATCH);
                 }
             } else {

@@ -1,0 +1,40 @@
+.register-button{
+    -fx-background-color:green;
+    -fx-font-size: 14;
+}
+.register-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 14;
+}
+.register-close-button{
+    -fx-background-color:grey;
+    -fx-font-size: 14;
+}
+.register-close-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 14;
+}
+.login-button{
+    -fx-background-color:green;
+    -fx-font-size: 12;
+}
+.login-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 12;
+}
+.login-close-button{
+    -fx-background-color:green;
+    -fx-font-size: 12;
+}
+.login-close-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 12;
+}
+.navigate-text{
+
+}
+.navigate-text:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+}

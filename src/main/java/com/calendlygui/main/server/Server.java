@@ -30,7 +30,7 @@ public class Server implements Runnable {
             server = new ServerSocket(this.port);
             pool = Executors.newCachedThreadPool();
 
-            while(!done) {
+            while (!done) {
                 Socket client = server.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
                 this.connections.add(handler);
@@ -49,7 +49,7 @@ public class Server implements Runnable {
             if (!server.isClosed()) {
                 server.close();
             }
-            for(ConnectionHandler ch : connections){
+            for (ConnectionHandler ch : connections) {
                 ch.shutdown();
             }
         } catch (IOException e) {
@@ -73,7 +73,7 @@ public class Server implements Runnable {
                 this.outObject.writeObject("Login or signup");
 
                 String message;
-                while((message = this.in.readLine()) != null) {
+                while ((message = this.in.readLine()) != null) {
                     if (message.startsWith("/register ")) {
                         Manipulate.register(message, outObject);
                     } else if (message.startsWith("/login ")) {

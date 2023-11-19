@@ -31,6 +31,9 @@ public class RegisterController implements Initializable {
     private Button closeButton;
 
     @FXML
+    private Label signInLabel;
+
+    @FXML
     private Text comfirmPasswordText;
 
     @FXML
@@ -70,9 +73,6 @@ public class RegisterController implements Initializable {
     private Button registerButton;
 
     @FXML
-    private Text signInButton;
-
-    @FXML
     private Text usernameText;
 
     @FXML
@@ -84,6 +84,10 @@ public class RegisterController implements Initializable {
     @FXML
     void close(MouseEvent event) {
 
+    }
+    @FXML
+    void navigateToSignIn(MouseEvent event) throws IOException {
+        Controller.navigateToOtherStage(signInLabel,"login.fxml","Login");
     }
 
     @FXML
@@ -99,15 +103,6 @@ public class RegisterController implements Initializable {
             CalendlyApplication.out.println(request);
         }
 
-    }
-
-    @FXML
-    void navigateToSignInPage(MouseEvent event) throws IOException {
-        Stage stage = (Stage) signInButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Login");
-        stage.setScene(scene);
     }
 
     @Override

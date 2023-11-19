@@ -1,0 +1,21 @@
+.menu-button {
+    -fx-background-color:  #e91e63;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+.menu-button:hover {
+    -fx-background-color:#d11b59;
+    -fx-cursor: hand;
+}
+
+.menu-clicked-button {
+    -fx-background-color:  #ba184f;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.profile-text-field {
+    -fx-background-color: #680d2c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}

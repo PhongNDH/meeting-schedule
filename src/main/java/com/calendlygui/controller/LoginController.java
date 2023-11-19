@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -43,7 +44,7 @@ public class LoginController implements Initializable {
     private Button signInButton;
 
     @FXML
-    private Text registerButton;
+    private Label registerLabel;
 
     @FXML
     private Text errorText;
@@ -64,12 +65,8 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    void navigateToRegisterPage(MouseEvent event) throws IOException {
-        Stage stage = (Stage) registerButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("register.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Login");
-        stage.setScene(scene);
+    void navigateToRegister(MouseEvent event) throws IOException {
+        Controller.navigateToOtherStage(registerLabel,"register.fxml","Register");
     }
 
     @Override
@@ -145,7 +142,6 @@ public class LoginController implements Initializable {
             passwordText.setText("");
             isValidPassword = true;
         }
-
         return isValidEmail && isValidPassword;
     }
 

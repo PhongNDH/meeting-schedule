@@ -7,9 +7,6 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.effect.Light.Distant?>
-<?import javafx.scene.effect.Lighting?>
-<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -17,16 +14,16 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #fff59d;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.calendlygui.controller.RegisterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #fff59d;" stylesheets="@../../style/authentication.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.calendlygui.controller.RegisterController">
    <children>
       <AnchorPane prefHeight="75.0" prefWidth="700.0" style="-fx-background-color: #e91e63;">
          <children>
-            <ImageView fitHeight="57.0" fitWidth="58.0" layoutX="32.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="60.0" fitWidth="60.0" layoutX="25.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../assets/logo/logo3.png" />
                </image>
             </ImageView>
-            <Text fill="WHITE" layoutX="89.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="User registration">
+            <Text fill="WHITE" layoutX="100.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="User registration">
                <font>
                   <Font size="16.0" />
                </font>
@@ -77,7 +74,7 @@
          </toggleGroup>
       </RadioButton>
       <RadioButton fx:id="teacherOccupation" layoutX="417.0" layoutY="397.0" mnemonicParsing="false" text="Teacher" toggleGroup="$occupation" />
-      <Button fx:id="registerButton" layoutX="166.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: green; -fx-font-weight: bold;" text="Register" textFill="WHITE">
+      <Button fx:id="registerButton" layoutX="166.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: green; -fx-font-weight: bold;" styleClass="register-button" stylesheets="@../../style/authentication.css" text="Register" textFill="WHITE">
          <font>
             <Font size="14.0" />
          </font>
@@ -85,7 +82,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="closeButton" layoutX="365.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: grey; -fx-font-weight: bold;" text="Close" textFill="WHITE">
+      <Button fx:id="closeButton" layoutX="365.0" layoutY="455.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="40.0" prefWidth="140.0" style="-fx-background-color: grey; -fx-font-weight: bold;" styleClass="register-close-button" stylesheets="@../../style/authentication.css" text="Close" textFill="WHITE">
          <font>
             <Font size="14.0" />
          </font>
@@ -102,24 +99,11 @@
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text fx:id="signInButton" layoutX="168.0" layoutY="19.0" onMouseClicked="#navigateToSignInPage" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Sign in" underline="true">
+            <Label fx:id="signInLabel" layoutX="168.0" layoutY="4.0" onMouseClicked="#navigateToSignIn" style="-fx-font-weight: 800;" styleClass="navigate-text" stylesheets="@../../style/authentication.css" text="Sign in" underline="true">
                <font>
                   <Font size="14.0" />
                </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-               <effect>
-                  <Lighting>
-                     <bumpInput>
-                        <Shadow />
-                     </bumpInput>
-                     <light>
-                        <Light.Distant />
-                     </light>
-                  </Lighting>
-               </effect>
-            </Text>
+            </Label>
          </children>
       </Pane>
       <Text fx:id="usernameText" fill="RED" layoutX="125.0" layoutY="144.0" strokeType="OUTSIDE" strokeWidth="0.0" />

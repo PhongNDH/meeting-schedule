@@ -4,7 +4,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.calendlygui.controller.TeacherController">
+<AnchorPane prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.calendlygui.controller.teacher.TeacherController">
    <children>
       <Text layoutX="329.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Teacher" />
    </children>

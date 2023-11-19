@@ -6,6 +6,7 @@ import com.calendlygui.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 public class CalendlyApplication extends Application {
     public static User user = null;
@@ -27,8 +29,7 @@ public class CalendlyApplication extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("register.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
-            RegisterController registerController = fxmlLoader.getController();
-
+            //RegisterController registerController = fxmlLoader.getController();
             stage.setTitle("Register");
             stage.setScene(scene);
             stage.show();

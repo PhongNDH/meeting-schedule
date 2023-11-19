@@ -43,7 +43,7 @@ public class User implements Serializable {
         isTeacher = teacher;
     }
 
-    public boolean isGender() {
+    public boolean getGender() {
         return gender;
     }
 
