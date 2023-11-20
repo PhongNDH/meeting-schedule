@@ -1,4 +1,4 @@
-package com.calendlygui.controller;
+package com.calendlygui.controller.student;
 
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.utils.Controller;
@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 
 import static java.time.ZoneId.systemDefault;
 
-public class ProfileController implements Initializable {
+public class StudentProfileController implements Initializable {
     @FXML
     private Button appointmentButton;
 
@@ -105,28 +105,7 @@ public class ProfileController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        usernameTextField.setText(CalendlyApplication.user.getUsername());
-        emailTextField.setText(CalendlyApplication.user.getEmail());
-        String role = CalendlyApplication.user.isTeacher() ? "Teacher" : "Student";
-        roleTextField.setText(role);
-        String gender = CalendlyApplication.user.getGender() ? "Male" : "Female";
-        genderTextField.setText(gender);
-        Timestamp registerDatetime = CalendlyApplication.user.getRegisterDatetime();
-        Date registerDate = new Date(registerDatetime.getTime());
-        LocalDate localDate = registerDate.toInstant().atZone(systemDefault()).toLocalDate();
-        registerDatetimeTextfield.setText(localDate.getDayOfMonth() + "/" + localDate.getMonthValue() + "/" + localDate.getYear());
-        if (gender.equals("Male")) {
-            if (role.equals("Student")) {
-                avatarImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/assets/avatar/male2.png")).toExternalForm()));
-            } else {
-                avatarImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/assets/avatar/male.png")).toExternalForm()));
-            }
-        }else{
-            if (role.equals("Student")) {
-                avatarImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/assets/avatar/female2.png")).toExternalForm()));
-            } else {
-                avatarImage.setImage(new Image(Objects.requireNonNull(getClass().getResource("/assets/avatar/female.png")).toExternalForm()));
-            }
-        }
+        Controller.initialiseProfile(usernameTextField, emailTextField, roleTextField,genderTextField, registerDatetimeTextfield, avatarImage);
     }
 }
+

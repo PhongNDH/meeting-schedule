@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 
-public class TeacherController {
+public class TeacherHistoryController {
     @FXML
     private Button appointmentButton;
 
@@ -34,11 +34,11 @@ public class TeacherController {
 
     @FXML
     void navigateToHistory(MouseEvent event) {
-        Controller.navigateToOtherStage(historyButton,"teacher-history.fxml","History");
     }
 
     @FXML
     void navigateToHome(MouseEvent event) {
+        Controller.navigateToOtherStage(homeButton,"teacher.fxml","Teacher");
     }
 
     @FXML
@@ -60,5 +60,4 @@ public class TeacherController {
     void navigateToTimeslot(MouseEvent event) {
         Controller.navigateToOtherStage(timeslotButton,"teacher-timeslot.fxml","Time Slots");
     }
-
 }

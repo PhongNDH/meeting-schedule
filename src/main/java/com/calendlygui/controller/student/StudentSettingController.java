@@ -52,7 +52,7 @@ public class StudentSettingController {
 
     @FXML
     void navigateToProfile(MouseEvent event) {
-        Controller.navigateToOtherStage(profileButton,"profile.fxml","Profile");
+        Controller.navigateToOtherStage(profileButton,"student-profile.fxml","Profile");
     }
 
     @FXML

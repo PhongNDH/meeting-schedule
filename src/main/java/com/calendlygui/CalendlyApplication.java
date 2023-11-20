@@ -26,7 +26,7 @@ public class CalendlyApplication extends Application {
     @Override
     public void start(Stage stage){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("register.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
             //RegisterController registerController = fxmlLoader.getController();
