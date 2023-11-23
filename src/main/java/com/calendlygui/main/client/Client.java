@@ -1,7 +1,10 @@
 package com.calendlygui.main.client;
 
 import com.calendlygui.constant.ConstantValue;
+import com.calendlygui.model.ErrorMessage;
+import com.calendlygui.model.Response;
 import com.calendlygui.model.User;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,16 +14,19 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.time.LocalTime;
 
 public class Client implements Runnable {
     private Socket client;
     private ObjectInputStream inObject;
     private PrintWriter out;
     BufferedReader inReader;
-    private int port;
-    private InetAddress host;
+    private final int port;
+    private final InetAddress host;
     private boolean done;
     private User user;
+//    private final Gson gson = new Gson();
+    private Response response;
 
     public Client(InetAddress host, int port) {
         this.port = port;
@@ -41,17 +47,41 @@ public class Client implements Runnable {
             Object receivedData;
             while (true) {
                 receivedData = inObject.readObject();
-                System.out.println("Object : "+receivedData);
-                if (receivedData instanceof String receivedString) {
-                    System.out.println(receivedString);
-                    if (receivedString.equals("Quit successfully")) {
-                        this.shutdown();
-                        return;
+                System.out.println("response received: " + receivedData);
+
+                if(receivedData instanceof Response) response = (Response) receivedData;
+                else response = new Response(2, LocalTime.now(), new ErrorMessage("Unknown error"));
+
+                switch (response.getCode()){
+                    case 0:{
+                        System.out.println("SUCESS");
+                        break;
                     }
-                } else if (receivedData instanceof User) {
-                    user = (User) receivedData;
-                    System.out.println(user);
+                    case 1:{
+                        System.out.println("CLIENT SERVER");
+                        break;
+                    }
+                    case 2:{
+                        System.out.println("SERVER ERROR");
+                        break;
+                    }
+                    case 3:{
+                        System.out.println("SQL ERROR");
+                        break;
+                    }
+                    default: {}
                 }
+
+//                if (receivedData instanceof String receivedString) {
+//                    System.out.println(receivedString);
+//                    if (receivedString.equals("Quit successfully")) {
+//                        this.shutdown();
+//                        return;
+//                    }
+//                } else if (receivedData instanceof User) {
+//                    user = (User) receivedData;
+//                    System.out.println(user);
+//                }
             }
 
         } catch (ClassNotFoundException | IOException e) {
@@ -82,8 +112,6 @@ public class Client implements Runnable {
 
 //        INSERT INTO your_table_name (timestamp_column_name, other_column1, other_column2, ...)
 //        VALUES (TIMESTAMP '2023-11-20 12:34:56', 'value1', 'value2', ...);
-
-        //this line is new
 
         public void run() {
             while (!done) {

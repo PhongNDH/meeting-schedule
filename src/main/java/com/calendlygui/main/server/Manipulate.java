@@ -3,11 +3,14 @@ package com.calendlygui.main.server;
 import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.constant.RegisterMessage;
 import com.calendlygui.database.Authenticate;
+import com.calendlygui.model.ErrorMessage;
+import com.calendlygui.model.Response;
 import com.calendlygui.utils.Validate;
 import com.calendlygui.model.Outcome;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalTime;
 
 public class Manipulate {
     public static void register(String message, ObjectOutputStream outObject) throws IOException {
@@ -23,24 +26,26 @@ public class Manipulate {
                 String password = loginInfo[3];
                 boolean gender = loginInfo[4].equals("true");
                 boolean isTeacher = loginInfo[5].equals("true");
-                Outcome result = Authenticate.register(email, username, password, gender, isTeacher);
-                if (result == null) {
-                    System.out.println("Someone fails at register");
-                    outObject.writeObject(RegisterMessage.REGISTER_SERVER_WRONG);
-                } else if (result.getUser() == null) {
-                    if (result.getError().getContent().equals(RegisterMessage.REGISTER_EMAIL_EXIST)) {
-                        System.out.println("Someone fails at register because of using existent email");
-                        outObject.writeObject(RegisterMessage.REGISTER_EMAIL_EXIST);
-                    }
-                } else {
-                    System.out.println("Someone register successfully with email " + email);
-                    outObject.writeObject(result.getUser());
-                    outObject.writeObject(RegisterMessage.REGISTER_SUCCESS);
-                }
+
+                Response result = Authenticate.register(email, username, password, gender, isTeacher);
+                outObject.writeObject(result);
+//                if (result.getCode() != 0) {
+//                    System.out.println("Someone fails at register");
+//                    outObject.writeObject(RegisterMessage.REGISTER_SERVER_WRONG);
+//                } else if (result.getUser() == null) {
+//                    if (result.getError().getContent().equals(RegisterMessage.REGISTER_EMAIL_EXIST)) {
+//                        System.out.println("Someone fails at register because of using existed email");
+//                        outObject.writeObject(RegisterMessage.REGISTER_EMAIL_EXIST);
+//                    }
+//                } else {
+//                    System.out.println("Someone register successfully with email " + email);
+//                    outObject.writeObject(result.getUser());
+//                    outObject.writeObject(RegisterMessage.REGISTER_SUCCESS);
+//                }
             }
         } else {
-            System.out.println("Someone try to connect by incorrect command format");
-            outObject.writeObject("Check out your command format");
+            System.out.println("Incorrect command format or error. Try again");
+            outObject.writeObject(new Response(1, LocalTime.now(), new ErrorMessage("Incorrect command format")));
         }
 
     }
@@ -50,28 +55,20 @@ public class Manipulate {
         if (loginInfo.length == 3) {
             String email = loginInfo[1];
             String password = loginInfo[2];
-            Outcome result = Authenticate.signIn(email, password);
-            if (result == null) {
-                System.out.println("Someone fails at sign in");
-                outObject.writeObject(LoginMessage.LOGIN_SERVER_WRONG);
-            } else if (result.getUser() == null) {
-                if (result.getError().getContent().equals(LoginMessage.LOGIN_EMAIL_NOT_EXIST)) {
-                    System.out.println("Someone fails at sign in because of using email that does not exist");
-                    outObject.writeObject(LoginMessage.LOGIN_EMAIL_NOT_EXIST);
-                }
-
-                if (result.getError().getContent().equals(LoginMessage.LOGIN_PASSWORD_NOT_MATCH)) {
-                    System.out.println("Someone fails at sign in because password does not match");
-                    outObject.writeObject(LoginMessage.LOGIN_PASSWORD_NOT_MATCH);
-                }
-            } else {
-                System.out.println("Someone sign in successfully with email " + email);
-                outObject.writeObject(result.getUser());
-                outObject.writeObject(LoginMessage.LOGIN_SUCCESS);
-            }
+            Response result = Authenticate.signIn(email, password);
+            outObject.writeObject(result);
+//            if (result.getCode() != 0) {
+//                String error = result.getError().getContent();
+//                System.out.println(error);
+//                outObject.writeObject(error);
+//            } else {
+//                System.out.println("Someone sign in successfully with email " + email);
+//                outObject.writeObject(result.getUser());
+//                outObject.writeObject(LoginMessage.LOGIN_SUCCESS);
+//            }
         } else {
             System.out.println("Someone try to connect by incorrect command format");
-            outObject.writeObject("Check out your command format");
+            outObject.writeObject(new Response(1, LocalTime.now(), new ErrorMessage("Incorrect command format")));
         }
     }
 

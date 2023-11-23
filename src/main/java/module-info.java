@@ -6,6 +6,7 @@ module com.example.calendlygui {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires com.google.gson;
     requires jbcrypt;
 
     opens com.calendlygui to javafx.fxml;

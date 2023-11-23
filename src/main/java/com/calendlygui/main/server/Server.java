@@ -70,10 +70,11 @@ public class Server implements Runnable {
             try {
                 this.outObject = new ObjectOutputStream(this.client.getOutputStream());
                 this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-                this.outObject.writeObject("Login or signup");
+                this.outObject.writeObject("From server: Login or signup");
 
                 String message;
                 while ((message = this.in.readLine()) != null) {
+                    System.out.println("Server received: " + message);
                     if (message.startsWith("/register ")) {
                         Manipulate.register(message, outObject);
                     } else if (message.startsWith("/login ")) {
