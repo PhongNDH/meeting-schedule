@@ -81,7 +81,10 @@ public class Server implements Runnable {
                     } else if (message.equals("/quit")) {
                         System.out.println("Someone quit server");
                         outObject.writeObject("Quit successfully");
-                    } else {
+                    } else if (message.startsWith("/addslot")){
+                        Manipulate.addSlot(message, outObject);
+                    }
+                    else {
                         System.out.println("Someone try to connect by incorrect command format");
                         outObject.writeObject("Check out your command format");
                     }

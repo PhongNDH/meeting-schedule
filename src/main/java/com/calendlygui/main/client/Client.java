@@ -75,6 +75,14 @@ public class Client implements Runnable {
     }
 
     class InputHandler implements Runnable {
+        String[] promts = {
+                "/login nguyendai060703@gmail.com 111111",
+                "/addslot "
+        };
+
+//        INSERT INTO your_table_name (timestamp_column_name, other_column1, other_column2, ...)
+//        VALUES (TIMESTAMP '2023-11-20 12:34:56', 'value1', 'value2', ...);
+
         public void run() {
             while (!done) {
                 try {
@@ -83,7 +91,6 @@ public class Client implements Runnable {
                         out.println(message);
                     } else if (user != null && (message.startsWith("/login ") || message.startsWith("/register"))) {
                         System.out.println("You have signed in, please logout to login again");
-
                     } else {
                         out.println(message);
                     }

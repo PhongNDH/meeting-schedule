@@ -66,7 +66,7 @@ public class LoginController implements Initializable {
 
     @FXML
     void navigateToRegister(MouseEvent event) throws IOException {
-        Controller.navigateToOtherStage(registerLabel,"register.fxml","Register");
+        Controller.navigateToOtherStage(registerLabel, "register.fxml", "Register");
     }
 
     @Override
@@ -132,13 +132,13 @@ public class LoginController implements Initializable {
         boolean isValidPassword = false;
         if (email.trim().isEmpty()) {
             emailText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
-        }else{
+        } else {
             emailText.setText("");
             isValidEmail = true;
         }
         if (password.isEmpty()) {
             passwordText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
-        }else{
+        } else {
             passwordText.setText("");
             isValidPassword = true;
         }
@@ -150,8 +150,6 @@ public class LoginController implements Initializable {
         if (CalendlyApplication.user == null) return;
         if (CalendlyApplication.user.isTeacher())
             Controller.navigateToOtherStage(signInButton, "teacher.fxml", "Teacher");
-        else
-            Controller.navigateToOtherStage(signInButton, "student.fxml", "Student");
-
+        else Controller.navigateToOtherStage(signInButton, "student.fxml", "Student");
     }
 }

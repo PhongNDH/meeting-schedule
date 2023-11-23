@@ -74,4 +74,9 @@ public class Manipulate {
             outObject.writeObject("Check out your command format");
         }
     }
+
+    public static void addSlot(String message, ObjectOutputStream outObject) {
+        String[] data = message.split(" ");
+
+    }
 }

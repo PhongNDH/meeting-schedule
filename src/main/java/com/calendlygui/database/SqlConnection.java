@@ -4,9 +4,9 @@ import java.sql.*;
 
 public class SqlConnection {
     public static Connection connect() {
-        String url = "jdbc:postgresql://localhost:5432/calendly";
+        String url = "jdbc:postgresql://localhost:5432/networkprog";
         String user = "postgres";
-        String password = "Phongsql123";
+        String password = "Spyderpyg59@";
         try {
             return DriverManager.getConnection(url, user, password);
         } catch (SQLException var5) {
@@ -32,8 +32,8 @@ public class SqlConnection {
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                System.out.println(rs.getString("name"));
                 System.out.println(rs.getString("email"));
+                System.out.println(rs.getString("name"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
