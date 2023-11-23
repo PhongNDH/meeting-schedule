@@ -83,6 +83,8 @@ public class Client implements Runnable {
 //        INSERT INTO your_table_name (timestamp_column_name, other_column1, other_column2, ...)
 //        VALUES (TIMESTAMP '2023-11-20 12:34:56', 'value1', 'value2', ...);
 
+        //this line is new
+
         public void run() {
             while (!done) {
                 try {
