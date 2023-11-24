@@ -1,11 +1,9 @@
 package com.calendlygui.main.server;
 
 import com.calendlygui.constant.ConstantValue;
+import com.calendlygui.model.Request;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,11 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
-    private ArrayList<ConnectionHandler> connections;
+    private final ArrayList<ConnectionHandler> connections;
     private ServerSocket server;
     private boolean done = false;
-    private ExecutorService pool;
-    private int port;
+    private final int port;
 
     public Server(int port) {
         this.port = port;
@@ -28,13 +25,13 @@ public class Server implements Runnable {
     public void run() {
         try {
             server = new ServerSocket(this.port);
-            pool = Executors.newCachedThreadPool();
+            ExecutorService pool = Executors.newCachedThreadPool();
 
             while (!done) {
                 Socket client = server.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
                 this.connections.add(handler);
-                this.pool.execute(handler);
+                pool.execute(handler);
             }
 
         } catch (IOException e) {
@@ -57,9 +54,10 @@ public class Server implements Runnable {
         }
     }
 
-    class ConnectionHandler implements Runnable {
-        private Socket client;
-        ObjectOutputStream outObject;
+    static class ConnectionHandler implements Runnable {
+        private final Socket client;
+        static ObjectInputStream inObject;
+        static ObjectOutputStream outObject;
         private BufferedReader in;
 
         public ConnectionHandler(Socket client) {
@@ -68,31 +66,41 @@ public class Server implements Runnable {
 
         public void run() {
             try {
-                this.outObject = new ObjectOutputStream(this.client.getOutputStream());
+                inObject = new ObjectInputStream(this.client.getInputStream());
+                outObject = new ObjectOutputStream(this.client.getOutputStream());
                 this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-                this.outObject.writeObject("Login or signup");
 
-                String message;
-                while ((message = this.in.readLine()) != null) {
-                    if (message.startsWith("/register ")) {
-                        Manipulate.register(message, outObject);
-                    } else if (message.startsWith("/login ")) {
-                        Manipulate.signIn(message, outObject);
-                    } else if (message.equals("/quit")) {
-                        System.out.println("Someone quit server");
-                        outObject.writeObject("Quit successfully");
-                    } else if (message.startsWith("/addslot")){
-                        Manipulate.addSlot(message, outObject);
-                    }
-                    else {
-                        System.out.println("Someone try to connect by incorrect command format");
-                        outObject.writeObject("Check out your command format");
+//                outObject.writeObject("Server connected");
+
+                Request request;
+                while (true){
+                    request = (Request) inObject.readObject();
+                    System.out.println("Server received: " + request);
+                    switch (request.getMethod()){
+                        case "LOGIN": {
+                            System.out.println("LOGGING IN");
+                            Manipulate.signIn(request.getBody());
+                            break;
+                        }
+                        case "REGISTER": {
+                            System.out.println("REGISTERING");
+                            Manipulate.register(request.getBody());
+                            break;
+                        }
+                        case "QUIT": {
+                            outObject.writeObject("Quit successfully");
+                            System.out.println("QUITTING");
+                            break;
+                        }
+                        default: {
+                            System.out.println(request);
+                            break;
+                        }
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 this.shutdown();
             }
-
         }
 
         public void shutdown() {
