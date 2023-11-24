@@ -6,25 +6,30 @@ import java.time.LocalTime;
 public class Response implements Serializable {
     int code;   //0: Success    1: Client message error     2: Server error     3: SQL error
     LocalTime time;
-    User user;
-    ErrorMessage error;
+    int uid;
+    Object body;
 
     //getters
-    public int getCode(){ return this.code; }
-    public User getUser() { return user; }
-    public ErrorMessage getError() { return error; }
-    public LocalTime getTime() { return time; }
-
-    //constructors
-    public Response(int code, LocalTime time, User user){
-        this.code = code;
-        this.time = time;
-        this.user = user;
+    public int getCode() {
+        return this.code;
     }
 
-    public Response(int code, LocalTime time, ErrorMessage error){
+    public int getUid() {
+        return uid;
+    }
+
+    public Object getBody() {
+        return body;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    //constructors
+    public Response(int code, LocalTime time, Object body) {
         this.code = code;
         this.time = time;
-        this.error = error;
+        this.body = body;
     }
 }

@@ -2,6 +2,7 @@ package com.calendlygui.main.client;
 
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.model.ErrorMessage;
+import com.calendlygui.model.Request;
 import com.calendlygui.model.Response;
 import com.calendlygui.model.User;
 import com.google.gson.Gson;
@@ -15,7 +16,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.time.LocalTime;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 public class Client implements Runnable {
     private Socket client;
     private ObjectInputStream inObject;
@@ -24,14 +26,12 @@ public class Client implements Runnable {
     private final int port;
     private final InetAddress host;
     private boolean done;
-    private User user;
-//    private final Gson gson = new Gson();
-    private Response response;
+    private static int uid;
+    private static User user = null;
 
     public Client(InetAddress host, int port) {
         this.port = port;
         this.host = host;
-        this.user = null;
     }
 
     public void run() {
@@ -48,25 +48,33 @@ public class Client implements Runnable {
             while (true) {
                 receivedData = inObject.readObject();
                 System.out.println("response received: " + receivedData);
-
+                Response response;
                 if(receivedData instanceof Response) response = (Response) receivedData;
                 else response = new Response(2, LocalTime.now(), new ErrorMessage("Unknown error"));
 
                 switch (response.getCode()){
                     case 0:{
-                        System.out.println("SUCESS");
+                        uid = response.getUid();
+                        user = (User) response.getBody();
+                        System.out.println("SUCCESS");
                         break;
                     }
                     case 1:{
                         System.out.println("CLIENT SERVER");
+                        ErrorMessage errorMessage = (ErrorMessage) response.getBody();
+                        System.out.println(errorMessage.getContent());
                         break;
                     }
                     case 2:{
                         System.out.println("SERVER ERROR");
+                        ErrorMessage errorMessage = (ErrorMessage) response.getBody();
+                        System.out.println(errorMessage.getContent());
                         break;
                     }
                     case 3:{
                         System.out.println("SQL ERROR");
+                        ErrorMessage errorMessage = (ErrorMessage) response.getBody();
+                        System.out.println(errorMessage.getContent());
                         break;
                     }
                     default: {}
@@ -113,17 +121,37 @@ public class Client implements Runnable {
 //        INSERT INTO your_table_name (timestamp_column_name, other_column1, other_column2, ...)
 //        VALUES (TIMESTAMP '2023-11-20 12:34:56', 'value1', 'value2', ...);
 
+        Request request;
+        ArrayList<String> body = new ArrayList<>();
+        String[] data;
         public void run() {
             while (!done) {
                 try {
                     String message = inReader.readLine();
-                    if (message.equals("/quit")) {
-                        out.println(message);
-                    } else if (user != null && (message.startsWith("/login ") || message.startsWith("/register"))) {
-                        System.out.println("You have signed in, please logout to login again");
-                    } else {
-                        out.println(message);
+                    data = message.split(" ");
+                    switch (data[0]){
+                        case "login": {
+                            body.clear();
+                            body.addAll(Arrays.asList(data).subList(1, 3));
+                            request = new Request("LOGIN", body);
+                            break;
+                        }
+                        case "register":{
+                            body.clear();
+                            body.addAll(Arrays.asList(data).subList(1, 5));
+                            request = new Request("REGISTER", body);
+                            break;
+                        }
+                        case "quit":{
+                            out.println(message);
+                            shutdown();
+                            break;
+                        }
+                        default:{
+
+                        }
                     }
+                    out.println(request);
                 } catch (IOException var3) {
                     shutdown();
                 }
