@@ -36,7 +36,6 @@ public class Server implements Runnable {
 
         } catch (IOException e) {
             this.shutdown();
-            throw new RuntimeException(e);
         }
     }
 
@@ -105,12 +104,18 @@ public class Server implements Runnable {
 
         public void shutdown() {
             try {
-                in.close();
-                outObject.close();
-                if (!this.client.isClosed()) {
+                if(in != null){
+                    in.close();
+                }
+                if(outObject != null){
+                    outObject.close();
+                }
+                if(inObject != null){
+                    inObject.close();
+                }
+                if (!client.isClosed()) {
                     client.close();
                 }
-
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
