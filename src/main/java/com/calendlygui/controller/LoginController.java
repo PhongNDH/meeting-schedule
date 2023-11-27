@@ -59,7 +59,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    void signIn(MouseEvent event) throws IOException {
+    void signIn(MouseEvent event) {
         String email = emailTextField.getText();
         String password = passwordTextField.getText();
         ArrayList<String> body = new ArrayList<>();
@@ -67,7 +67,11 @@ public class LoginController implements Initializable {
         body.add(password);
         Request request = new Request("LOGIN", body);
         if (dealWithErrorMessageFromUI(email, password)) {
-            CalendlyApplication.outObject.writeObject(request);
+            try {
+                CalendlyApplication.outObject.writeObject(request);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -86,11 +90,9 @@ public class LoginController implements Initializable {
         } catch (IOException e) {
             CalendlyApplication.shutdown();
         }
+
         Thread receiveThread = new Thread(() -> {
             try {
-                CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-                CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
-                CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
                 Object responseObject;
                 Response response = null;
                 while (true) {
@@ -104,23 +106,26 @@ public class LoginController implements Initializable {
                     else{
                         switch (response.getCode()) {
                             case 0: {
+                                User user = ((User) response.getBody());
                                 System.out.println("SUCCESS");
-                                System.out.println(((User) response.getBody()).getUsername());
+                                System.out.println(user.getUsername());
+                                CalendlyApplication.user = user;
+                                navigateToHomePage();
                                 break;
                             }
                             case 1: {
                                 System.out.println("CLIENT ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                             case 2: {
                                 System.out.println("SERVER ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                             case 3: {
                                 System.out.println("SQL ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                             default: {
@@ -140,7 +145,7 @@ public class LoginController implements Initializable {
         receiveThread.start();
     }
 
-    private boolean dealWithErrorMessageFromDatabase(String message) {
+    private void dealWithErrorMessageFromServer(String message) {
         switch (message) {
             case LoginMessage.LOGIN_SERVER_WRONG -> {
                 errorText.setText(LoginMessage.LOGIN_SERVER_WRONG);
@@ -154,12 +159,10 @@ public class LoginController implements Initializable {
                 emailText.setText(LoginMessage.LOGIN_EMAIL_NOT_EXIST);
                 Controller.setTextToEmpty(errorText, passwordText);
             }
-            case LoginMessage.LOGIN_SUCCESS -> {
+            default -> {
                 Controller.setTextToEmpty(errorText, emailText, passwordText);
-                return true;
             }
         }
-        return false;
     }
 
     private boolean dealWithErrorMessageFromUI(String email, String password) {
@@ -178,6 +181,11 @@ public class LoginController implements Initializable {
             isValidPassword = true;
         }
         return isValidEmail && isValidPassword;
+    }
+
+    private void showErrorFromServerToUIAndConsole(ErrorMessage error){
+        System.out.println(error.getContent());
+        dealWithErrorMessageFromServer(error.getContent());
     }
 
     private void navigateToHomePage() throws IOException {

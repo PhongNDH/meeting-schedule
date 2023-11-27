@@ -91,7 +91,7 @@ public class RegisterController implements Initializable {
 
     }
     @FXML
-    void navigateToSignIn(MouseEvent event) throws IOException {
+    void navigateToSignIn(MouseEvent event) {
         Controller.navigateToOtherStage(signInLabel,"login.fxml","Login");
     }
 
@@ -128,11 +128,6 @@ public class RegisterController implements Initializable {
         }
         Thread receiveThread = new Thread(() -> {
             try {
-                CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-                CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
-                CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
-                CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
-
                 Object responseObject;
                 Response response = null;
                 while (true) {
@@ -146,8 +141,11 @@ public class RegisterController implements Initializable {
                     else{
                         switch (response.getCode()) {
                             case 0: {
+                                User user = ((User) response.getBody());
                                 System.out.println("SUCCESS");
-                                System.out.println(((User) response.getBody()).getUsername());
+                                System.out.println(user.getUsername());
+                                CalendlyApplication.user = user;
+                                navigateToHomePage();
                                 break;
                             }
                             case 1: {
@@ -157,17 +155,17 @@ public class RegisterController implements Initializable {
                             }
                             case 2: {
                                 System.out.println("SERVER ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                             case 3: {
                                 System.out.println("SQL ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                             default: {
                                 System.out.println("UNKNOWN ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
                                 break;
                             }
                         }
@@ -182,7 +180,7 @@ public class RegisterController implements Initializable {
         receiveThread.start();
     }
 
-    private boolean dealWithErrorMessageFromServer(String message) {
+    private void dealWithErrorMessageFromServer(String message) {
         switch (message) {
             case RegisterMessage.REGISTER_SERVER_WRONG -> {
                 errorText.setText(LoginMessage.LOGIN_SERVER_WRONG);
@@ -192,12 +190,10 @@ public class RegisterController implements Initializable {
                 emailText.setText(RegisterMessage.REGISTER_EMAIL_EXIST);
                 Controller.setTextToEmpty(errorText, passwordText, usernameText, comfirmPasswordText);
             }
-            case RegisterMessage.REGISTER_SUCCESS -> {
+            default -> {
                 Controller.setTextToEmpty(errorText, emailText, passwordText, usernameText, comfirmPasswordText);
-                return true;
             }
         }
-        return false;
     }
 
     private boolean dealWithErrorMessageFromUI(String email, String username, String password, String confirmedPassword) {
@@ -238,8 +234,12 @@ public class RegisterController implements Initializable {
         return isValidUsername && isValidEmail && isValidPassword && isValidPasswordConfirmation;
     }
 
+    private void showErrorFromServerToUIAndConsole(ErrorMessage error){
+        System.out.println(error.getContent());
+        dealWithErrorMessageFromServer(error.getContent());
+    }
+
     private void navigateToHomePage() throws IOException {
-        //Allow to execute a Runnable object in the JavaFX Application Thread asynchronously
         if (CalendlyApplication.user == null) return;
         if (CalendlyApplication.user.isTeacher())
             Controller.navigateToOtherStage(registerButton, "teacher.fxml", "Teacher");

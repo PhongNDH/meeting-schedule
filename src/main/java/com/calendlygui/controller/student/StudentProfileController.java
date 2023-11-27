@@ -63,6 +63,17 @@ public class StudentProfileController implements Initializable {
     private ImageView avatarImage;
 
     @FXML
+    private Button logoutButton;
+
+    @FXML
+    void logout(MouseEvent event) {
+        if(CalendlyApplication.user != null){
+            CalendlyApplication.user = null;
+        }
+        Controller.navigateToOtherStage(logoutButton, "login.fxml","Login");
+    }
+
+    @FXML
     void navigateTeacherList(MouseEvent event) {
         Controller.navigateToOtherStage(teacherListButton, "student-teacher-list.fxml", "Teacher List");
     }

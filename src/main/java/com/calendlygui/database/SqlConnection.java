@@ -9,8 +9,8 @@ public class SqlConnection {
         String password = "Phongsql123";
         try {
             return DriverManager.getConnection(url, user, password);
-        } catch (SQLException var5) {
-            throw new RuntimeException(var5);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

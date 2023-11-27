@@ -69,7 +69,6 @@ public class Server implements Runnable {
                 outObject = new ObjectOutputStream(this.client.getOutputStream());
                 in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
                 inObject = new ObjectInputStream((this.client.getInputStream()));
-                //                outObject.writeObject("Server connected");
 
                 Request request;
                 while (true){

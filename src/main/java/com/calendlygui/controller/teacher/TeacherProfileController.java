@@ -60,6 +60,17 @@ public class TeacherProfileController implements Initializable {
     private ImageView avatarImage;
 
     @FXML
+    private Button logoutButton;
+
+    @FXML
+    void logout(MouseEvent event) {
+        if(CalendlyApplication.user != null){
+            CalendlyApplication.user = null;
+        }
+        Controller.navigateToOtherStage(logoutButton, "login.fxml","Login");
+    }
+
+    @FXML
     void navigateToAppointment(MouseEvent event) {
         Controller.navigateToOtherStage(appointmentButton,"teacher-appointment.fxml","Appointment");
     }

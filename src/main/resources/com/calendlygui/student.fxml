@@ -148,14 +148,36 @@
                   <Insets left="50.0" />
                </padding>
             </Button>
+            <Button fx:id="logoutButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="422.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Logout">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/logout.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </Button>
          </children></VBox>
       <Pane layoutX="250.0" prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: #fff59d;">
          <children>
-            <Text layoutX="260.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Home ">
+            <Text layoutX="73.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Home " wrappingWidth="80.673828125">
                <font>
-                  <Font size="44.0" />
+                  <Font size="20.0" />
                </font>
             </Text>
+            <Text layoutX="73.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome," />
+            <Text fx:id="usernameText" layoutX="127.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="201.00009155273443" />
+            <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="12.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../assets/logo/logo.png" />
+               </image>
+            </ImageView>
          </children></Pane>
    </children>
 </AnchorPane>

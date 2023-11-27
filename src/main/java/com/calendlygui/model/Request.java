@@ -37,8 +37,8 @@ public class Request implements Serializable {
 
     @Override
     public String toString() {
-        String bodyString = "";
-        for(String data: body) bodyString += " " + data;
+        StringBuilder bodyString = new StringBuilder();
+        for(String data: body) bodyString.append(" ").append(data);
         return uid + " - " + method + " -" + bodyString;
     }
 }

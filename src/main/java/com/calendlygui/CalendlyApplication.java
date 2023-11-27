@@ -27,28 +27,25 @@ public class CalendlyApplication extends Application {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
-
             //RegisterController registerController = fxmlLoader.getController();
 
-
-            stage.setTitle("Register");
+            stage.setTitle("Login");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     public static void main(String[] args) {
-        try {
-            client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-            out = new PrintWriter(client.getOutputStream(), true);
-            inObject = new ObjectInputStream(client.getInputStream());
-            outObject = new ObjectOutputStream(client.getOutputStream());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+//        try {
+//            client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
+//            out = new PrintWriter(client.getOutputStream(), true);
+//            inObject = new ObjectInputStream(client.getInputStream());
+//            outObject = new ObjectOutputStream(client.getOutputStream());
+//        } catch (IOException e) {
+//            System.out.println(e.getMessage());
+//        }
         launch();
     }
 

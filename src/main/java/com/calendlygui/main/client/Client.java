@@ -141,7 +141,7 @@ public class Client implements Runnable {
                         break;
                     }
                     outObject.writeObject(request);
-                } catch (IOException var3) {
+                } catch (IOException e) {
                     shutdown();
                 }
             }
