@@ -3,6 +3,9 @@ package com.calendlygui.controller;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.LoginMessage;
+import com.calendlygui.model.ErrorMessage;
+import com.calendlygui.model.Request;
+import com.calendlygui.model.Response;
 import com.calendlygui.model.User;
 import com.calendlygui.utils.Controller;
 import javafx.fxml.FXML;
@@ -22,6 +25,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -58,9 +62,12 @@ public class LoginController implements Initializable {
     void signIn(MouseEvent event) throws IOException {
         String email = emailTextField.getText();
         String password = passwordTextField.getText();
-        String request = "/login " + email + " " + password;
+        ArrayList<String> body = new ArrayList<>();
+        body.add(email);
+        body.add(password);
+        Request request = new Request("LOGIN", body);
         if (dealWithErrorMessageFromUI(email, password)) {
-            CalendlyApplication.out.println(request);
+            CalendlyApplication.outObject.writeObject(request);
         }
     }
 
@@ -75,6 +82,7 @@ public class LoginController implements Initializable {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
             CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
+            CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
         } catch (IOException e) {
             CalendlyApplication.shutdown();
         }
@@ -83,17 +91,44 @@ public class LoginController implements Initializable {
                 CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
                 CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
                 CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
-                Object receivedData;
+                Object responseObject;
+                Response response = null;
                 while (true) {
-                    receivedData = CalendlyApplication.inObject.readObject();
-                    if (receivedData instanceof String receivedMessage) {
-                        System.out.println(receivedMessage);
-                        if (dealWithErrorMessageFromDatabase(receivedMessage)) {
-                            navigateToHomePage();
+                    responseObject = CalendlyApplication.inObject.readObject();
+                    if(responseObject instanceof Response) response = (Response) responseObject;
+                    System.out.println("Response received : " + response);
+                    if(response == null) return;
+                    if(response.getBody() instanceof String){
+                        System.out.println((String) response.getBody());
+                    }
+                    else{
+                        switch (response.getCode()) {
+                            case 0: {
+                                System.out.println("SUCCESS");
+                                System.out.println(((User) response.getBody()).getUsername());
+                                break;
+                            }
+                            case 1: {
+                                System.out.println("CLIENT ERROR");
+                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                break;
+                            }
+                            case 2: {
+                                System.out.println("SERVER ERROR");
+                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                break;
+                            }
+                            case 3: {
+                                System.out.println("SQL ERROR");
+                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                break;
+                            }
+                            default: {
+                                System.out.println("UNKNOWN ERROR");
+                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                break;
+                            }
                         }
-                    } else if (receivedData instanceof User receivedUser) {
-                        CalendlyApplication.user = receivedUser;
-                        //System.out.println(CalendlyApplication.user);
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {

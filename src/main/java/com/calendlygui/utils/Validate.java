@@ -12,6 +12,6 @@ public class Validate {
     }
 
     public static boolean checkName(String name){
-        return name.matches("[\\p{L} ]+"); // contain only letters and space with diacritics
+        return name.matches(ConstantValue.NAME_PATTERN); // contain only letters and space with diacritics
     }
 }

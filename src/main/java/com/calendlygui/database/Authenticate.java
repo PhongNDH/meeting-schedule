@@ -93,4 +93,8 @@ public class Authenticate {
 //        return new Outcome(new User(username, email, registerDatetime, isTeacher, gender, "register"));
         return new Response(0, new User(username, email, registerDatetime, isTeacher, gender, "register"));
     }
+
+    public static void Logout(User user){
+
+    }
 }
