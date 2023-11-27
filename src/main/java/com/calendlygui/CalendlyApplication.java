@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -19,6 +20,7 @@ public class CalendlyApplication extends Application {
     public static Socket client;
     public static PrintWriter out;
     public static ObjectInputStream inObject;
+    public static ObjectOutputStream outObject;
 
     @Override
     public void start(Stage stage) {
@@ -38,21 +40,29 @@ public class CalendlyApplication extends Application {
 
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             out = new PrintWriter(client.getOutputStream(), true);
             inObject = new ObjectInputStream(client.getInputStream());
+            outObject = new ObjectOutputStream(client.getOutputStream());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         launch();
     }
 
     public static void shutdown() {
         try {
-            out.close();
-            inObject.close();
+            if (inObject != null) {
+                inObject.close();
+            }
+            if (outObject != null) {
+                outObject.close();
+            }
+            if (out != null) {
+                out.close();
+            }
             if (!client.isClosed()) {
                 client.close();
             }
