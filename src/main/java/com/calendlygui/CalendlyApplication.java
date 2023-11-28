@@ -38,14 +38,6 @@ public class CalendlyApplication extends Application {
     }
 
     public static void main(String[] args) {
-//        try {
-//            client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-//            out = new PrintWriter(client.getOutputStream(), true);
-//            inObject = new ObjectInputStream(client.getInputStream());
-//            outObject = new ObjectOutputStream(client.getOutputStream());
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
         launch();
     }
 
