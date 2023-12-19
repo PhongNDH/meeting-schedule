@@ -2,10 +2,7 @@ package com.calendlygui.main.server;
 
 import com.calendlygui.constant.ConstantValue;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,11 +10,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
-    private ArrayList<ConnectionHandler> connections;
+    private final ArrayList<ConnectionHandler> connections;
     private ServerSocket server;
     private boolean done = false;
-    private ExecutorService pool;
-    private int port;
+    private final int port;
+
+
 
     public Server(int port) {
         this.port = port;
@@ -28,13 +26,13 @@ public class Server implements Runnable {
     public void run() {
         try {
             server = new ServerSocket(this.port);
-            pool = Executors.newCachedThreadPool();
+            ExecutorService pool = Executors.newCachedThreadPool();
 
             while (!done) {
                 Socket client = server.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
                 this.connections.add(handler);
-                this.pool.execute(handler);
+                pool.execute(handler);
             }
 
         } catch (IOException e) {
@@ -57,10 +55,11 @@ public class Server implements Runnable {
         }
     }
 
-    class ConnectionHandler implements Runnable {
-        private Socket client;
-        ObjectOutputStream outObject;
+    static class ConnectionHandler implements Runnable {
+        private final Socket client;
+        public static ObjectOutputStream outObject;
         private BufferedReader in;
+        public PrintWriter out;
 
         public ConnectionHandler(Socket client) {
             this.client = client;
@@ -68,26 +67,14 @@ public class Server implements Runnable {
 
         public void run() {
             try {
-                this.outObject = new ObjectOutputStream(this.client.getOutputStream());
+                this.out = new PrintWriter(this.client.getOutputStream(), true);
+                outObject = new ObjectOutputStream(this.client.getOutputStream());
                 this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-                this.outObject.writeObject("Login or signup");
+                outObject.writeObject("Server connected");
 
-                String message;
-                while ((message = this.in.readLine()) != null) {
-                    if (message.startsWith("/register ")) {
-                        Manipulate.register(message, outObject);
-                    } else if (message.startsWith("/login ")) {
-                        Manipulate.signIn(message, outObject);
-                    } else if (message.equals("/quit")) {
-                        System.out.println("Someone quit server");
-                        outObject.writeObject("Quit successfully");
-                    } else if (message.startsWith("/addslot")){
-                        Manipulate.addSlot(message, outObject);
-                    }
-                    else {
-                        System.out.println("Someone try to connect by incorrect command format");
-                        outObject.writeObject("Check out your command format");
-                    }
+                String request;
+                while ((request = this.in.readLine()) != null) {
+                    handleRequest(request);
                 }
             } catch (IOException e) {
                 this.shutdown();
@@ -107,7 +94,22 @@ public class Server implements Runnable {
                 System.out.println(e.getMessage());
             }
         }
+        private void handleRequest(String request) throws IOException {
+            System.out.println("Request: " + request);
+            if (request.startsWith("/REGISTER"))                        Manipulate.register(request);
+            else if (request.startsWith("/LOGIN"))                      Manipulate.signIn(request);
+            else if (request.startsWith("/ADDSLOT"))                    Manipulate.addSlot(request);
+            else if (request.startsWith("/TEACHER_CREATE_MEETING"))     Manipulate.createMeeting(request);
+            else if (request.equals("/quit")) {
+                System.out.println("Someone quit server");
+                outObject.writeObject("Quit successfully");
+            } else {
+                System.out.println("Someone try to connect by incorrect command format");
+                outObject.writeObject("Check out your command format");
+            }
+        }
     }
+
 
     public static void main(String[] args) {
         System.out.println("Start listening to client ...");

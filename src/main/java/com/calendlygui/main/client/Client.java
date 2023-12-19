@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Client implements Runnable {
     private Socket client;
@@ -21,6 +22,9 @@ public class Client implements Runnable {
     private InetAddress host;
     private boolean done;
     private User user;
+
+    private String request;
+    ArrayList<String> data = new ArrayList<>();
 
     public Client(InetAddress host, int port) {
         this.port = port;
@@ -41,7 +45,7 @@ public class Client implements Runnable {
             Object receivedData;
             while (true) {
                 receivedData = inObject.readObject();
-                System.out.println("Object : "+receivedData);
+                System.out.println("Object : " + receivedData);
                 if (receivedData instanceof String receivedString) {
                     System.out.println(receivedString);
                     if (receivedString.equals("Quit successfully")) {
@@ -89,19 +93,69 @@ public class Client implements Runnable {
             while (!done) {
                 try {
                     String message = inReader.readLine();
-                    if (message.equals("/quit")) {
-                        out.println(message);
-                    } else if (user != null && (message.startsWith("/login ") || message.startsWith("/register"))) {
-                        System.out.println("You have signed in, please logout to login again");
-                    } else {
-                        out.println(message);
+                    switch (message) {
+                        case "/LOGIN": {
+                            handleLogin("nguyendai060703@gmail.com", "111111");
+                            break;
+                        }
+                        case "/REGISTER": {
+                            handleRegister("a1@gmail.com", "111111");
+                            break;
+                        }
+                        case "/TEACHER_CREATE_MEETING": {
+
+                            handleCreateMeeting(
+                                    "Checkpoint1",
+                                    "06/07/2003",
+                                    "07:00",
+                                    "07:20",
+                                    "Individual",
+                                    "1",
+                                    "1");
+                            break;
+                        }
+                        default: {}
                     }
+                    out.println(request);
                 } catch (IOException var3) {
                     shutdown();
                 }
             }
-
         }
+    }
+
+    String createRequest(String command, ArrayList<String> data) {
+        StringBuilder request = new StringBuilder();
+        request.append(command);
+        for (String _data : data) request.append(" ").append(_data);
+
+        return request.toString();
+    }
+
+    void handleCreateMeeting(String name, String dateTime, String begin, String end, String type, String tId, String slot) {
+        data.clear();
+        data.add(name);
+        data.add(dateTime);
+        data.add(begin);
+        data.add(end);
+        data.add(type);
+        data.add(tId);
+        data.add(slot);
+        request = createRequest("/TEACHER_CREATE_MEETING", data);
+    }
+
+    void handleLogin(String account, String password) {
+        data.clear();
+        data.add(account);
+        data.add(password);
+        request = createRequest("/LOGIN", data);
+    }
+
+    void handleRegister(String account, String password) {
+        data.clear();
+        data.add(account);
+        data.add(password);
+        request = createRequest("/REGISTER", data);
     }
 
     public static void main(String[] args) throws UnknownHostException {
