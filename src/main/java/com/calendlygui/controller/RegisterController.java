@@ -124,6 +124,7 @@ public class RegisterController implements Initializable {
             CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
             CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
         }
         Thread receiveThread = new Thread(() -> {
@@ -172,6 +173,7 @@ public class RegisterController implements Initializable {
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
             }
         });

@@ -88,6 +88,7 @@ public class LoginController implements Initializable {
             CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
             CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
         }
 
@@ -137,6 +138,7 @@ public class LoginController implements Initializable {
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
             }
         });

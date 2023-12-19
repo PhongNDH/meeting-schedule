@@ -3,10 +3,17 @@ package com.calendlygui.controller.teacher;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.utils.Controller;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
-public class TeacherTimeslotController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class TeacherTimeslotController implements Initializable {
     @FXML
     private Button appointmentButton;
 
@@ -30,6 +37,29 @@ public class TeacherTimeslotController {
 
     @FXML
     private Button logoutButton;
+
+    @FXML
+    private TextField beginTextField;
+
+    @FXML
+    private ComboBox<String> classificationComboBox;
+
+    @FXML
+    private ComboBox<String> deadlineComboBox;
+
+
+    @FXML
+    private TextField endTextField;
+
+    @FXML
+    private Button meetingCreationButton;
+
+    @FXML
+    private TextField meetingNameTextField;
+
+    @FXML
+    private DatePicker meetingTimeDatePicker;
+
 
     @FXML
     void logout(MouseEvent event) {
@@ -71,5 +101,16 @@ public class TeacherTimeslotController {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
+    }
+
+    @FXML
+    void createTimeSlot(MouseEvent event) {
+
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        classificationComboBox.setValue("Group");
+        deadlineComboBox.setValue("1");
     }
 }

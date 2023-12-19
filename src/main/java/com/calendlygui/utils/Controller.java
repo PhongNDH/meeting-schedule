@@ -13,9 +13,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
@@ -87,5 +84,4 @@ public class Controller {
             }
         }
     }
-
 }
