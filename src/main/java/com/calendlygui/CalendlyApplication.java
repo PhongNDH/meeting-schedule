@@ -24,7 +24,7 @@ public class CalendlyApplication extends Application {
     public static ObjectInputStream inObject;
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -33,18 +33,19 @@ public class CalendlyApplication extends Application {
             stage.setTitle("Register");
             stage.setScene(scene);
             stage.show();
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) {
         try {
             client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             out = new PrintWriter(client.getOutputStream(), true);
-            inObject = new ObjectInputStream(client.getInputStream());} catch (IOException e) {
+            inObject = new ObjectInputStream(client.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Error: " + e);
             throw new RuntimeException(e);
         }
         launch();
