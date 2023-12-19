@@ -44,9 +44,6 @@ public class TeacherTimeslotController implements Initializable {
     @FXML
     private ComboBox<String> classificationComboBox;
 
-    @FXML
-    private ComboBox<String> deadlineComboBox;
-
 
     @FXML
     private TextField endTextField;
@@ -111,6 +108,5 @@ public class TeacherTimeslotController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         classificationComboBox.setValue("Group");
-        deadlineComboBox.setValue("1");
     }
 }
