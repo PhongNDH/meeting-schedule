@@ -59,6 +59,8 @@ public class Server implements Runnable {
         ObjectInputStream inObject;
         private BufferedReader in;
 
+        public static PrintWriter out;
+
         public ConnectionHandler(Socket client) {
             this.client = client;
         }
@@ -68,6 +70,7 @@ public class Server implements Runnable {
                 outObject = new ObjectOutputStream(this.client.getOutputStream());
                 in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
                 inObject = new ObjectInputStream((this.client.getInputStream()));
+                out = new PrintWriter(client.getOutputStream(), true);
 
                 Request request;
                 while (true){
