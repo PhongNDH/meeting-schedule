@@ -7,10 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,6 +15,8 @@ import java.net.UnknownHostException;
 public class CalendlyApplication extends Application {
     public static User user = null;
     public static Socket client;
+
+    public static BufferedReader in;
     public static PrintWriter out;
     public static ObjectInputStream inObject;
     public static ObjectOutputStream outObject;

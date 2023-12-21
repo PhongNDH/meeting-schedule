@@ -62,13 +62,15 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender, String mode) {
+    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender
+//            , String mode
+    ) {
         this.username = username;
         this.email = email;
         this.registerDatetime = registerDatetime;
         this.isTeacher = isTeacher;
         this.gender = gender;
-        this.mode = mode;
+//        this.mode = mode;
     }
 
     @Override

@@ -62,17 +62,33 @@ public class LoginController implements Initializable {
     void signIn(MouseEvent event) {
         String email = emailTextField.getText();
         String password = passwordTextField.getText();
-        ArrayList<String> body = new ArrayList<>();
-        body.add(email);
-        body.add(password);
-        Request request = new Request("LOGIN", body);
-        if (dealWithErrorMessageFromUI(email, password)) {
-            try {
-                CalendlyApplication.outObject.writeObject(request);
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
+//        ArrayList<String> body = new ArrayList<>();
+//        body.add(email);
+//        body.add(password);
+//        Request request = new Request("LOGIN", body);
+//        if (dealWithErrorMessageFromUI(email, password)) {
+//            try {
+//                CalendlyApplication.outObject.writeObject(request);
+//            } catch (IOException e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
+        if(dealWithErrorMessageFromUI(email, password)) {
+            ArrayList<String> data = new ArrayList<>();
+            data.add(email);
+            data.add(password);
+            System.out.println(email + " " + password);
+            String request = createRequest("/LOGIN", data);
+            CalendlyApplication.out.println(request);
         }
+    }
+
+    String createRequest(String command, ArrayList<String> data) {
+        StringBuilder request = new StringBuilder();
+        request.append(command);
+        for (String _data : data) request.append(" ").append(_data);
+
+        return request.toString();
     }
 
     @FXML
@@ -84,6 +100,7 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
+            CalendlyApplication.in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream()));
             CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
             CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
             CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
@@ -94,9 +111,27 @@ public class LoginController implements Initializable {
 
         Thread receiveThread = new Thread(() -> {
             try {
-                Object responseObject;
-                Response response = null;
+//                Object responseObject;
+//                Response response = null;
+                String response = "";
                 while (true) {
+                    response = CalendlyApplication.in.readLine();
+
+                    String data[] = response.split(" ");
+                    if(data.length == 6) {
+                        System.out.println("Response received : " + response);
+                        switch ((data[0])){
+                            case "/SUCCESS": {
+                                System.out.println("LOGIN SUCCESS");
+                                Boolean isTeacher = data[4].equals("true");
+                                Boolean gender = data[5].equals("true");
+                                User user = new User(data[1], data[2], data[3], isTeacher, gender);
+                            }
+                            case "/FAIL": {
+
+                            }
+                        }
+                    }
                     responseObject = CalendlyApplication.inObject.readObject();
                     if(responseObject instanceof Response) response = (Response) responseObject;
                     System.out.println("Response received : " + response);
