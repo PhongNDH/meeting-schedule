@@ -59,7 +59,7 @@ public class Server implements Runnable {
         private final Socket client;
         public static ObjectOutputStream outObject;
         private BufferedReader in;
-        public PrintWriter out;
+        public static PrintWriter out;
 
         public ConnectionHandler(Socket client) {
             this.client = client;
@@ -67,7 +67,7 @@ public class Server implements Runnable {
 
         public void run() {
             try {
-                this.out = new PrintWriter(this.client.getOutputStream(), true);
+                out = new PrintWriter(this.client.getOutputStream(), true);
                 outObject = new ObjectOutputStream(this.client.getOutputStream());
                 this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
                 outObject.writeObject("Server connected");

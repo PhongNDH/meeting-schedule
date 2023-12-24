@@ -1,5 +1,6 @@
 package com.calendlygui.main.client;
 
+import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.model.User;
 
@@ -12,14 +13,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.calendlygui.constant.ConstantValue.DELIMINATOR;
 
 public class Client implements Runnable {
     private Socket client;
     private ObjectInputStream inObject;
     private PrintWriter out;
+    private BufferedReader in;
     BufferedReader inReader;
-    private int port;
-    private InetAddress host;
+    private final int port;
+    private final InetAddress host;
     private boolean done;
     private User user;
 
@@ -35,6 +40,7 @@ public class Client implements Runnable {
     public void run() {
         try {
             client = new Socket(this.host, this.port);
+            in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
             out = new PrintWriter(this.client.getOutputStream(), true);
             inReader = new BufferedReader(new InputStreamReader(System.in));
             inObject = new ObjectInputStream(this.client.getInputStream());
@@ -44,6 +50,8 @@ public class Client implements Runnable {
 
             Object receivedData;
             while (true) {
+//                String response = in.readLine();
+//                System.out.println(response);
                 receivedData = inObject.readObject();
                 System.out.println("Object : " + receivedData);
                 if (receivedData instanceof String receivedString) {
@@ -94,16 +102,21 @@ public class Client implements Runnable {
                 try {
                     String message = inReader.readLine();
                     switch (message) {
-                        case "/LOGIN": {
+                        case "1": {
                             handleLogin("nguyendai060703@gmail.com", "111111");
                             break;
                         }
-                        case "/REGISTER": {
-                            handleRegister("a1@gmail.com", "111111");
+                        case "2": {
+                            handleRegister(
+                                    "a2@gmail.com",
+                                    "111111",
+                                    "111111",
+                                    true,
+                                    true
+                            );
                             break;
                         }
-                        case "/TEACHER_CREATE_MEETING": {
-
+                        case "3": {
                             handleCreateMeeting(
                                     "Checkpoint1",
                                     "06/07/2003",
@@ -114,9 +127,10 @@ public class Client implements Runnable {
                                     "1");
                             break;
                         }
-                        default: {}
+                        default: {
+                        }
                     }
-                    out.println(request);
+
                 } catch (IOException var3) {
                     shutdown();
                 }
@@ -126,37 +140,97 @@ public class Client implements Runnable {
 
     String createRequest(String command, ArrayList<String> data) {
         StringBuilder request = new StringBuilder();
-        request.append(command);
-        for (String _data : data) request.append(" ").append(_data);
+        request.append("/").append(command);
+        for (String _data : data) request.append(DELIMINATOR).append(_data);
 
         return request.toString();
     }
 
     void handleCreateMeeting(String name, String dateTime, String begin, String end, String type, String tId, String slot) {
-        data.clear();
-        data.add(name);
-        data.add(dateTime);
-        data.add(begin);
-        data.add(end);
-        data.add(type);
-        data.add(tId);
-        data.add(slot);
-        request = createRequest("/TEACHER_CREATE_MEETING", data);
+        request = createRequest(
+                "TEACHER_CREATE_MEETING",
+                new ArrayList<>(List.of(
+                        name,
+                        dateTime,
+                        begin,
+                        end,
+                        type,
+                        tId,
+                        slot
+                )));
+        out.println(request);
+
+        while (true) {
+            //        String response = "/SUCCESS;Login successfully;dainn;nguyendai060703@gmail.com;2023-11-18 15:35:22.924218;true;male";
+            String response = "/FAIL;SQL_CONNECTION;SOME STUPID ERROR";
+            if (response != null) {
+                String[] info = response.split(DELIMINATOR);
+                if (info[0].contains("SUCCESS")) System.out.println("SHOW SOMETHING");
+                else System.out.println("Error: " + info[1] + " " + info[2]);
+                break;
+            }
+        }
     }
 
     void handleLogin(String account, String password) {
         data.clear();
         data.add(account);
         data.add(password);
-        request = createRequest("/LOGIN", data);
+        request = createRequest("LOGIN", data);
+        out.println(request);
+
+        //listen to changes
+        while (true) {
+            //        String response = "/SUCCESS;Login successfully;dainn;nguyendai060703@gmail.com;2023-11-18 15:35:22.924218;true;male";
+            String response = "/FAIL;SQL_CONNECTION;MOTHERFUC";
+            if (response != null) {
+                String[] info = response.split(DELIMINATOR);
+                if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
+                else System.out.println("Error: " + info[1] + " " + info[2]);
+                break;
+            }
+        }
     }
 
-    void handleRegister(String account, String password) {
+    void handleRegister(String username, String email, String password, boolean isMale, boolean isTeacher) {
         data.clear();
-        data.add(account);
+        data.add(username);
+        data.add(email);
         data.add(password);
-        request = createRequest("/REGISTER", data);
+        data.add(isMale ? "male" : "female");
+        data.add(isTeacher ? "true" : "false");
+        request = createRequest("REGISTER", data);
+        out.println(request);
+
+//        String response = "/FAIL;SQL Connection Error;Email has existed";
+        while (true) {
+            String response = "/SUCCESS;Register successfully;111111;a2@gmail.com;2023-12-25 03:16:41.495112;true;female";
+            if (response != null) {
+                String[] info = response.split(DELIMINATOR);
+                if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
+                else System.out.println("Error: " + info[1] + " " + info[2]);
+                break;
+            }
+        }
     }
+
+    //teacher
+    void handleEditSlot() {
+    }
+
+    void handleViewByDate() {
+    }
+
+    void handleAddMinute() {
+    }
+
+    void handleViewPastMeetings() {
+    }
+
+    //student
+    void handleViewSlots() {
+    }
+
 
     public static void main(String[] args) throws UnknownHostException {
         Client client = new Client(InetAddress.getLocalHost(), ConstantValue.PORT);
