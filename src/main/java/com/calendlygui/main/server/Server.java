@@ -115,6 +115,8 @@ public class Server implements Runnable {
                 if(inObject != null){
                     inObject.close();
                 }
+                if(out != null)
+                    out.close();
                 if (!client.isClosed()) {
                     client.close();
                 }
