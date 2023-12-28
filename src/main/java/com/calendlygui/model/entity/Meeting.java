@@ -1,4 +1,6 @@
-package com.calendlygui.model;
+package com.calendlygui.model.entity;
+
+import com.calendlygui.model.Content;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,6 +15,17 @@ public class Meeting {
         this.occurDatetime = occurDatetime;
         this.finishDatetime = finishDatetime;
         this.classification = classification;
+    }
+
+    public Meeting(int id, int teacherId, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String selectedClassification, String status) {
+        this.id = id;
+        this.teacherId = teacherId;
+        this.name = name;
+        this.establishedDatetime = establishedDatetime;
+        this.occurDatetime = occurDatetime;
+        this.finishDatetime = finishDatetime;
+        this.selectedClassification = selectedClassification;
+        this.status = status;
     }
 
     int id;

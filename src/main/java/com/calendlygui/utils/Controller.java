@@ -59,6 +59,12 @@ public class Controller {
         }
     }
 
+    public static void setTextFieldToEmpty(TextField... texts) {
+        for (TextField txt : texts) {
+            txt.setText("");
+        }
+    }
+
     public static void initialiseProfile(TextField usernameTextField, TextField emailTextField, TextField roleTextField, TextField genderTextField, TextField registerDatetimeTextfield, ImageView avatarImage){
         usernameTextField.setText(CalendlyApplication.user.getUsername());
         emailTextField.setText(CalendlyApplication.user.getEmail());

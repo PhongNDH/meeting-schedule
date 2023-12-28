@@ -1,12 +1,10 @@
 package com.calendlygui.database;
 
-import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.constant.RegisterMessage;
 import com.calendlygui.model.ErrorMessage;
-import com.calendlygui.model.Outcome;
 import com.calendlygui.model.Response;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;

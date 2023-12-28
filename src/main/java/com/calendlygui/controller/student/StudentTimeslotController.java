@@ -1,20 +1,20 @@
 package com.calendlygui.controller.student;
 
 import com.calendlygui.CalendlyApplication;
-import com.calendlygui.model.Meeting;
+import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.Pane;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class StudentTimeslotController implements Initializable {
@@ -110,30 +110,86 @@ public class StudentTimeslotController implements Initializable {
     void navigateToTimeslot(MouseEvent event) {
     }
 
+    @FXML
+    private TextField createdTextField;
+
+    @FXML
+    private TextField nameTextField;
+
+    @FXML
+    private TextField beginTextField;
+
+    @FXML
+    private Button closeButton;
+
+    @FXML
+    private TextField endTextField;
+
+    @FXML
+    private Button joinButton;
+
+    @FXML
+    private TextField teacherTextField;
+
+    @FXML
+    private Pane detailPane;
+
+    @FXML
+    private ComboBox<String> classificationCombobox;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        meetingTable = new TableView<>();
-        teacherTableColumn = new TableColumn<>();
-        dateTableColumn = new TableColumn<>();
-        beginTableColumn = new TableColumn<>();
-        endTableColumn = new TableColumn<>();
-        typeTableColumn = new TableColumn<>();
-
-        //meetingTable.getColumns().addAll(teacherTableColumn, dateTableColumn, beginTableColumn, endTableColumn, typeTableColumn);
         teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherId())));
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.GetDateFromTimestamp(data.getValue().getFinishDatetime())));
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.GetTimeFromTimestamp(data.getValue().getOccurDatetime())));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.GetTimeFromTimestamp(data.getValue().getEstablishedDatetime())));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getClassification()));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(
-                new Meeting(1, 1, "First Meeting", Format.CreateTimestamp(2023, 12, 25, 8, 30),
-                        Format.CreateTimestamp(2023, 12, 26, 8, 30),
-                        Format.CreateTimestamp(2023, 12, 26, 8, 50), "Both"),
-                new Meeting(2, 2, "Second Meeting", Format.CreateTimestamp(2023, 12, 25, 8, 30),
-                        Format.CreateTimestamp(2023, 12, 26, 8, 30),
-                        Format.CreateTimestamp(2023, 12, 26, 8, 50), "Group")
+                new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+                        Format.createTimestamp(2023, 12, 26, 8, 30),
+                        Format.createTimestamp(2023, 12, 26, 8, 50), "Both"),
+                new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+                        Format.createTimestamp(2023, 12, 26, 8, 30),
+                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group")
         );
+
         meetingTable.setItems(data);
+
+        meetingTable.setRowFactory(tv -> {
+            TableRow<Meeting> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    Meeting rowData = row.getItem();
+                    //System.out.println("Double click on: "+rowData.getTeacherId());
+                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
+                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+                    nameTextField.setText(rowData.getName());
+                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
+                    if(Objects.equals(rowData.getClassification(), "Both")){
+                        classificationCombobox.getItems().addAll("Group", "Individual");
+                        classificationCombobox.setValue("Group");
+                    }else{
+                        classificationCombobox.getItems().add(rowData.getClassification());
+                        classificationCombobox.setValue(rowData.getClassification());
+                    }
+                    detailPane.setVisible(true);;
+                }
+            });
+            return row ;
+        });
+    }
+
+    @FXML
+    void closeDialog(MouseEvent event) {
+        Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
+        classificationCombobox.getItems().clear();
+        detailPane.setVisible(false);
+    }
+
+    @FXML
+    void joinMeeting(MouseEvent event) {
+
     }
 }

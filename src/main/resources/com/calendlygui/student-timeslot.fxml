@@ -2,8 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -60,7 +62,7 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Schedule">
+                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Scheduled">
                     <graphic>
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -173,16 +175,52 @@
                         <Font size="44.0" />
                     </font>
                 </Text>
-            <TableView layoutX="70.0" layoutY="108.0" prefHeight="200.0" prefWidth="510.0">
+            <Pane prefHeight="100.0" prefWidth="650.0" style="-fx-background-color: #9f7b48;">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" layoutX="561.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/logo/logo7.png" />
+                     </image>
+                  </ImageView>
+                  <Text fill="WHITE" layoutX="227.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Teacher's time slot">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+            <TableView fx:id="meetingTable" layoutX="40.0" layoutY="165.0" prefHeight="318.0" prefWidth="570.0">
                <columns>
-                  <TableColumn prefWidth="75.0" text="Teacher" />
-                  <TableColumn prefWidth="75.0" text="Date" />
-                  <TableColumn prefWidth="75.0" text="Begin" />
-                  <TableColumn prefWidth="75.0" text="End" />
-                  <TableColumn prefWidth="75.0" text="Type" />
-                  <TableColumn prefWidth="75.0" text="Due date" />
+                  <TableColumn fx:id="teacherTableColumn" prefWidth="75.0" text="Teacher" />
+                  <TableColumn fx:id="dateTableColumn" prefWidth="120.66668701171875" text="Date" />
+                  <TableColumn fx:id="beginTableColumn" prefWidth="110.66668701171875" text="Begin" />
+                  <TableColumn fx:id="endTableColumn" prefWidth="122.6666259765625" text="End" />
+                  <TableColumn fx:id="typeTableColumn" prefWidth="140.666748046875" text="Classification" />
                </columns>
             </TableView>
+            <Pane fx:id="detailPane" layoutX="40.0" layoutY="138.0" prefHeight="381.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
+               <children>
+                  <Button fx:id="joinButton" layoutX="104.0" layoutY="330.0" mnemonicParsing="false" onMouseClicked="#joinMeeting" prefHeight="27.0" prefWidth="153.0" style="-fx-font-weight: bold;" styleClass="join-button" stylesheets="@../../style/student.css" text="Join" textFill="WHITE" />
+                  <Text layoutX="86.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Teacher" />
+                  <TextField fx:id="teacherTextField" editable="false" layoutX="181.0" layoutY="47.0" prefHeight="25.0" prefWidth="323.0" />
+                  <Text layoutX="86.0" layoutY="154.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Created date" />
+                  <TextField fx:id="beginTextField" editable="false" layoutX="181.0" layoutY="182.0" prefHeight="25.0" prefWidth="323.0" />
+                  <TextField fx:id="endTextField" editable="false" layoutX="181.0" layoutY="227.0" prefHeight="25.0" prefWidth="323.0" />
+                  <Text layoutX="86.0" layoutY="199.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Begin" />
+                  <Button fx:id="closeButton" layoutX="328.0" layoutY="329.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="29.0" prefWidth="153.0" style="-fx-font-weight: bold;" styleClass="close-button" stylesheets="@../../style/student.css" text="Close" textFill="WHITE" />
+                  <Text layoutX="85.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Classification" />
+                  <Text layoutX="215.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Meeting Detail" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="86.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Name" />
+                  <TextField fx:id="nameTextField" editable="false" layoutX="181.0" layoutY="92.0" prefHeight="25.0" prefWidth="323.0" />
+                  <TextField fx:id="createdTextField" editable="false" layoutX="181.0" layoutY="137.0" prefHeight="25.0" prefWidth="323.0" />
+                  <Text layoutX="86.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="End" />
+                  <ComboBox fx:id="classificationCombobox" layoutX="181.0" layoutY="273.0" prefHeight="25.0" prefWidth="323.0" />
+               </children>
+            </Pane>
             </children></Pane>
     </children>
 </AnchorPane>

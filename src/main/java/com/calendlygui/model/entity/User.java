@@ -1,4 +1,4 @@
-package com.calendlygui.model;
+package com.calendlygui.model.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

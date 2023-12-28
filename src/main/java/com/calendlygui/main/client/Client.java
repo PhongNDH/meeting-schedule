@@ -4,7 +4,7 @@ import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.model.ErrorMessage;
 import com.calendlygui.model.Request;
 import com.calendlygui.model.Response;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class Client implements Runnable {
     private Socket client;

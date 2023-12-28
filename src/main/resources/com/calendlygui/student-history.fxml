@@ -58,7 +58,7 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Schedule">
+                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Scheduled">
                     <graphic>
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
