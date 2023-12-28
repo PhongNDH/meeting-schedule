@@ -1,7 +1,6 @@
 package com.calendlygui;
 
-import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,9 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class CalendlyApplication extends Application {
     public static User user = null;
