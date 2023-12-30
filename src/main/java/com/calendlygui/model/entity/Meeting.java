@@ -1,10 +1,5 @@
 package com.calendlygui.model.entity;
 
-<<<<<<< HEAD
-=======
-import com.calendlygui.model.Content;
-
->>>>>>> origin/UI
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -54,8 +49,6 @@ public class Meeting {
         this.contents = contents;
     }
 
-=======
->>>>>>> origin/UI
     int id;
 
     int teacherId;
