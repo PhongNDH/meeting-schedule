@@ -18,7 +18,7 @@
                     <children>
                         <ImageView fitHeight="99.0" fitWidth="132.0" layoutX="75.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../assets/logo/logo8.png" />
+                                <Image url="@../../assets/logo/logo5.png" />
                             </image>
                         </ImageView>
                         <Text fill="WHITE" layoutX="85.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Calendly">
@@ -58,11 +58,11 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Appointment">
+                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Schedule">
                     <graphic>
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../assets/icon/videocall.png" />
+                                <Image url="@../../assets/icon/calendar.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -78,6 +78,21 @@
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../../assets/icon/teacher.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="50.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="appointmentButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="116.0" mnemonicParsing="false" onMouseClicked="#navigateToAppointment" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Appointment">
+                    <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../assets/icon/videocall.png" />
                             </image>
                         </ImageView>
                     </graphic>

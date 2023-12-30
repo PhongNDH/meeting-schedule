@@ -1,5 +1,10 @@
 package com.calendlygui.model.entity;
 
+<<<<<<< HEAD
+=======
+import com.calendlygui.model.Content;
+
+>>>>>>> origin/UI
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -26,6 +31,7 @@ public class Meeting {
         this.status = status;
     }
 
+<<<<<<< HEAD
     public Meeting(int id, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification,String selectedClassification, String status, List<Content> contents) {
         this.id = id;
         this.name = name;
@@ -49,6 +55,8 @@ public class Meeting {
         this.contents = contents;
     }
 
+=======
+>>>>>>> origin/UI
     int id;
 
     int teacherId;
