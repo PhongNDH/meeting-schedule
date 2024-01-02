@@ -1,6 +1,5 @@
 package com.calendlygui.main.client;
 
-import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.model.User;
 
@@ -15,7 +14,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.calendlygui.constant.ConstantValue.DELIMINATOR;
+import static com.calendlygui.constant.ConstantValue.DELIMITER;
+import static com.calendlygui.constant.ConstantValue.TEACHER_CREATE_MEETING;
 
 public class Client implements Runnable {
     private Socket client;
@@ -44,29 +44,12 @@ public class Client implements Runnable {
             out = new PrintWriter(this.client.getOutputStream(), true);
             inReader = new BufferedReader(new InputStreamReader(System.in));
             inObject = new ObjectInputStream(this.client.getInputStream());
+
             InputHandler inputHandler = new InputHandler();
             Thread t = new Thread(inputHandler);
             t.start();
-
-            Object receivedData;
-            while (true) {
-//                String response = in.readLine();
-//                System.out.println(response);
-                receivedData = inObject.readObject();
-                System.out.println("Object : " + receivedData);
-                if (receivedData instanceof String receivedString) {
-                    System.out.println(receivedString);
-                    if (receivedString.equals("Quit successfully")) {
-                        this.shutdown();
-                        return;
-                    }
-                } else if (receivedData instanceof User) {
-                    user = (User) receivedData;
-                    System.out.println(user);
-                }
-            }
-
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (
+                IOException e) {
             this.shutdown();
         }
     }
@@ -87,18 +70,9 @@ public class Client implements Runnable {
     }
 
     class InputHandler implements Runnable {
-        String[] promts = {
-                "/login nguyendai060703@gmail.com 111111",
-                "/addslot "
-        };
-
-//        INSERT INTO your_table_name (timestamp_column_name, other_column1, other_column2, ...)
-//        VALUES (TIMESTAMP '2023-11-20 12:34:56', 'value1', 'value2', ...);
-
-        //this line is new
-
         public void run() {
             while (!done) {
+                //input from console
                 try {
                     String message = inReader.readLine();
                     switch (message) {
@@ -119,13 +93,16 @@ public class Client implements Runnable {
                         case "3": {
                             handleCreateMeeting(
                                     "Checkpoint1",
-                                    "06/07/2003",
+                                    "2023-12-26",
                                     "07:00",
                                     "07:20",
-                                    "Individual",
-                                    "1",
-                                    "1");
+                                    "individual",
+                                    1);
                             break;
+                        }
+                        case "4": {
+//                            /TEACHER_EDIT_MEETING id  name  date  begin  end  classification
+//                            handleEditMeeting();
                         }
                         default: {
                         }
@@ -133,6 +110,8 @@ public class Client implements Runnable {
 
                 } catch (IOException var3) {
                     shutdown();
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -141,50 +120,23 @@ public class Client implements Runnable {
     String createRequest(String command, ArrayList<String> data) {
         StringBuilder request = new StringBuilder();
         request.append("/").append(command);
-        for (String _data : data) request.append(DELIMINATOR).append(_data);
+        for (String _data : data) request.append(DELIMITER).append(_data);
 
         return request.toString();
     }
 
-    void handleCreateMeeting(String name, String dateTime, String begin, String end, String type, String tId, String slot) {
-        request = createRequest(
-                "TEACHER_CREATE_MEETING",
-                new ArrayList<>(List.of(
-                        name,
-                        dateTime,
-                        begin,
-                        end,
-                        type,
-                        tId,
-                        slot
-                )));
+
+    void handleLogin(String account, String password) throws IOException, ClassNotFoundException {
+        request = createRequest("LOGIN", new ArrayList<>(List.of(account, password)));
         out.println(request);
 
+        //listen to response
+        String response;
         while (true) {
-            //        String response = "/SUCCESS;Login successfully;dainn;nguyendai060703@gmail.com;2023-11-18 15:35:22.924218;true;male";
-            String response = "/FAIL;SQL_CONNECTION;SOME STUPID ERROR";
+            response = in.readLine();
             if (response != null) {
-                String[] info = response.split(DELIMINATOR);
-                if (info[0].contains("SUCCESS")) System.out.println("SHOW SOMETHING");
-                else System.out.println("Error: " + info[1] + " " + info[2]);
-                break;
-            }
-        }
-    }
-
-    void handleLogin(String account, String password) {
-        data.clear();
-        data.add(account);
-        data.add(password);
-        request = createRequest("LOGIN", data);
-        out.println(request);
-
-        //listen to changes
-        while (true) {
-            //        String response = "/SUCCESS;Login successfully;dainn;nguyendai060703@gmail.com;2023-11-18 15:35:22.924218;true;male";
-            String response = "/FAIL;SQL_CONNECTION;MOTHERFUC";
-            if (response != null) {
-                String[] info = response.split(DELIMINATOR);
+                System.out.println("Response: " + response);
+                String[] info = response.split(DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;
@@ -192,7 +144,7 @@ public class Client implements Runnable {
         }
     }
 
-    void handleRegister(String username, String email, String password, boolean isMale, boolean isTeacher) {
+    void handleRegister(String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
         data.clear();
         data.add(username);
         data.add(email);
@@ -202,11 +154,13 @@ public class Client implements Runnable {
         request = createRequest("REGISTER", data);
         out.println(request);
 
-//        String response = "/FAIL;SQL Connection Error;Email has existed";
+        //listen to response
+        String response;
         while (true) {
-            String response = "/SUCCESS;Register successfully;111111;a2@gmail.com;2023-12-25 03:16:41.495112;true;female";
+            response = in.readLine();
             if (response != null) {
-                String[] info = response.split(DELIMINATOR);
+                System.out.println("Response: " + response);
+                String[] info = response.split(DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;
@@ -214,8 +168,43 @@ public class Client implements Runnable {
         }
     }
 
+
     //teacher
-    void handleEditSlot() {
+    void handleCreateMeeting(String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
+        request = createRequest(
+                TEACHER_CREATE_MEETING,
+                new ArrayList<>(List.of(String.valueOf(tId), name, dateTime, begin, end, classification)));
+        out.println(request);
+
+        //listen to response
+        String response;
+        while (true) {
+            response = in.readLine();
+            if (response != null) {
+                System.out.println("Response: " + response);
+                String[] info = response.split(DELIMITER);
+                if (info[0].contains("SUCCESS")) System.out.println("SHOW SOMETHING");
+                else System.out.println("Error: " + info[1] + " " + info[2]);
+                break;
+            }
+        }
+    }
+
+    void handleEditMeeting(int id, String name, String dateTime, String begin, String end, String classification, String status, String selectedClassification) throws IOException, ClassNotFoundException {
+        request = createRequest("TEACHER_EDIT_MEETING",
+                new ArrayList<>(List.of(String.valueOf(id), name, dateTime, begin, end, classification, status, selectedClassification)));
+
+        String response;
+        while (true) {
+            response = in.readLine();
+            if (response != null) {
+                System.out.println("Response: " + response);
+                String[] info = response.split(DELIMITER);
+                if (info[0].contains("SUCCESS")) System.out.println("UPDATE DONE");
+                else System.out.println("Error: " + info[1] + " " + info[2]);
+                break;
+            }
+        }
     }
 
     void handleViewByDate() {

@@ -5,9 +5,14 @@ import com.calendlygui.constant.ConstantValue;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.utils.Helper.createResponse;
 
 public class Server implements Runnable {
     private final ArrayList<ConnectionHandler> connections;
@@ -70,13 +75,12 @@ public class Server implements Runnable {
                 out = new PrintWriter(this.client.getOutputStream(), true);
                 outObject = new ObjectOutputStream(this.client.getOutputStream());
                 this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-                outObject.writeObject("Server connected");
 
                 String request;
                 while ((request = this.in.readLine()) != null) {
-                    handleRequest(request);
+                    processRequest(request);
                 }
-            } catch (IOException e) {
+            } catch (IOException | RuntimeException | ParseException e) {
                 this.shutdown();
             }
 
@@ -94,22 +98,28 @@ public class Server implements Runnable {
                 System.out.println(e.getMessage());
             }
         }
-        private void handleRequest(String request) throws IOException {
+        private void processRequest(String request) throws IOException, ParseException {
             System.out.println("Request: " + request);
-            if (request.startsWith("/REGISTER"))                        Manipulate.register(request);
-            else if (request.startsWith("/LOGIN"))                      Manipulate.signIn(request);
-            else if (request.startsWith("/ADDSLOT"))                    Manipulate.addSlot(request);
-            else if (request.startsWith("/TEACHER_CREATE_MEETING"))     Manipulate.createMeeting(request);
-            else if (request.equals("/quit")) {
-                System.out.println("Someone quit server");
-                outObject.writeObject("Quit successfully");
-            } else {
-                System.out.println("Someone try to connect by incorrect command format");
-                outObject.writeObject("Check out your command format");
+            String[] data = request.split(DELIMITER);
+            if (data[0].contains(REGISTER))                             Manipulate.register(data);
+            else if (data[0].contains(LOGIN))                           Manipulate.signIn(data);
+            else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
+            else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data);
+            else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data);
+            else if (data[0].contains(TEACHER_ENTER_CONTENT))           Manipulate.addMinute(data);
+            else if (data[0].contains(TEACHER_VIEW_HISTORY))            Manipulate.viewHistory(data);
+
+            else if (data[0].contains(STUDENT_VIEW_TIMESLOT))           Manipulate.viewAvailableSlots();
+            else if (data[0].contains(STUDENT_SCHEDULE_MEETING))        Manipulate.scheduleMeeting(data);
+            else if (data[0].contains(STUDENT_VIEW_MEETING_BY_WEEK))    Manipulate.viewByWeek(data);
+
+            else if (request.equals("/" + QUIT))                        Manipulate.quit();
+            else {
+                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
+                out.println(error);
             }
         }
     }
-
 
     public static void main(String[] args) {
         System.out.println("Start listening to client ...");

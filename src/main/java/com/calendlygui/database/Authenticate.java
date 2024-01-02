@@ -1,12 +1,5 @@
 package com.calendlygui.database;
 
-import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.constant.LoginMessage;
-import com.calendlygui.constant.RegisterMessage;
-import com.calendlygui.main.server.Manipulate;
-import com.calendlygui.model.ErrorMessage;
-import com.calendlygui.model.Outcome;
-import com.calendlygui.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
@@ -16,6 +9,7 @@ import java.util.Objects;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.constant.RegisterMessage.REGISTER_EMAIL_EXIST;
+import static com.calendlygui.utils.Helper.createResponse;
 
 public class Authenticate {
     public static String register(String email, String name, String password, boolean gender, boolean isTeacher) {
@@ -36,9 +30,9 @@ public class Authenticate {
             }
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
-                return Manipulate.createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(REGISTER_EMAIL_EXIST)));
+                return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(REGISTER_EMAIL_EXIST)));
             }
-            return Manipulate.createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
         }
 
         // Update login table
@@ -50,10 +44,19 @@ public class Authenticate {
             ps2.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return Manipulate.createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
         }
 //        return new Outcome(new User(name, email, registerDatetime, isTeacher, gender, "register"));
-        return Manipulate.createResponse("SUCCESS", "Register successfully", new ArrayList<>(List.of(name, email, registerDatetime.toString(), isTeacher ? "true" : "false", gender ? "male" : "female")));
+        return createResponse(
+                "SUCCESS",
+                "Register successfully",
+                new ArrayList<>(List.of(
+                        name,
+                        email,
+                        registerDatetime.toString(),
+                        isTeacher ? "true" : "false",
+                        gender ? "true" : "false")
+                ));
     }
 
     public static String signIn(String email, String password) {
@@ -72,10 +75,10 @@ public class Authenticate {
                 hash = rs.getString("password");
             }
             if (Objects.equals(hash, null)) {
-                return Manipulate.createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_EMAIL_NOT_EXIST)));
+                return createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_EMAIL_NOT_EXIST)));
             }
         } catch (SQLException e) {
-            return Manipulate.createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
         }
         if (BCrypt.checkpw(password, hash)) {
             try {
@@ -89,13 +92,17 @@ public class Authenticate {
                     registerDatetime = rs2.getTimestamp("register_datetime");
                 }
             } catch (SQLException e) {
-                return Manipulate.createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+                return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
             }
         } else {
-            return Manipulate.createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_PASSWORD_NOT_MATCH)));
+            return createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_PASSWORD_NOT_MATCH)));
         }
-//        return new Outcome(new User(username, email, registerDatetime, isTeacher, gender, "register"));
-        ArrayList<String> userData = new ArrayList<>(List.of(username, email, registerDatetime.toString(), isTeacher ? "true" : "false", gender ? "male" : "famale"));
-        return Manipulate.createResponse("SUCCESS", LOGIN_SUCCESS, userData);
+        ArrayList<String> userData = new ArrayList<>(List.of(
+                username,
+                email,
+                registerDatetime.toString(),
+                isTeacher ? "true" : "false",
+                gender ? "true" : "false"));
+        return createResponse("SUCCESS", LOGIN_SUCCESS, userData);
     }
 }

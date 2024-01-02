@@ -7,6 +7,7 @@ module com.example.calendlygui {
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires jbcrypt;
+    requires kotlin.stdlib;
 
     opens com.calendlygui to javafx.fxml;
     exports com.calendlygui.controller;
