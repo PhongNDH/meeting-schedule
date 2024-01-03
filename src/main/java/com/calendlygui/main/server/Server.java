@@ -1,20 +1,26 @@
 package com.calendlygui.main.server;
 
 import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.model.Request;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.utils.Helper.createResponse;
+
 public class Server implements Runnable {
-    private ArrayList<ConnectionHandler> connections;
+    private final ArrayList<ConnectionHandler> connections;
     private ServerSocket server;
     private boolean done = false;
-    private ExecutorService pool;
-    private int port;
+    private final int port;
+
+
 
     public Server(int port) {
         this.port = port;
@@ -25,17 +31,18 @@ public class Server implements Runnable {
     public void run() {
         try {
             server = new ServerSocket(this.port);
-            pool = Executors.newCachedThreadPool();
+            ExecutorService pool = Executors.newCachedThreadPool();
 
             while (!done) {
                 Socket client = server.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
                 this.connections.add(handler);
-                this.pool.execute(handler);
+                pool.execute(handler);
             }
 
         } catch (IOException e) {
             this.shutdown();
+            throw new RuntimeException(e);
         }
     }
 
@@ -53,12 +60,10 @@ public class Server implements Runnable {
         }
     }
 
-    class ConnectionHandler implements Runnable {
-        private Socket client;
+    static class ConnectionHandler implements Runnable {
+        private final Socket client;
         public static ObjectOutputStream outObject;
-        ObjectInputStream inObject;
         private BufferedReader in;
-
         public static PrintWriter out;
 
         public ConnectionHandler(Socket client) {
@@ -67,38 +72,15 @@ public class Server implements Runnable {
 
         public void run() {
             try {
+                out = new PrintWriter(this.client.getOutputStream(), true);
                 outObject = new ObjectOutputStream(this.client.getOutputStream());
-                in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
-                inObject = new ObjectInputStream((this.client.getInputStream()));
-                out = new PrintWriter(client.getOutputStream(), true);
+                this.in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
 
-                Request request;
-                while (true){
-                    request = (Request) inObject.readObject();
-                    System.out.println("Server received: " + request);
-                    switch (request.getMethod()){
-                        case "LOGIN": {
-                            System.out.println("LOGGING IN");
-                            Manipulate.signIn(request.getBody());
-                            break;
-                        }
-                        case "REGISTER": {
-                            System.out.println("REGISTERING");
-                            Manipulate.register(request.getBody());
-                            break;
-                        }
-                        case "QUIT": {
-                            outObject.writeObject("Quit successfully");
-                            System.out.println("QUITTING");
-                            break;
-                        }
-                        default: {
-                            System.out.println(request);
-                            break;
-                        }
-                    }
+                String request;
+                while ((request = this.in.readLine()) != null) {
+                    processRequest(request);
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | RuntimeException | ParseException e) {
                 this.shutdown();
             }
 
@@ -106,22 +88,35 @@ public class Server implements Runnable {
 
         public void shutdown() {
             try {
-                if(in != null){
-                    in.close();
-                }
-                if(outObject != null){
-                    outObject.close();
-                }
-                if(inObject != null){
-                    inObject.close();
-                }
-                if(out != null)
-                    out.close();
-                if (!client.isClosed()) {
+                in.close();
+                outObject.close();
+                if (!this.client.isClosed()) {
                     client.close();
                 }
+
             } catch (IOException e) {
                 System.out.println(e.getMessage());
+            }
+        }
+        private void processRequest(String request) throws IOException, ParseException {
+            System.out.println("Request: " + request);
+            String[] data = request.split(DELIMITER);
+            if (data[0].contains(REGISTER))                             Manipulate.register(data);
+            else if (data[0].contains(LOGIN))                           Manipulate.signIn(data);
+            else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
+            else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data);
+            else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data);
+            else if (data[0].contains(TEACHER_ENTER_CONTENT))           Manipulate.addMinute(data);
+            else if (data[0].contains(TEACHER_VIEW_HISTORY))            Manipulate.viewHistory(data);
+
+            else if (data[0].contains(STUDENT_VIEW_TIMESLOT))           Manipulate.viewAvailableSlots();
+            else if (data[0].contains(STUDENT_SCHEDULE_MEETING))        Manipulate.scheduleMeeting(data);
+            else if (data[0].contains(STUDENT_VIEW_MEETING_BY_WEEK))    Manipulate.viewByWeek(data);
+
+            else if (request.equals("/" + QUIT))                        Manipulate.quit();
+            else {
+                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
+                out.println(error);
             }
         }
     }

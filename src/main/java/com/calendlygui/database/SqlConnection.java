@@ -4,13 +4,13 @@ import java.sql.*;
 
 public class SqlConnection {
     public static Connection connect() {
-        String url = "jdbc:postgresql://localhost:5432/calendly";
+        String url = "jdbc:postgresql://localhost:5432/networkprog";
         String user = "postgres";
-        String password = "Phongsql123";
+        String password = "Spyderpyg59@";
         try {
             return DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException var5) {
+            throw new RuntimeException(var5);
         }
     }
 

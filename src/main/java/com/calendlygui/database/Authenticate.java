@@ -1,10 +1,12 @@
 package com.calendlygui.database;
 
+import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.constant.RegisterMessage;
 import com.calendlygui.model.ErrorMessage;
+import com.calendlygui.model.Outcome;
 import com.calendlygui.model.Response;
-import com.calendlygui.model.entity.User;
+import com.calendlygui.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
@@ -46,7 +48,7 @@ public class Authenticate {
             return new Response(3, new ErrorMessage(e.getMessage()));
         }
 //        return new Outcome(new User(name, email, registerDatetime, isTeacher, gender, "register"));
-        return new Response(0, new User(name, email, registerDatetime, isTeacher, gender));
+        return new Response(0, new User(name, email, registerDatetime, isTeacher, gender, "register"));
     }
 
     public static Response signIn(String email, String password) {
@@ -89,7 +91,7 @@ public class Authenticate {
 //            return new Outcome(new ErrorMessage(LoginMessage.LOGIN_PASSWORD_NOT_MATCH));
         }
 //        return new Outcome(new User(username, email, registerDatetime, isTeacher, gender, "register"));
-        return new Response(0, new User(username, email, registerDatetime, isTeacher, gender));
+        return new Response(0, new User(username, email, registerDatetime, isTeacher, gender, "register"));
     }
 
     public static void Logout(User user){
