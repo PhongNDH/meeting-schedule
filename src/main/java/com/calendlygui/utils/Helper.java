@@ -131,7 +131,7 @@ public class Helper {
                     meetingInfo[8]);
 
 //            List of minutes: meetingInfo[9]
-            if(meetingInfo[9] != ""){
+            if(!Objects.equals(meetingInfo[9], "")){
                 ArrayList<Minute> minutes = new ArrayList<>();
                 String minuteField = meetingInfo[9];
                 String[] minuteStrings = minuteField.split(LINE_BREAK);
@@ -144,7 +144,7 @@ public class Helper {
             }
 
 //            List of minutes: meetingInfo[10]
-            if(meetingInfo[10] != ""){
+            if(!Objects.equals(meetingInfo[10], "")){
                 ArrayList<User> students = new ArrayList<>();
                 String studentField = meetingInfo[10];
                 String[] studentStrings = studentField.split(LINE_BREAK);

@@ -77,13 +77,13 @@ public class Handler implements Runnable {
                     String message = inReader.readLine();
                     switch (message) {
                         case "1": {
-                            handleLogin("nguyendai060703@gmail.com", "111111");
+                            handleLogin("Nguyen Dai", "111111");
                             break;
                         }
                         case "2": {
                             handleRegister(
-                                    "Student Alana Job",
-                                    "aj@gmail.com",
+                                    "nguyendai060703@gmail.com",
+                                    "Nguyen Dai",
                                     "111111",
                                     true,
                                     false
@@ -171,7 +171,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleRegister(String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
+    void handleRegister(String email, String username, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
         data.clear();
         data.add(username);
         data.add(email);
