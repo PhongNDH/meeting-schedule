@@ -122,6 +122,9 @@ public class Manipulate {
             int tId = Integer.parseInt(data[1]);
 
             String result = handleViewHistory(tId);
+
+            System.out.println(result);
+
             out.println(result);
         } else {
             String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));

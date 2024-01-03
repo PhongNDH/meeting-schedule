@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,8 +82,8 @@ public class Handler implements Runnable {
                         }
                         case "2": {
                             handleRegister(
-                                    "Student Joe",
-                                    "js@gmail.com",
+                                    "Student Alana Job",
+                                    "aj@gmail.com",
                                     "111111",
                                     true,
                                     false
@@ -120,7 +121,11 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "7": {
-                            handleViewPastMeetings(1);
+                            try {
+                                handleViewPastMeetings(1);
+                            } catch (ParseException e){
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         }
 
@@ -141,7 +146,7 @@ public class Handler implements Runnable {
                         }
                     }
 
-                } catch (IOException var3) {
+                } catch (IOException | ParseException var3) {
                     shutdown();
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
@@ -159,7 +164,7 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
                 break;
             }
@@ -180,7 +185,7 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
                 break;
             }
@@ -200,7 +205,7 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("SHOW SOMETHING");
                 break;
             }
@@ -216,14 +221,14 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("UPDATE DONE");
                 break;
             }
         }
     }
 
-    void handleViewByDate(int tId, String date) throws IOException {
+    void handleViewByDate(int tId, String date) throws IOException, ParseException {
         request = createRequest(TEACHER_VIEW_MEETING_BY_DATE,
                 new ArrayList<>(List.of(String.valueOf(tId), date)));
         out.println(request);
@@ -234,7 +239,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println(response);
 
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
@@ -259,7 +264,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleViewPastMeetings(int tId) throws IOException {
+    void handleViewPastMeetings(int tId) throws IOException, ParseException {
 //        TEACHER_VIEW_HISTORY  teacher_id
         request = createRequest(TEACHER_VIEW_HISTORY, new ArrayList<>(List.of(String.valueOf(tId))));
         out.println(request);
@@ -269,10 +274,11 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println(response);
 
-                String[] info = response.split(DELIMITER);
-                if (info[0].contains("SUCCESS")) {
+                String[] info = response.split(COMMAND_DELIMITER);
+                if (info[0].contains(SUCCESS)) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
+                    for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
                 }
             }
@@ -281,7 +287,7 @@ public class Handler implements Runnable {
 
 
     //student
-    void handleViewAvailableSlots() throws IOException {
+    void handleViewAvailableSlots() throws IOException, ParseException {
         request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
         out.println(request);
 
@@ -291,7 +297,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println(response);
 
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
@@ -301,7 +307,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleScheduleMeeting(int sId, int mId, String type) throws IOException {
+    void handleScheduleMeeting(int sId, int mId, String type) throws IOException, ParseException {
 //        /STUDENT_SCHEDULE_INDIVIDUAL_MEETING student_id  meeting_id
         request = createRequest(STUDENT_SCHEDULE_MEETING, new ArrayList<>(List.of(String.valueOf(sId), String.valueOf(mId), type)));
         out.println(request);
@@ -311,7 +317,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println(response);
 
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
@@ -321,7 +327,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleViewByWeek(int sId, String beginDate, String endDate) throws IOException {
+    void handleViewByWeek(int sId, String beginDate, String endDate) throws IOException, ParseException {
 //        /STUDENT_VIEW_MEETING_BY_WEEK student_id  begin_date end_date
         request = createRequest(STUDENT_VIEW_MEETING_BY_WEEK, new ArrayList<>(List.of(String.valueOf(sId), beginDate, endDate)));
         out.println(request);
@@ -331,7 +337,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println(response);
 
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());

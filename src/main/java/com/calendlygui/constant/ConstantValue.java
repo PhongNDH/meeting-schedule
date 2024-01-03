@@ -4,9 +4,10 @@ public class ConstantValue {
     public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     public static final String NAME_PATTERN = "[\\p{L} ]+";
     public static final String HOST_ADDRESS = "127.0.0.1";
-    public static final String DELIMITER = ";";
-    public static final String LINE_BREAK = "<><>";
-    public static final String DOUBLE_LINE_BREAK = "\n\n";
+    public static final String COMMAND_DELIMITER = ";";
+    public static final String FIELD_DELIMITER = "~";
+    public static final String LINE_BREAK = "<>";
+    public static final String DOUBLE_LINE_BREAK = "<><>";
 
     //MESSAGES
     public static final String SQL_ERROR = "SQL Connection Error";
@@ -43,8 +44,8 @@ public class ConstantValue {
     //Meeting
     public static final String MEETING = "meeting";
     public static final String ID = "id";
-    public static final String MEETING_TEACHER_ID = "teacher_id";
     public static final String NAME = "name";
+    public static final String MEETING_TEACHER_ID = "teacher_id";
     public static final String MEETING_OCCUR = "occur";
     public static final String MEETING_FINISH = "finish";
     public static final String STATUS = "status";
@@ -65,6 +66,12 @@ public class ConstantValue {
     //Participate
     public static final String PARTICIPATE = "participate";
     public static final String STUDENT_ID = "student_id";
+
+    //Users
+    public static final String EMAIL = "email";
+    public static final String GENDER = "gender";
+    public static final String REGISTER_DATETIME = "register_datetime";
+    public static final String IS_TEACHER = "is_teacher";
 
 
     //Message types

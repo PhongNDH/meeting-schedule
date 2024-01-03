@@ -9,7 +9,6 @@ public class User implements Serializable {
     Timestamp registerDatetime;
     boolean isTeacher;
     boolean gender;
-    String mode;
 
     public String getUsername() {
         return username;
@@ -51,24 +50,16 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
 
     public User() {
     }
 
-    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender, String mode) {
+    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender) {
         this.username = username;
         this.email = email;
         this.registerDatetime = registerDatetime;
         this.isTeacher = isTeacher;
         this.gender = gender;
-        this.mode = mode;
     }
 
     @Override

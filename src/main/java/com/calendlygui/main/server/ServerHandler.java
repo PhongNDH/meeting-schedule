@@ -2,6 +2,8 @@ package com.calendlygui.main.server;
 
 import com.calendlygui.database.SqlConnection;
 import com.calendlygui.model.Meeting;
+import com.calendlygui.model.Minute;
+import com.calendlygui.model.User;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -135,6 +137,15 @@ public class ServerHandler {
 
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
+
+            System.out.println("Found " + meetings.size() + " in history");
+
+            for(Meeting meeting: meetings){
+                ArrayList<Minute> minutes = getMinutes(conn, meeting.id);
+                ArrayList<User> students = getStudentsInPastMeetings(conn, meeting.id);
+                meeting.minutes = minutes;
+                meeting.students = students;
+            }
 
             return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
 

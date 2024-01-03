@@ -100,7 +100,7 @@ public class Server implements Runnable {
         }
         private void processRequest(String request) throws IOException, ParseException {
             System.out.println("Request: " + request);
-            String[] data = request.split(DELIMITER);
+            String[] data = request.split(COMMAND_DELIMITER);
             if (data[0].contains(REGISTER))                             Manipulate.register(data);
             else if (data[0].contains(LOGIN))                           Manipulate.signIn(data);
             else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
