@@ -167,6 +167,21 @@ public class Helper {
         return meetings;
     }
 
+    public static User extractUserFromResponse(String response) throws ParseException {
+        String[] data = response.split(COMMAND_DELIMITER);
+        if(data.length == 7){
+            return new User(
+                    data[2],
+                    data[3],
+                    new Timestamp(formatter.parse(data[4]).getTime()),
+                    Objects.equals(data[5], "true"),
+                    Objects.equals(data[6], "true")
+            );
+        }
+
+        return null;
+    }
+
     public static ArrayList<Minute> getMinutes(Connection conn, int meetingId) throws SQLException {
         ArrayList<Minute> minutes = new ArrayList<>();
 

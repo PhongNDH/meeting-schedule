@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
-import static com.calendlygui.utils.Helper.createRequest;
-import static com.calendlygui.utils.Helper.extractMeetingsFromResponse;
+import static com.calendlygui.utils.Helper.*;
 
 public class Handler implements Runnable {
     private Socket client;
@@ -82,8 +81,8 @@ public class Handler implements Runnable {
                         }
                         case "2": {
                             handleRegister(
-                                    "nguyendai060703@gmail.com",
-                                    "Nguyen Dai",
+                                    "vl@gmail.com",
+                                    "Vanh LEG",
                                     "111111",
                                     true,
                                     false
@@ -155,7 +154,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleLogin(String account, String password) throws IOException, ClassNotFoundException {
+    void handleLogin(String account, String password) throws IOException, ClassNotFoundException, ParseException {
         request = createRequest(LOGIN, new ArrayList<>(List.of(account, password)));
         out.println(request);
 
@@ -165,13 +164,17 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
+                if (info[0].contains(SUCCESS)) {
+                    User currentUser = extractUserFromResponse(response);
+                    System.out.println(currentUser);
+                    System.out.println("Navigate to home screen");
+                }
                 break;
             }
         }
     }
 
-    void handleRegister(String email, String username, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
+    void handleRegister(String email, String username, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException, ParseException {
         data.clear();
         data.add(username);
         data.add(email);
@@ -186,7 +189,11 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
+                if (info[0].contains(SUCCESS)) {
+                    User currentUser = extractUserFromResponse(response);
+                    System.out.println(currentUser);
+                    System.out.println("Navigate to home screen");
+                }
                 break;
             }
         }
