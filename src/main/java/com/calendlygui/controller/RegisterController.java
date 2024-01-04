@@ -5,10 +5,9 @@ import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.constant.RegisterMessage;
 import com.calendlygui.model.ErrorMessage;
-import com.calendlygui.model.Request;
-import com.calendlygui.model.Response;
 import com.calendlygui.model.entity.User;
 import com.calendlygui.utils.Controller;
+import com.calendlygui.utils.SendData;
 import com.calendlygui.utils.Validate;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,6 +24,11 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+import static com.calendlygui.CalendlyApplication.in;
+import static com.calendlygui.CalendlyApplication.out;
+import static com.calendlygui.constant.ConstantValue.DELIMITER;
+import static com.calendlygui.constant.ConstantValue.SUCCESS;
 
 public class RegisterController implements Initializable {
 
@@ -86,28 +90,22 @@ public class RegisterController implements Initializable {
     void close(MouseEvent event) {
 
     }
+
     @FXML
     void navigateToSignIn(MouseEvent event) {
-        Controller.navigateToOtherStage(signInLabel,"login.fxml","Login");
+        Controller.navigateToOtherStage(signInLabel, "login.fxml", "Login");
     }
 
     @FXML
-    void register(MouseEvent event) throws IOException {
+    void register(MouseEvent event) throws IOException, ClassNotFoundException {
         String username = usernameTextField.getText();
         String email = emailTextField.getText();
         String password = passwordPasswordField.getText();
         String confirmedPassword = confirmPasswordField.getText();
         boolean isMale = gender.getSelectedToggle().equals(maleGender);
         boolean isTeacher = occupation.getSelectedToggle().equals(teacherOccupation);
-        ArrayList<String> body = new ArrayList<>();
-        body.add(email);
-        body.add(username);
-        body.add(password);
-        body.add(isMale ? "true" : "false");
-        body.add(isTeacher? "true" : "false");
-        Request request = new Request("REGISTER", body);
         if (dealWithErrorMessageFromUI(email, username, password, confirmedPassword)) {
-            CalendlyApplication.outObject.writeObject(request);
+            SendData.handleRegister(in, out, email, username, password, isMale, isTeacher);
         }
 
     }
@@ -116,7 +114,7 @@ public class RegisterController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-            CalendlyApplication.out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
+            out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
             CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
             CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
         } catch (IOException e) {
@@ -125,50 +123,80 @@ public class RegisterController implements Initializable {
         }
         Thread receiveThread = new Thread(() -> {
             try {
-                Object responseObject;
-                Response response = null;
-                while (true) {
-                    responseObject = CalendlyApplication.inObject.readObject();
-                    if(responseObject instanceof Response) response = (Response) responseObject;
-                    System.out.println("Response received : " + response);
-                    if(response == null) return;
-                    if(response.getBody() instanceof String){
-                        System.out.println((String) response.getBody());
-                    }
+                String response;
+                while ((response = in.readLine()) != null) {
+                    System.out.println("Response: " + response);
+                    String[] info = response.split(DELIMITER);
+                    if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
                     else{
-                        switch (response.getCode()) {
-                            case 0: {
-                                User user = ((User) response.getBody());
-                                System.out.println("SUCCESS");
-                                System.out.println(user.getUsername());
-                                CalendlyApplication.user = user;
-                                navigateToHomePage();
-                                break;
-                            }
-                            case 1: {
+                        switch (info[1]){
+                            case ConstantValue.CLIENTSIDE_ERROR: {
                                 System.out.println("CLIENT ERROR");
-                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+                                showErrorFromServerToUIAndConsole( info[2]);
                                 break;
                             }
-                            case 2: {
+                            case ConstantValue.SERVERSIDE_ERROR: {
                                 System.out.println("SERVER ERROR");
-                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+                                showErrorFromServerToUIAndConsole(info[2]);
                                 break;
                             }
-                            case 3: {
+                            case ConstantValue.SQL_ERROR: {
                                 System.out.println("SQL ERROR");
-                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+                                showErrorFromServerToUIAndConsole(info[2]);
                                 break;
                             }
                             default: {
                                 System.out.println("UNKNOWN ERROR");
-                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+                                System.out.println((info[2]));
                                 break;
                             }
                         }
                     }
                 }
-            } catch (IOException | ClassNotFoundException e) {
+//                Object responseObject;
+//                Response response = null;
+//                while (true) {
+//                    responseObject = CalendlyApplication.inObject.readObject();
+//                    if(responseObject instanceof Response) response = (Response) responseObject;
+//                    System.out.println("Response received : " + response);
+//                    if(response == null) return;
+//                    if(response.getBody() instanceof String){
+//                        System.out.println((String) response.getBody());
+//                    }
+//                    else{
+//                        switch (response.getCode()) {
+//                            case 0: {
+//                                User user = ((User) response.getBody());
+//                                System.out.println("SUCCESS");
+//                                System.out.println(user.getUsername());
+//                                CalendlyApplication.user = user;
+//                                navigateToHomePage();
+//                                break;
+//                            }
+//                            case 1: {
+//                                System.out.println("CLIENT ERROR");
+//                                System.out.println(((ErrorMessage) response.getBody()).getContent());
+//                                break;
+//                            }
+//                            case 2: {
+//                                System.out.println("SERVER ERROR");
+//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+//                                break;
+//                            }
+//                            case 3: {
+//                                System.out.println("SQL ERROR");
+//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+//                                break;
+//                            }
+//                            default: {
+//                                System.out.println("UNKNOWN ERROR");
+//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
             }
@@ -232,9 +260,9 @@ public class RegisterController implements Initializable {
         return isValidUsername && isValidEmail && isValidPassword && isValidPasswordConfirmation;
     }
 
-    private void showErrorFromServerToUIAndConsole(ErrorMessage error){
-        System.out.println(error.getContent());
-        dealWithErrorMessageFromServer(error.getContent());
+    private void showErrorFromServerToUIAndConsole(String error) {
+        System.out.println(error);
+        dealWithErrorMessageFromServer(error);
     }
 
     private void navigateToHomePage() throws IOException {

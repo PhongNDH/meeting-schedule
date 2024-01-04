@@ -70,6 +70,8 @@ public class Meeting {
 
     List<Content> contents;
 
+    List<User> students;
+
     public int getId() {
         return id;
     }
@@ -80,6 +82,10 @@ public class Meeting {
 
     public String getName() {
         return name;
+    }
+
+    public List<User> getStudents() {
+        return students;
     }
 
     public Timestamp getEstablishedDatetime() {

@@ -83,7 +83,6 @@ public class Server implements Runnable {
             } catch (IOException | RuntimeException | ParseException e) {
                 this.shutdown();
             }
-
         }
 
         public void shutdown() {
@@ -98,6 +97,7 @@ public class Server implements Runnable {
                 System.out.println(e.getMessage());
             }
         }
+
         private void processRequest(String request) throws IOException, ParseException {
             System.out.println("Request: " + request);
             String[] data = request.split(DELIMITER);
