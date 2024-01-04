@@ -137,6 +137,21 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
+            <Button fx:id="logoutButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="422.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Logout">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/logout.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </Button>
             </children></VBox>
         <Pane layoutX="250.0" prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: #fff59d;">
          <children>
@@ -163,7 +178,7 @@
                   <TableColumn fx:id="statusTableColumn" prefWidth="104.00006103515625" text="Status" />
                </columns>
             </TableView>
-            <Pane fx:id="detailPane" layoutX="40.0" layoutY="129.0" prefHeight="393.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
+            <Pane fx:id="detailPane" layoutX="40.0" layoutY="129.0" prefHeight="393.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;">
                <children>
                   <Text layoutX="84.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Created date" />
                   <TextField fx:id="beginTextField" editable="false" layoutX="180.0" layoutY="135.0" prefHeight="25.0" prefWidth="303.0" />

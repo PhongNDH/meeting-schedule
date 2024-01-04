@@ -2,7 +2,7 @@ package com.calendlygui.utils;
 
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.model.Meeting;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 
 import java.io.*;
 import java.net.InetAddress;

@@ -12,6 +12,7 @@ public class ConstantValue {
     public static final String SQL_ERROR = "SQL Connection Error";
     public static final String CLIENTSIDE_ERROR = "Client-side Error";
     public static final String SERVERSIDE_ERROR = "Server-side Error";
+
     public static final int PORT = 3000;
     public static final String LOGIN_EMAIL_NOT_EXIST = "Email does not exist";
     public static final String LOGIN_SERVER_WRONG = "Something fails at server";

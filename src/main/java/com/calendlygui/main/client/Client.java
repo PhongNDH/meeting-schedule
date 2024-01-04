@@ -1,7 +1,7 @@
 package com.calendlygui.main.client;
 
 import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;

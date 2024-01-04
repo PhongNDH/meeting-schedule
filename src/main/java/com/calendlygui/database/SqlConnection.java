@@ -4,9 +4,9 @@ import java.sql.*;
 
 public class SqlConnection {
     public static Connection connect() {
-        String url = "jdbc:postgresql://localhost:5432/networkprog";
+        String url = "jdbc:postgresql://localhost:5432/calendly";
         String user = "postgres";
-        String password = "Spyderpyg59@";
+        String password = "Phongsql123";
         try {
             return DriverManager.getConnection(url, user, password);
         } catch (SQLException var5) {

@@ -181,6 +181,7 @@ public class TeacherHistoryController implements Initializable {
         Controller.navigateToOtherStage(timeslotButton, "teacher-timeslot.fxml", "Time Slots");
     }
 
+
     @FXML
     void openContentPane(MouseEvent event) {
         contentPane.setVisible(true);

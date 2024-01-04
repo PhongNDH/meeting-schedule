@@ -1,5 +1,6 @@
 package com.calendlygui.controller.teacher;
 
+import com.calendlygui.CalendlyApplication;
 import com.calendlygui.utils.Controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -11,6 +12,9 @@ public class TeacherController {
 
     @FXML
     private Button historyButton;
+
+    @FXML
+    private Button logoutButton;
 
     @FXML
     private Button homeButton;
@@ -59,6 +63,14 @@ public class TeacherController {
     @FXML
     void navigateToTimeslot(MouseEvent event) {
         Controller.navigateToOtherStage(timeslotButton,"teacher-timeslot.fxml","Time Slots");
+    }
+
+    @FXML
+    void logout(MouseEvent event) {
+        if(CalendlyApplication.user != null){
+            CalendlyApplication.user = null;
+        }
+        Controller.navigateToOtherStage(logoutButton, "login.fxml","Login");
     }
 
 }

@@ -58,11 +58,11 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Schedule">
+                <Button fx:id="scheduleButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#navigateToSchedule" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Appointment">
                     <graphic>
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../assets/icon/calendar.png" />
+                                <Image url="@../../assets/icon/videocall.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -78,21 +78,6 @@
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../../assets/icon/teacher.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <padding>
-                        <Insets left="50.0" />
-                    </padding>
-                </Button>
-                <Button fx:id="appointmentButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="116.0" mnemonicParsing="false" onMouseClicked="#navigateToAppointment" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Appointment">
-                    <graphic>
-                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../../assets/icon/videocall.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -148,6 +133,21 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
+            <Button fx:id="logoutButton" alignment="BASELINE_LEFT" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Logout">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/logout.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </Button>
             </children></VBox>
         <Pane layoutX="250.0" prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: #fff59d;">
             <children>
