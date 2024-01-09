@@ -39,11 +39,11 @@ public class ServerHandler {
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
             System.out.println("Created: " + establishTime.toString());
-            return createResponse(SUCCESS, "New meeting created", new ArrayList<>(List.of(establishTime.toString())));
+            return createResponse(OPERATION_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -74,10 +74,10 @@ public class ServerHandler {
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
             System.out.println("Created: " + establishTime.toString());
-            return createResponse(SUCCESS, "Meeting edited", new ArrayList<>(List.of(establishTime.toString())));
+            return createResponse(OPERATION_SUCCESS, establishTime.toString());
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -95,10 +95,10 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
+            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -118,11 +118,11 @@ public class ServerHandler {
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
             System.out.println("Created: " + establishTime.toString());
-            return createResponse(SUCCESS, "New minute added", new ArrayList<>(List.of(establishTime.toString())));
+            return createResponse(OPERATION_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -147,11 +147,11 @@ public class ServerHandler {
                 meeting.students = students;
             }
 
-            return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
+            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -166,11 +166,11 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
+            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -200,10 +200,10 @@ public class ServerHandler {
                 break;
             }
 
-            return createResponse(SUCCESS, "Insert & update successfully", new ArrayList<>(List.of(participateTime.toString())));
+            return createResponse(OPERATION_SUCCESS, participateTime.toString());
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
     }
 
@@ -226,14 +226,14 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
+            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         } catch (ParseException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SERVERSIDE_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(PARSE_ERROR);
         }
     }
 
@@ -273,10 +273,10 @@ public class ServerHandler {
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
-            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         } catch (NullPointerException e) {
-            System.out.println(SERVERSIDE_ERROR + ": " + e.getMessage());
-            return createResponse(FAIL, SERVERSIDE_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            System.out.println(e.getMessage());
+            return String.valueOf(NULL_ERROR);
         }
     }
 
@@ -301,7 +301,7 @@ public class ServerHandler {
 
         deletePs.executeQuery();
 
-        return createResponse(SUCCESS, "Update successfully", new ArrayList<>(List.of(String.valueOf(establishDatetime))));
+        return createResponse(OPERATION_SUCCESS, establishDatetime.toString());
     }
 
     private static String cancelMeeting(int sId, int mId) throws SQLException {
@@ -314,6 +314,6 @@ public class ServerHandler {
         deletePs.executeQuery();
 
         Timestamp deleteTime = new Timestamp(System.currentTimeMillis());
-        return createResponse(SUCCESS, UPDATE_DONE, new ArrayList<>(List.of(String.valueOf(deleteTime))));
+        return createResponse(OPERATION_SUCCESS, deleteTime.toString());
     }
 }

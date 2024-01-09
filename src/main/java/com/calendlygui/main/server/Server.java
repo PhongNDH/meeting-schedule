@@ -116,8 +116,8 @@ public class Server implements Runnable {
 
             else if (request.equals("/" + QUIT))                        Manipulate.quit();
             else {
-                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-                out.println(error);
+//                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
+                out.println(INCORRECT_FORMAT);
             }
         }
     }

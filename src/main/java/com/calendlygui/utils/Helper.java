@@ -43,16 +43,15 @@ public class Helper {
         return request.toString();
     }
 
-    public static String createResponse(String status, String type, ArrayList<String> message) {
-        StringBuilder data = new StringBuilder();
-        for (int i = 0; i < message.size(); i++) {
-            if (i == 0) data.append(message.get(i));
-            else data.append(COMMAND_DELIMITER).append(message.get(i));
-        }
-        return "/" + status + COMMAND_DELIMITER + type + COMMAND_DELIMITER + data;
+    public static String createResponse(int code, String message) {
+        return code + COMMAND_DELIMITER + message;
     }
 
-    public static String createResponseWithMeetingList(String status, String type, ArrayList<Meeting> meetings) {
+    public static String createResponseWithUser(int code, String name, String email, String time, String isTeacher, String gender){
+        return code + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
+    }
+
+    public static String createResponseWithMeetingList(int code, ArrayList<Meeting> meetings) {
         StringBuilder data = new StringBuilder();
         for (Meeting meeting : meetings) {
             data.append(COMMAND_DELIMITER)
@@ -84,8 +83,7 @@ public class Helper {
 
             if(!meeting.students.isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
         }
-        String res = "/" + status + COMMAND_DELIMITER + type + data;
-        return res;
+        return String.valueOf(code) + data;
     }
 
     public static ArrayList<Meeting> getMeetings(ResultSet rs) throws SQLException {
@@ -120,7 +118,7 @@ public class Helper {
     public static ArrayList<Meeting> extractMeetingsFromResponse(String response) throws ParseException {
         String[] data = response.split(COMMAND_DELIMITER);
         ArrayList<Meeting> meetings = new ArrayList<>();
-        for (int i = 2; i < data.length; i++) {
+        for (int i = 1; i < data.length; i++) {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
@@ -169,13 +167,13 @@ public class Helper {
 
     public static User extractUserFromResponse(String response) throws ParseException {
         String[] data = response.split(COMMAND_DELIMITER);
-        if(data.length == 7){
+        if(data.length == 6){
             return new User(
+                    data[1],
                     data[2],
-                    data[3],
-                    new Timestamp(formatter.parse(data[4]).getTime()),
-                    Objects.equals(data[5], "true"),
-                    Objects.equals(data[6], "true")
+                    new Timestamp(formatter.parse(data[3]).getTime()),
+                    Objects.equals(data[4], "true"),
+                    Objects.equals(data[5], "true")
             );
         }
 

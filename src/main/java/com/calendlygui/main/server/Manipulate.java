@@ -19,21 +19,19 @@ public class Manipulate {
     public static void register(String[] registerInfo) throws IOException {
         if (registerInfo.length == 6) {
             if ((!registerInfo[4].equals("false") && !registerInfo[4].equals("true") || !registerInfo[5].equals("false") && !registerInfo[5].equals("true")) && !Validate.checkEmailFormat(registerInfo[1])) {
-                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-                out.write(error);
+                out.write(INCORRECT_FORMAT);
             } else {
                 String email = registerInfo[1];
                 String username = registerInfo[2];
                 String password = registerInfo[3];
                 boolean gender = registerInfo[4].equals("true");
                 boolean isTeacher = registerInfo[5].equals("true");
-                String result = Authenticate.register(email, username, password, gender, isTeacher);
 
+                String result = Authenticate.register(email, username, password, gender, isTeacher);
                 out.println(result);
             }
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-            out.write(error);
+            out.write(INCORRECT_FORMAT);
         }
     }
 
@@ -46,8 +44,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-            out.write(error);
+            out.write(INCORRECT_FORMAT);
         }
     }
 
@@ -65,8 +62,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -85,8 +81,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -98,8 +93,7 @@ public class Manipulate {
             String result = handleViewMeetingsByDate(tId, date);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -112,8 +106,7 @@ public class Manipulate {
             String result = handleAddMinute(mId, content);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -127,8 +120,7 @@ public class Manipulate {
 
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -148,8 +140,7 @@ public class Manipulate {
             String result = handleScheduleMeeting(sId, mId, type);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -162,8 +153,7 @@ public class Manipulate {
             String result = handleViewMeetingsByWeek(sId, beginDate, endDate);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -175,13 +165,12 @@ public class Manipulate {
             String result = handleCancelMeeting(sId, mId);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
     public static void quit() {
-        String result = createResponse(SUCCESS, "Quit successfully", new ArrayList<>());
+        String result = createResponse(OPERATION_SUCCESS, "Quit successfully");
         out.println(result);
     }
 
