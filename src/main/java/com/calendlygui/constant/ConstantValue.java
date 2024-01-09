@@ -72,6 +72,7 @@ public class ConstantValue {
     public static final int IO_ERROR = 51;
     public static final int PARSE_ERROR = 52;
     public static final int NULL_ERROR = 53;
+    public static final int NOT_UP_TO_DATE = 54;
 
     public static final int SQL_ERROR = 61;
 

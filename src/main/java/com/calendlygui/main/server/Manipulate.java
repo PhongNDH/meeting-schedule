@@ -35,7 +35,7 @@ public class Manipulate {
         }
     }
 
-    public static void signIn(String[] loginInfo){
+    public static void signIn(String[] loginInfo) {
         if (loginInfo.length == 3) {
             String email = loginInfo[1];
             String password = loginInfo[2];
@@ -86,7 +86,7 @@ public class Manipulate {
     }
 
     public static void viewByDate(String[] data) throws ParseException {
-        if(data.length == 3){
+        if (data.length == 3) {
             int tId = Integer.parseInt(data[1]);
             String date = data[2];
 
@@ -98,7 +98,7 @@ public class Manipulate {
     }
 
     public static void addMinute(String[] data) {
-        if(data.length == 3){
+        if (data.length == 3) {
 //            int tId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[1]);
             String content = data[2];
@@ -110,8 +110,8 @@ public class Manipulate {
         }
     }
 
-    public static void viewHistory(String[] data){
-        if(data.length == 2){
+    public static void viewHistory(String[] data) {
+        if (data.length == 2) {
             int tId = Integer.parseInt(data[1]);
 
             String result = handleViewHistory(tId);
@@ -132,7 +132,7 @@ public class Manipulate {
     }
 
     public static void scheduleMeeting(String[] data) {
-        if(data.length == 4){
+        if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[2]);
             String type = data[3];
@@ -145,7 +145,7 @@ public class Manipulate {
     }
 
     public static void viewByWeek(String[] data) {
-        if(data.length == 4){
+        if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             String beginDate = data[2];
             String endDate = data[3];
@@ -158,7 +158,7 @@ public class Manipulate {
     }
 
     public static void cancelMeeting(String[] data) {
-        if(data.length == 3){
+        if (data.length == 3) {
             int sId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[2]);
 
