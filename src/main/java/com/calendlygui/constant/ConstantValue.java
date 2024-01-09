@@ -38,6 +38,7 @@ public class ConstantValue {
     public static final String STUDENT_VIEW_TIMESLOT = "STUDENT_VIEW_TIMESLOT";
     public static final String STUDENT_SCHEDULE_MEETING = "STUDENT_SCHEDULE_MEETING";
     public static final String STUDENT_VIEW_MEETING_BY_WEEK = "STUDENT_VIEW_MEETING_BY_WEEK";
+    public static final String STUDENT_CANCEL_MEETING = "STUDENT_CANCEL_MEETING";
     public static final String QUIT = "QUIT";
 
     //FIELDS
@@ -76,5 +77,6 @@ public class ConstantValue {
 
     //Message types
     public static final String SQL_EXCEPTION = "SQL Exception";
+    public static final String UPDATE_DONE = "Update successfully";
 
 }

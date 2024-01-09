@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.utils.Helper.*;
@@ -76,7 +77,7 @@ public class Handler implements Runnable {
                     String message = inReader.readLine();
                     switch (message) {
                         case "1": {
-                            handleLogin("Nguyen Dai", "111111");
+                            handleLogin("vl@gmail.com", "111111");
                             break;
                         }
                         case "2": {
@@ -87,41 +88,83 @@ public class Handler implements Runnable {
                                     true,
                                     false
                             );
+                            handleRegister(
+                                    "s1@gmail.com",
+                                    "Student one",
+                                    "111111",
+                                    true,
+                                    false
+                            );
+                            handleRegister(
+                                    "s2@gmail.com",
+                                    "Student two",
+                                    "111111",
+                                    false,
+                                    false
+                            );
+                            handleRegister(
+                                    "t1@gmail.com",
+                                    "Teacher 1",
+                                    "111111",
+                                    true,
+                                    true
+                            );
+                            handleRegister(
+                                    "t2@gmail.com",
+                                    "Teacher 2",
+                                    "111111",
+                                    true,
+                                    true
+                            );
                             break;
                         }
                         case "3": {
                             handleCreateMeeting(
-                                    "Checkpoint1",
-                                    "2023-12-26",
-                                    "07:00",
-                                    "07:20",
+                                    "Checkpoint 1",
+                                    "2024-1-9",
+                                    "08:00",
+                                    "08:30",
                                     "individual",
-                                    1);
+                                    18);
+
+                            handleCreateMeeting(
+                                    "GR1",
+                                    "2024-1-9",
+                                    "08:15",
+                                    "09:00",
+                                    "group",
+                                    19);
                             break;
                         }
                         case "4": {
                             handleEditMeeting(
-                                    1,
-                                    "Edited checkpoint",
-                                    "2023-12-30",
-                                    "8:20",
-                                    "8:40",
+                                    10,
+                                    "Check point 1 (Edited)",
+                                    "2024-1-9",
+                                    "08:00",
+                                    "08:30",
                                     "accept",
                                     "group"
                             );
                             break;
                         }
                         case "5": {
-                            handleViewByDate(1, "2023-12-30");
+                            handleViewByDate(18, "2024-1-9");
+                            handleViewByDate(19, "2024-1-9");
                             break;
                         }
                         case "6": {
-                            handleAddMinute(1, "No need to do that");
+                            handleAddMinute(10, "Check student 1");
+                            handleAddMinute(10, "Check student 2");
+                            handleAddMinute(10, "Check student 3");
+                            handleAddMinute(11, "Assign project");
+                            handleAddMinute(11, "Check project's progress");
                             break;
                         }
                         case "7": {
                             try {
-                                handleViewPastMeetings(1);
+                                handleViewPastMeetings(18);
+//                                handleViewPastMeetings(19);
                             } catch (ParseException e){
                                 System.out.println(e.getMessage());
                             }
@@ -134,11 +177,16 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "9": {
-                            handleScheduleMeeting(4, 2, GROUP);
+                            handleScheduleMeeting(16, 11, GROUP);
+                            handleScheduleMeeting(17, 11, GROUP);
                             break;
                         }
                         case "10": {
                             handleViewByWeek(4, "2023-1-1", "2023-12-31");
+                            break;
+                        }
+                        case "11": {
+                            handleCancelMeeting(16, 11);
                             break;
                         }
                         default: {
@@ -199,6 +247,20 @@ public class Handler implements Runnable {
         }
     }
 
+    private void handleCancelMeeting(int sId, int mId) throws IOException {
+        request = createRequest(STUDENT_CANCEL_MEETING, new ArrayList<>(List.of(String.valueOf(sId), String.valueOf(mId))));
+        out.println(request);
+
+        while (true) {
+            response = in.readLine();
+            if (response != null) {
+                System.out.println(response);
+                break;
+            }
+        }
+    }
+
+
 
     //teacher
     void handleCreateMeeting(String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
@@ -249,7 +311,7 @@ public class Handler implements Runnable {
                 String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
-                    System.out.println(meetings.size());
+                    for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
                 }
             }
@@ -308,6 +370,7 @@ public class Handler implements Runnable {
                 if (info[0].contains("SUCCESS")) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
+                    for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
                 }
             }
@@ -323,13 +386,7 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println(response);
-
-                String[] info = response.split(COMMAND_DELIMITER);
-                if (info[0].contains("SUCCESS")) {
-                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
-                    System.out.println(meetings.size());
-                    break;
-                }
+                break;
             }
         }
     }

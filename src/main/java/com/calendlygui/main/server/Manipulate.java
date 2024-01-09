@@ -167,6 +167,19 @@ public class Manipulate {
         }
     }
 
+    public static void cancelMeeting(String[] data) {
+        if(data.length == 3){
+            int sId = Integer.parseInt(data[1]);
+            int mId = Integer.parseInt(data[2]);
+
+            String result = handleCancelMeeting(sId, mId);
+            out.println(result);
+        } else {
+            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
+            out.println(error);
+        }
+    }
+
     public static void quit() {
         String result = createResponse(SUCCESS, "Quit successfully", new ArrayList<>());
         out.println(result);

@@ -131,7 +131,7 @@ public class Helper {
                     meetingInfo[8]);
 
 //            List of minutes: meetingInfo[9]
-            if(!Objects.equals(meetingInfo[9], "")){
+            if(meetingInfo.length >= 10 && !Objects.equals(meetingInfo[9], "")){
                 ArrayList<Minute> minutes = new ArrayList<>();
                 String minuteField = meetingInfo[9];
                 String[] minuteStrings = minuteField.split(LINE_BREAK);
@@ -144,7 +144,7 @@ public class Helper {
             }
 
 //            List of minutes: meetingInfo[10]
-            if(!Objects.equals(meetingInfo[10], "")){
+            if(meetingInfo.length == 11 && !Objects.equals(meetingInfo[10], "")){
                 ArrayList<User> students = new ArrayList<>();
                 String studentField = meetingInfo[10];
                 String[] studentStrings = studentField.split(LINE_BREAK);
@@ -205,6 +205,8 @@ public class Helper {
             minutes.add(newMinute);
         }
 
+        System.out.println("Minutes: " + minutes.size());
+
         return minutes;
     }
 
@@ -225,7 +227,8 @@ public class Helper {
 
         System.out.println("Students: " + studentIDs.size());
 
-        return getUsers(conn, new ArrayList<>(studentIDs));
+        if(!studentIDs.isEmpty()) return getUsers(conn, new ArrayList<>(studentIDs));
+        else return new ArrayList<>();
     }
 
     public static ArrayList<User> getUsers(Connection conn, ArrayList<Integer> studentIDs) throws SQLException {
