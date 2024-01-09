@@ -63,7 +63,7 @@ public class ConstantValue {
     //Code
     public static final int OPERATION_SUCCESS = 10;
     public static final int CLIENT_MISSING_INFO = 41;
-    public static final int INCORRECT_FORMAT = 41;
+    public static final int INCORRECT_FORMAT = 42;
     public static final int ACCOUNT_NOT_EXIST = 43;
     public static final int INVALID_PASSWORD = 44;
     public static final int ACCOUNT_EXIST = 45;

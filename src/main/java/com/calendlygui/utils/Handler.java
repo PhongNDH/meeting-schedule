@@ -224,7 +224,7 @@ public class Handler implements Runnable {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
-                }
+                } else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -249,7 +249,7 @@ public class Handler implements Runnable {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
-                }
+                } else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -262,7 +262,10 @@ public class Handler implements Runnable {
         while (true) {
             response = in.readLine();
             if (response != null) {
-                System.out.println(response);
+                System.out.println("Response: " + response);
+                String[] info = response.split(COMMAND_DELIMITER);
+                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("UPDATE DONE");
+                else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -284,6 +287,7 @@ public class Handler implements Runnable {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
                 if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("SHOW SOMETHING");
+                else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -300,6 +304,7 @@ public class Handler implements Runnable {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
                 if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("UPDATE DONE");
+                else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -321,7 +326,7 @@ public class Handler implements Runnable {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
-                }
+                } else handleErrorResponse(info[0]);
             }
         }
     }
@@ -336,6 +341,10 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
+                String[] info = response.split(COMMAND_DELIMITER);
+                if(Integer.parseInt(info[0]) == OPERATION_SUCCESS){
+                    System.out.println("DO SOMETHING");
+                } else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -357,7 +366,7 @@ public class Handler implements Runnable {
                     System.out.println(meetings.size());
                     for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
-                }
+                } else handleErrorResponse(info[0]);
             }
         }
     }
@@ -380,7 +389,7 @@ public class Handler implements Runnable {
                     System.out.println(meetings.size());
                     for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
-                }
+                } else handleErrorResponse(info[0]);
             }
         }
     }
@@ -394,6 +403,11 @@ public class Handler implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println(response);
+
+                String[] info = response.split(COMMAND_DELIMITER);
+                if(Integer.parseInt(info[0]) == OPERATION_SUCCESS){
+                    System.out.println("Do something");
+                } else handleErrorResponse(info[0]);
                 break;
             }
         }
@@ -414,7 +428,60 @@ public class Handler implements Runnable {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
                     break;
-                }
+                } else handleErrorResponse(info[0]);
+            }
+        }
+    }
+
+    void handleErrorResponse(String codeString){
+        int code = Integer.parseInt(codeString);
+        switch (code){
+            case CLIENT_MISSING_INFO: {
+                System.out.println("Missing information in request");
+                break;
+            }
+            case INCORRECT_FORMAT: {
+                System.out.println("Incorrect message format");
+                break;
+            }
+            case ACCOUNT_NOT_EXIST: {
+                System.out.println("This account does not exist");
+                break;
+            }
+            case INVALID_PASSWORD: {
+                System.out.println("Invalid password");
+                break;
+            }
+            case ACCOUNT_EXIST: {
+                System.out.println("This account already exist");
+                break;
+            }
+            case UNDEFINED_ERROR: {
+                System.out.println("Unknown error");
+                break;
+            }
+            case IO_ERROR: {
+                System.out.println("Input/Output error");
+                break;
+            }
+            case PARSE_ERROR: {
+                System.out.println("Error parsing numbers and strings");
+                break;
+            }
+            case NULL_ERROR: {
+                System.out.println("Null pointer error");
+                break;
+            }
+            case NOT_UP_TO_DATE: {
+                System.out.println("Someone interacted with the data source, reload to update");
+                break;
+            }
+            case SQL_ERROR: {
+                System.out.println("Sql error");
+                break;
+            }
+            default: {
+                System.out.println("Unknown error");
             }
         }
     }
