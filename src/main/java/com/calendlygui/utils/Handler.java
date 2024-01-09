@@ -185,8 +185,8 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "9": {
-                            handleScheduleMeeting(in, out, 16, 11, GROUP);
-                            handleScheduleMeeting(in, out, 17, 11, GROUP);
+                            handleScheduleMeeting(in, out, 16, 10, INDIVIDUAL);
+//                            handleScheduleMeeting(in, out, 17, 11, GROUP);
                             break;
                         }
                         case "10": {

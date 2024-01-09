@@ -175,10 +175,23 @@ public class ServerHandler {
     }
 
     public static String handleScheduleMeeting(int sId, int mId, String type) {
+        try {
+        String checkMeetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
+        PreparedStatement checkMeetingPs = conn.prepareStatement(checkMeetingQuery);
+        checkMeetingPs.setInt(1, mId);
+        System.out.println(checkMeetingPs);
+
+        ResultSet checkMeetingRs = checkMeetingPs.executeQuery();
+        String selectedClassification = null;
+        while (checkMeetingRs.next()){
+            selectedClassification = checkMeetingRs.getString(SELECTED_CLASSIFICATION);
+        }
+        if(selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL))
+            return String.valueOf(NOT_UP_TO_DATE);
+
         String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
         String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = ?, " + SELECTED_CLASSIFICATION + " = ? where " + ID + " = ? returning " + ESTABLISH_DATETIME;
 
-        try {
             PreparedStatement participatePs = conn.prepareStatement(participateQuery);
             participatePs.setInt(1, sId);
             participatePs.setInt(2, mId);
