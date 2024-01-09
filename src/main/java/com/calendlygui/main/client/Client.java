@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.calendlygui.constant.ConstantValue.DELIMITER;
+import static com.calendlygui.constant.ConstantValue.COMMAND_DELIMITER;
 import static com.calendlygui.constant.ConstantValue.TEACHER_CREATE_MEETING;
 
 public class Client implements Runnable {
@@ -120,7 +120,7 @@ public class Client implements Runnable {
     String createRequest(String command, ArrayList<String> data) {
         StringBuilder request = new StringBuilder();
         request.append("/").append(command);
-        for (String _data : data) request.append(DELIMITER).append(_data);
+        for (String _data : data) request.append(COMMAND_DELIMITER).append(_data);
 
         return request.toString();
     }
@@ -136,7 +136,7 @@ public class Client implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;
@@ -160,7 +160,7 @@ public class Client implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("Navigate to home screen");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;
@@ -182,7 +182,7 @@ public class Client implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("SHOW SOMETHING");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;
@@ -199,7 +199,7 @@ public class Client implements Runnable {
             response = in.readLine();
             if (response != null) {
                 System.out.println("Response: " + response);
-                String[] info = response.split(DELIMITER);
+                String[] info = response.split(COMMAND_DELIMITER);
                 if (info[0].contains("SUCCESS")) System.out.println("UPDATE DONE");
                 else System.out.println("Error: " + info[1] + " " + info[2]);
                 break;

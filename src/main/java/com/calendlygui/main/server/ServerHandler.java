@@ -2,6 +2,8 @@ package com.calendlygui.main.server;
 
 import com.calendlygui.database.SqlConnection;
 import com.calendlygui.model.Meeting;
+import com.calendlygui.model.Minute;
+import com.calendlygui.model.User;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -47,7 +49,7 @@ public class ServerHandler {
 
     static String handleEditMeeting(int id, String name, String date, String begin, String end, String status, String selectedClassification) throws ParseException {
         Date[] convertedTime = convertToDate(date, begin, end);
-        String insertQuery = "update table " + MEETING +
+        String insertQuery = "update " + MEETING +
                 " set " + NAME + " = ?," +
                 MEETING_OCCUR + " = ?," +
                 MEETING_FINISH + " = ?," +
@@ -136,6 +138,15 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
+            System.out.println("Found " + meetings.size() + " in history");
+
+            for (Meeting meeting : meetings) {
+                ArrayList<Minute> minutes = getMinutes(conn, meeting.id);
+                ArrayList<User> students = getStudentsInPastMeetings(conn, meeting.id);
+                meeting.minutes = minutes;
+                meeting.students = students;
+            }
+
             return createResponseWithMeetingList(SUCCESS, DATA_FOUND + ": " + meetings.size(), meetings);
 
         } catch (SQLException e) {
@@ -144,7 +155,7 @@ public class ServerHandler {
         }
     }
 
-    public static String handleViewAvailableSlots(){
+    public static String handleViewAvailableSlots() {
         String query = "select * from " + MEETING + " where " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -163,9 +174,9 @@ public class ServerHandler {
         }
     }
 
-    public static String handleScheduleMeeting(int sId, int mId, String type){
+    public static String handleScheduleMeeting(int sId, int mId, String type) {
         String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
-        String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = ?, " + SELECTED_CLASSIFICATION + " = ? where " + ID + " = ? returning " + ESTABLISH_DATETIME ;
+        String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = ?, " + SELECTED_CLASSIFICATION + " = ? where " + ID + " = ? returning " + ESTABLISH_DATETIME;
 
         try {
             PreparedStatement participatePs = conn.prepareStatement(participateQuery);
@@ -190,13 +201,13 @@ public class ServerHandler {
             }
 
             return createResponse(SUCCESS, "Insert & update successfully", new ArrayList<>(List.of(participateTime.toString())));
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
         }
     }
 
-    public static String handleViewMeetingsByWeek(int sId, String beginDate, String endDate){
+    public static String handleViewMeetingsByWeek(int sId, String beginDate, String endDate) {
         String query = "select * from " + PARTICIPATE + " join " + MEETING +
                 " on " + PARTICIPATE + "." + MEETING_ID + " = " + MEETING + "." + ID +
                 " where " + STUDENT_ID + " = ?" +
@@ -224,5 +235,85 @@ public class ServerHandler {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return createResponse(FAIL, SERVERSIDE_ERROR, new ArrayList<>(List.of(e.getMessage())));
         }
+    }
+
+    public static String handleCancelMeeting(int sId, int mId) {
+        String meetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(meetingQuery);
+            ps.setInt(1, mId);
+            System.out.println(ps);
+
+            ResultSet rs = ps.executeQuery();
+            String selectedClassification = null;
+
+            while (rs.next()) {
+                selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
+            }
+            if (selectedClassification.equals(GROUP)) {
+                String countStudentQuery = "select count(*) from " + PARTICIPATE + " where " + MEETING_ID + " = ?";
+                PreparedStatement countPs = conn.prepareStatement(countStudentQuery);
+                countPs.setInt(1, mId);
+                System.out.println(countPs);
+
+                ResultSet countRs = countPs.executeQuery();
+                int studentNum = 0;
+                while (countRs.next()) studentNum = countRs.getInt("count");
+
+                System.out.println("Number of participated students: " + studentNum);
+                if (studentNum == 1)
+                    return cancelAndUpdateMeeting(sId, mId);
+                else
+                    return cancelMeeting(sId, mId);
+
+            } else {
+                return cancelAndUpdateMeeting(sId, mId);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
+            return createResponse(FAIL, SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+        } catch (NullPointerException e) {
+            System.out.println(SERVERSIDE_ERROR + ": " + e.getMessage());
+            return createResponse(FAIL, SERVERSIDE_ERROR, new ArrayList<>(List.of(e.getMessage())));
+        }
+    }
+
+    private static String cancelAndUpdateMeeting(int sId, int mId) throws SQLException {
+        String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = '" + PENDING + "', " + SELECTED_CLASSIFICATION + " = null where " + ID + " = ? returning " + ESTABLISH_DATETIME;
+        PreparedStatement updatePs = conn.prepareStatement(updateMeetingQuery);
+        updatePs.setInt(1, mId);
+        System.out.println(updatePs);
+
+        ResultSet updateRs = updatePs.executeQuery();
+
+        Timestamp establishDatetime = null;
+        while (updateRs.next()) {
+            establishDatetime = updateRs.getTimestamp(ESTABLISH_DATETIME);
+        }
+
+        String deleteQuery = "delete from " + PARTICIPATE + " where " + STUDENT_ID + " = ? and " + MEETING_ID + " = ? returning " + PARTICIPATE_DATETIME;
+        PreparedStatement deletePs = conn.prepareStatement(deleteQuery);
+        deletePs.setInt(1, sId);
+        deletePs.setInt(2, mId);
+        System.out.println(deletePs);
+
+        deletePs.executeQuery();
+
+        return createResponse(SUCCESS, "Update successfully", new ArrayList<>(List.of(String.valueOf(establishDatetime))));
+    }
+
+    private static String cancelMeeting(int sId, int mId) throws SQLException {
+        String deleteQuery = "delete from " + PARTICIPATE + " where " + STUDENT_ID + " = ? and " + MEETING_ID + " = ? returning " + PARTICIPATE_DATETIME;
+        PreparedStatement deletePs = conn.prepareStatement(deleteQuery);
+        deletePs.setInt(1, sId);
+        deletePs.setInt(2, mId);
+        System.out.println(deletePs);
+
+        deletePs.executeQuery();
+
+        Timestamp deleteTime = new Timestamp(System.currentTimeMillis());
+        return createResponse(SUCCESS, UPDATE_DONE, new ArrayList<>(List.of(String.valueOf(deleteTime))));
     }
 }

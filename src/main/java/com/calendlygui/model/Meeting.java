@@ -14,6 +14,7 @@ public class Meeting {
     public String selectedClassification;
 
     public ArrayList<Minute> minutes = new ArrayList<>();
+    public ArrayList<User> students = new ArrayList<>();
 
     // Constructor
     public Meeting(int id, String name, String date, String occur, String finish,
@@ -29,10 +30,6 @@ public class Meeting {
         this.selectedClassification = selectedClassification;
     }
 
-//    public void addMinute(Minute minute){
-//        minutes.add(minute);
-//    }
-
     @Override
     public String toString() {
         return "Meeting{" +
@@ -46,6 +43,7 @@ public class Meeting {
                 ", status='" + status + '\'' +
                 ", selectedClassification='" + selectedClassification + '\'' +
                 ", Minutes: " + minutes.size() +
+                ", Students: " + students.size() +
                 '}';
     }
 }
