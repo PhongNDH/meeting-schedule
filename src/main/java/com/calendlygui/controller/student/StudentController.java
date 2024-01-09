@@ -69,4 +69,8 @@ public class StudentController {
         Controller.navigateToOtherStage(timeslotButton,"student-timeslot.fxml","Time slots");
 
     }
+    @FXML
+    void logout(MouseEvent event) {
+
+    }
 }
