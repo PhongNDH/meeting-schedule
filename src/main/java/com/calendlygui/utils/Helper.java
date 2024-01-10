@@ -103,11 +103,12 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            String date = formatter.format(occur.getTime());
+            occur.setHours(0);
+            occur.setMinutes(0);
 
             occurString = convertFromDateToString(occur);
             finishString = convertFromDateToString(finish);
-            Meeting newMeeting = new Meeting(id, name, date, occurString, finishString, teacherId, classification, status, selectedClassification);
+            Meeting newMeeting = new Meeting(id, name, occur, occurString, finishString, teacherId, classification, status, selectedClassification);
 
             meetings.add(newMeeting);
         }
@@ -122,7 +123,7 @@ public class Helper {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
-                    meetingInfo[1], meetingInfo[2],
+                    meetingInfo[1], new Timestamp(formatter.parse(meetingInfo[2]).getTime()),
                     meetingInfo[3], meetingInfo[4],
                     Integer.parseInt(meetingInfo[5]),
                     meetingInfo[6], meetingInfo[7],

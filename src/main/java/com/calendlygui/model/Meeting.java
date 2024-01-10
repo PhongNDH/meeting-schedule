@@ -1,11 +1,12 @@
 package com.calendlygui.model;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Meeting {
     public int id;
     public String name;
-    public String date;
+    public Timestamp date;
     public String occur;
     public String finish;
     public int tId;
@@ -17,7 +18,7 @@ public class Meeting {
     public ArrayList<User> students = new ArrayList<>();
 
     // Constructor
-    public Meeting(int id, String name, String date, String occur, String finish,
+    public Meeting(int id, String name, Timestamp date, String occur, String finish,
                    int tId, String classification, String status, String selectedClassification) {
         this.id = id;
         this.name = name;
