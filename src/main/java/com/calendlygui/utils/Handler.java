@@ -83,8 +83,8 @@ public class Handler implements Runnable {
                         case "2": {
                             handleRegister(
                                     in, out,
-                                    "vl@gmail.com",
-                                    "Vanh LEG",
+                                    "Joe Mama",
+                                    "joemama@gmail.com",
                                     "111111",
                                     true,
                                     false

@@ -47,8 +47,8 @@ public class Helper {
         return code + COMMAND_DELIMITER + message;
     }
 
-    public static String createResponseWithUser(int code, String name, String email, String time, String isTeacher, String gender){
-        return code + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
+    public static String createResponseWithUser(int code, int id, String name, String email, String time, String isTeacher, String gender){
+        return code + COMMAND_DELIMITER + id + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
     }
 
     public static String createResponseWithMeetingList(int code, ArrayList<Meeting> meetings) {
@@ -149,11 +149,12 @@ public class Helper {
                 for(String studentString: studentStrings){
                     String[] studentData = studentString.split(FIELD_DELIMITER);
                     students.add(new User(
+                            Integer.parseInt(studentData[0]),
+                            studentData[2],
                             studentData[1],
-                            studentData[0],
-                            new Timestamp(formatter.parse(studentData[2]).getTime()),
-                            Objects.equals(studentData[3], "true"),
-                            Objects.equals(studentData[4], "true")
+                            new Timestamp(formatter.parse(studentData[3]).getTime()),
+                            Objects.equals(studentData[4], "true"),
+                            Objects.equals(studentData[5], "true")
                             ));
                 }
 
@@ -167,13 +168,14 @@ public class Helper {
 
     public static User extractUserFromResponse(String response) throws ParseException {
         String[] data = response.split(COMMAND_DELIMITER);
-        if(data.length == 6){
+        if(data.length == 7){
             return new User(
-                    data[1],
+                    Integer.parseInt(data[1]),
                     data[2],
-                    new Timestamp(formatter.parse(data[3]).getTime()),
-                    Objects.equals(data[4], "true"),
-                    Objects.equals(data[5], "true")
+                    data[3],
+                    new Timestamp(formatter.parse(data[4]).getTime()),
+                    Objects.equals(data[5], "true"),
+                    Objects.equals(data[6], "true")
             );
         }
 
@@ -263,7 +265,7 @@ public class Helper {
             isTeacher = rs.getBoolean(IS_TEACHER);
             registerDatetime = rs.getTimestamp(REGISTER_DATETIME);
 
-            User tmpUser = new User(name, email, registerDatetime, isTeacher, gender);
+            User tmpUser = new User(id, name, email, registerDatetime, isTeacher, gender);
             users.add(tmpUser);
         }
 

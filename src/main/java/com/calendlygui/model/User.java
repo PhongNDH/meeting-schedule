@@ -4,11 +4,18 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class User implements Serializable {
+    int id;
     String username;
     String email;
     Timestamp registerDatetime;
     boolean isTeacher;
     boolean gender;
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -54,7 +61,8 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender) {
+    public User(int id, String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.registerDatetime = registerDatetime;
@@ -65,6 +73,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "Name : "+ username + "\n"+
+                "Id : "+id +"\n"+
                 "Email : "+email +"\n"+
                 "Register Datetime : "+registerDatetime+"\n"+
                 "Gender : " + (gender ? "Male" : "Female")+ "\n"+

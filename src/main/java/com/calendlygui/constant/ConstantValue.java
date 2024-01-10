@@ -54,6 +54,8 @@ public class ConstantValue {
     public static final String STUDENT_ID = "student_id";
 
     //Users
+
+    public static final String USERS = "Users";
     public static final String EMAIL = "email";
     public static final String GENDER = "gender";
     public static final String REGISTER_DATETIME = "register_datetime";
