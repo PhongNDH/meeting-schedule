@@ -1,5 +1,7 @@
 package com.calendlygui.model;
 
+import com.calendlygui.model.entity.User;
+
 import java.util.ArrayList;
 
 public class Meeting {
@@ -14,6 +16,7 @@ public class Meeting {
     public String selectedClassification;
 
     public ArrayList<Minute> minutes = new ArrayList<>();
+    public ArrayList<User> students = new ArrayList<>();
 
     // Constructor
     public Meeting(int id, String name, String date, String occur, String finish,

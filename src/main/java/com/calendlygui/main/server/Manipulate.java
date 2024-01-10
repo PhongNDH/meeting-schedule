@@ -6,7 +6,6 @@ import com.calendlygui.utils.Validate;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
@@ -20,25 +19,23 @@ public class Manipulate {
     public static void register(String[] registerInfo) throws IOException {
         if (registerInfo.length == 6) {
             if ((!registerInfo[4].equals("false") && !registerInfo[4].equals("true") || !registerInfo[5].equals("false") && !registerInfo[5].equals("true")) && !Validate.checkEmailFormat(registerInfo[1])) {
-                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-                out.write(error);
+                out.write(INCORRECT_FORMAT);
             } else {
                 String email = registerInfo[1];
                 String username = registerInfo[2];
                 String password = registerInfo[3];
                 boolean gender = registerInfo[4].equals("true");
                 boolean isTeacher = registerInfo[5].equals("true");
-                String result = Authenticate.register(email, username, password, gender, isTeacher);
 
+                String result = Authenticate.register(email, username, password, gender, isTeacher);
                 out.println(result);
             }
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-            out.write(error);
+            out.write(INCORRECT_FORMAT);
         }
     }
 
-    public static void signIn(String[] loginInfo){
+    public static void signIn(String[] loginInfo) {
         if (loginInfo.length == 3) {
             String email = loginInfo[1];
             String password = loginInfo[2];
@@ -47,8 +44,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
-            out.write(error);
+            out.write(INCORRECT_FORMAT);
         }
     }
 
@@ -66,8 +62,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -86,26 +81,24 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
     public static void viewByDate(String[] data) throws ParseException {
-        if(data.length == 3){
+        if (data.length == 3) {
             int tId = Integer.parseInt(data[1]);
             String date = data[2];
 
             String result = handleViewMeetingsByDate(tId, date);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
     public static void addMinute(String[] data) {
-        if(data.length == 3){
+        if (data.length == 3) {
 //            int tId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[1]);
             String content = data[2];
@@ -113,20 +106,21 @@ public class Manipulate {
             String result = handleAddMinute(mId, content);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
-    public static void viewHistory(String[] data){
-        if(data.length == 2){
+    public static void viewHistory(String[] data) {
+        if (data.length == 2) {
             int tId = Integer.parseInt(data[1]);
 
             String result = handleViewHistory(tId);
+
+            System.out.println(result);
+
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
@@ -138,7 +132,7 @@ public class Manipulate {
     }
 
     public static void scheduleMeeting(String[] data) {
-        if(data.length == 4){
+        if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[2]);
             String type = data[3];
@@ -146,13 +140,12 @@ public class Manipulate {
             String result = handleScheduleMeeting(sId, mId, type);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
     public static void viewByWeek(String[] data) {
-        if(data.length == 4){
+        if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             String beginDate = data[2];
             String endDate = data[3];
@@ -160,13 +153,24 @@ public class Manipulate {
             String result = handleViewMeetingsByWeek(sId, beginDate, endDate);
             out.println(result);
         } else {
-            String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(MISSING_INFO)));
-            out.println(error);
+            out.println(CLIENT_MISSING_INFO);
+        }
+    }
+
+    public static void cancelMeeting(String[] data) {
+        if (data.length == 3) {
+            int sId = Integer.parseInt(data[1]);
+            int mId = Integer.parseInt(data[2]);
+
+            String result = handleCancelMeeting(sId, mId);
+            out.println(result);
+        } else {
+            out.println(CLIENT_MISSING_INFO);
         }
     }
 
     public static void quit() {
-        String result = createResponse(SUCCESS, "Quit successfully", new ArrayList<>());
+        String result = createResponse(OPERATION_SUCCESS, "Quit successfully");
         out.println(result);
     }
 

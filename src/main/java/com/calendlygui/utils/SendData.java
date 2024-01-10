@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
-import static com.calendlygui.constant.ConstantValue.SUCCESS;
 import static com.calendlygui.utils.Helper.createRequest;
 
 public class SendData {

@@ -22,13 +22,14 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 
 import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
-import static com.calendlygui.constant.ConstantValue.DELIMITER;
-import static com.calendlygui.constant.ConstantValue.SUCCESS;
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.constant.ConstantValue.UNDEFINED_ERROR;
+import static com.calendlygui.utils.Helper.extractUserFromResponse;
 
 public class RegisterController implements Initializable {
 
@@ -97,7 +98,7 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    void register(MouseEvent event) throws IOException, ClassNotFoundException {
+    void register(MouseEvent event) {
         String username = usernameTextField.getText();
         String email = emailTextField.getText();
         String password = passwordPasswordField.getText();
@@ -105,9 +106,12 @@ public class RegisterController implements Initializable {
         boolean isMale = gender.getSelectedToggle().equals(maleGender);
         boolean isTeacher = occupation.getSelectedToggle().equals(teacherOccupation);
         if (dealWithErrorMessageFromUI(email, username, password, confirmedPassword)) {
-            SendData.handleRegister(in, out, email, username, password, isMale, isTeacher);
+            try {
+                SendData.handleRegister(in, out, email, username, password, isMale, isTeacher);
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
         }
-
     }
 
     @Override
@@ -126,28 +130,27 @@ public class RegisterController implements Initializable {
                 String response;
                 while ((response = in.readLine()) != null) {
                     System.out.println("Response: " + response);
-                    String[] info = response.split(DELIMITER);
-                    if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
-                    else{
-                        switch (info[1]){
-                            case ConstantValue.CLIENTSIDE_ERROR: {
-                                System.out.println("CLIENT ERROR");
-                                showErrorFromServerToUIAndConsole( info[2]);
+                    String[] info = response.split(COMMAND_DELIMITER);
+                    if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                        CalendlyApplication.user = extractUserFromResponse(response);
+                        navigateToHomePage();
+                        System.out.println("Navigate to home screen");
+                    } else {
+                        int code = Integer.parseInt(info[0]);
+                        switch (code) {
+                            case ACCOUNT_EXIST: {
+                                System.out.println("This account already exist");
+                                showErrorFromServerToUIAndConsole("This account already exist");
                                 break;
                             }
-                            case ConstantValue.SERVERSIDE_ERROR: {
-                                System.out.println("SERVER ERROR");
-                                showErrorFromServerToUIAndConsole(info[2]);
+                            case SQL_ERROR: {
+                                System.out.println("Sql error");
+                                showErrorFromServerToUIAndConsole("Sql error");
                                 break;
                             }
-                            case ConstantValue.SQL_ERROR: {
-                                System.out.println("SQL ERROR");
-                                showErrorFromServerToUIAndConsole(info[2]);
-                                break;
-                            }
-                            default: {
-                                System.out.println("UNKNOWN ERROR");
-                                System.out.println((info[2]));
+                            case UNDEFINED_ERROR: {
+                                System.out.println("Unknown error");
+                                System.out.println("Unknown error");
                                 break;
                             }
                         }
@@ -199,6 +202,8 @@ public class RegisterController implements Initializable {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
             }
         });
         //The JVM can terminate daemon without waiting for it to complete its task if all non-daemon threads finish their execution, .

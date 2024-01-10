@@ -3,7 +3,6 @@ package com.calendlygui.controller;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.LoginMessage;
-import com.calendlygui.model.entity.User;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.SendData;
 import javafx.fxml.FXML;
@@ -19,14 +18,14 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 
 import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
-import static com.calendlygui.constant.ConstantValue.DELIMITER;
-import static com.calendlygui.constant.ConstantValue.SUCCESS;
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.utils.Helper.extractUserFromResponse;
 
 public class LoginController implements Initializable {
     @FXML
@@ -82,9 +81,7 @@ public class LoginController implements Initializable {
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream()));
-//            CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
-//            CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
@@ -94,32 +91,34 @@ public class LoginController implements Initializable {
             try {
                 String response;
                 while ((response = in.readLine()) != null) {
+                    response = response.trim();
                     System.out.println("Response: " + response);
-                    String[] info = response.split(DELIMITER);
-                    if (info[0].contains(SUCCESS) && info.length == 7) {
-                        CalendlyApplication.user = new User(info[2], info[3], Timestamp.valueOf(info[4]), Objects.equals(info[5], "true"), Objects.equals(info[6], "true"));
+                    String[] info = response.split(COMMAND_DELIMITER);
+                    int code = Integer.parseInt(info[0]);
+                    if (code == OPERATION_SUCCESS) {
+                        CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
                         System.out.println("Navigate to home screen");
                     } else {
-                        switch (info[1]) {
-                            case ConstantValue.CLIENTSIDE_ERROR: {
-                                System.out.println("CLIENT ERROR");
-                                showErrorFromServerToUIAndConsole(info[2]);
+                        switch (code) {
+                            case ACCOUNT_NOT_EXIST: {
+                                System.out.println("This account does not exist");
+                                showErrorFromServerToUIAndConsole("This account does not exist");
                                 break;
                             }
-                            case ConstantValue.SERVERSIDE_ERROR: {
-                                System.out.println("SERVER ERROR");
-                                showErrorFromServerToUIAndConsole(info[2]);
+                            case INVALID_PASSWORD: {
+                                System.out.println("Invalid password");
+                                showErrorFromServerToUIAndConsole("Invalid password");
                                 break;
                             }
-                            case ConstantValue.SQL_ERROR: {
-                                System.out.println("SQL ERROR");
-                                showErrorFromServerToUIAndConsole(info[2]);
+                            case SQL_ERROR: {
+                                System.out.println("Sql error");
+                                showErrorFromServerToUIAndConsole("Sql error");
                                 break;
                             }
-                            default: {
-                                System.out.println("UNKNOWN ERROR");
-                                System.out.println((info[2]));
+                            case UNDEFINED_ERROR: {
+                                System.out.println("Unknown error");
+                                showErrorFromServerToUIAndConsole("Unknown error");
                                 break;
                             }
                         }
@@ -171,6 +170,8 @@ public class LoginController implements Initializable {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
+            } catch (ParseException | NumberFormatException e) {
+                System.out.println(e.getMessage());
             }
         });
         //The JVM can terminate daemon without waiting for it to complete its task if all non-daemon threads finish their execution.

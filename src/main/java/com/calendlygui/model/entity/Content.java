@@ -10,6 +10,11 @@ public class Content {
         this.date = date;
     }
 
+    public Content(String content, Timestamp date) {
+        this.content = content;
+        this.date = date;
+    }
+
     int id;
 
     int meetingId;

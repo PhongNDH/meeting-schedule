@@ -1,15 +1,9 @@
 package com.calendlygui.database;
-
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
 import static com.calendlygui.constant.ConstantValue.*;
-import static com.calendlygui.constant.RegisterMessage.REGISTER_EMAIL_EXIST;
-import static com.calendlygui.utils.Helper.createResponse;
+import static com.calendlygui.utils.Helper.createResponseWithUser;
 
 public class Authenticate {
     public static String register(String email, String name, String password, boolean gender, boolean isTeacher) {
@@ -30,9 +24,9 @@ public class Authenticate {
             }
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
-                return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(REGISTER_EMAIL_EXIST)));
+                return String.valueOf(ACCOUNT_EXIST);
             }
-            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
 
         // Update login table
@@ -44,20 +38,17 @@ public class Authenticate {
             ps2.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
 //        return new Outcome(new User(name, email, registerDatetime, isTeacher, gender, "register"));
         assert registerDatetime != null;
-        return createResponse(
-                "SUCCESS",
-                "Register successfully",
-                new ArrayList<>(List.of(
-                        name,
-                        email,
-                        registerDatetime.toString(),
-                        isTeacher ? "true" : "false",
-                        gender ? "true" : "false")
-                ));
+        return createResponseWithUser(
+                OPERATION_SUCCESS,
+                name,
+                email,
+                registerDatetime.toString(),
+                String.valueOf(isTeacher),
+                String.valueOf(gender));
     }
 
     public static String signIn(String email, String password) {
@@ -76,10 +67,10 @@ public class Authenticate {
                 hash = rs.getString("password");
             }
             if (Objects.equals(hash, null)) {
-                return createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_EMAIL_NOT_EXIST)));
+                return String.valueOf(ACCOUNT_NOT_EXIST);
             }
         } catch (SQLException e) {
-            return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+            return String.valueOf(SQL_ERROR);
         }
         if (BCrypt.checkpw(password, hash)) {
             try {
@@ -93,18 +84,12 @@ public class Authenticate {
                     registerDatetime = rs2.getTimestamp("register_datetime");
                 }
             } catch (SQLException e) {
-                return createResponse("FAIL", SQL_ERROR, new ArrayList<>(List.of(e.getMessage())));
+                return String.valueOf(SQL_ERROR);
             }
         } else {
-            return createResponse("FAIL", SERVERSIDE_ERROR, new ArrayList<>(List.of(LOGIN_PASSWORD_NOT_MATCH)));
+            return String.valueOf(INVALID_PASSWORD);
         }
-        assert registerDatetime != null;
-        ArrayList<String> userData = new ArrayList<>(List.of(
-                username,
-                email,
-                registerDatetime.toString(),
-                isTeacher ? "true" : "false",
-                gender ? "true" : "false"));
-        return createResponse("SUCCESS", LOGIN_SUCCESS, userData);
+
+        return createResponseWithUser(OPERATION_SUCCESS, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
     }
 }
