@@ -3,9 +3,7 @@ package com.calendlygui.controller.teacher;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.GeneralMessage;
-import com.calendlygui.constant.RegisterMessage;
 import com.calendlygui.constant.teacher.TimeslotMessage;
-import com.calendlygui.model.entity.User;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
 import com.calendlygui.utils.SendData;
@@ -26,16 +24,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.constant.ConstantValue.UNDEFINED_ERROR;
-import static com.calendlygui.utils.Helper.extractUserFromResponse;
 
 public class TeacherTimeslotController implements Initializable {
     @FXML
@@ -180,7 +175,7 @@ public class TeacherTimeslotController implements Initializable {
                     response = response.replaceAll(NON_PRINTABLE_CHARACTER, "");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
-                    if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                    if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
                         //CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
                         System.out.println(TimeslotMessage.TIMESLOT_SUCCESS);

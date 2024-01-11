@@ -3,7 +3,6 @@ package com.calendlygui.controller.student;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.GeneralMessage;
-import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
@@ -200,7 +199,7 @@ public class StudentTimeslotController implements Initializable {
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
                     int code = Integer.parseInt(info[0]);
-                    if (code == OPERATION_SUCCESS) {
+                    if (code == CREATE_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         //navigateToHomePage();
                         meetings = extractMeetingsFromResponse(response);

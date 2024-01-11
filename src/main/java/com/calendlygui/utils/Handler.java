@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.utils.Helper.*;
@@ -179,7 +178,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
@@ -204,7 +203,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
@@ -223,7 +222,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("UPDATE DONE");
+                if (Integer.parseInt(info[0]) == UPDATE_SUCCESS) System.out.println("UPDATE DONE");
                 else handleErrorResponse(info[0]);
                 break;
             }
@@ -245,7 +244,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("SHOW SOMETHING");
+                if (Integer.parseInt(info[0]) == CREATE_SUCCESS) System.out.println("SHOW SOMETHING");
                 else handleErrorResponse(info[0]);
                 break;
             }
@@ -262,7 +261,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) System.out.println("UPDATE DONE");
+                if (Integer.parseInt(info[0]) == UPDATE_SUCCESS) System.out.println("UPDATE DONE");
                 else handleErrorResponse(info[0]);
                 break;
             }
@@ -281,7 +280,7 @@ public class Handler implements Runnable {
                 System.out.println(response);
 
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     for(Meeting meeting: meetings) System.out.println(meeting);
                     break;
@@ -301,7 +300,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if(Integer.parseInt(info[0]) == OPERATION_SUCCESS){
+                if(Integer.parseInt(info[0]) == CREATE_SUCCESS){
                     System.out.println("DO SOMETHING");
                 } else handleErrorResponse(info[0]);
                 break;
@@ -320,7 +319,7 @@ public class Handler implements Runnable {
                 System.out.println(response);
 
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
                     for(Meeting meeting: meetings) System.out.println(meeting);
@@ -342,7 +341,7 @@ public class Handler implements Runnable {
                 System.out.println(response);
 
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     System.out.println(meetings.size());
                     for(Meeting meeting: meetings) System.out.println(meeting);
@@ -363,7 +362,7 @@ public class Handler implements Runnable {
                 System.out.println(response);
 
                 String[] info = response.split(COMMAND_DELIMITER);
-                if(Integer.parseInt(info[0]) == OPERATION_SUCCESS){
+                if(Integer.parseInt(info[0]) == UPDATE_SUCCESS){
                     System.out.println("Do something");
                 } else handleErrorResponse(info[0]);
                 break;
@@ -382,7 +381,7 @@ public class Handler implements Runnable {
                 System.out.println(response);
 
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
                     for (Meeting meeting : meetings) System.out.println(meeting);
                     System.out.println(meetings.size());

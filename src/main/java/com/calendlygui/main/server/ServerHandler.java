@@ -39,7 +39,7 @@ public class ServerHandler {
 
             assert establishTime != null;
             System.out.println("Created: " + establishTime);
-            return createResponse(OPERATION_SUCCESS, establishTime.toString());
+            return createResponse(CREATE_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -74,7 +74,7 @@ public class ServerHandler {
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
             System.out.println("Created: " + establishTime.toString());
-            return createResponse(OPERATION_SUCCESS, establishTime.toString());
+            return createResponse(UPDATE_SUCCESS, establishTime.toString());
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
@@ -95,7 +95,7 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
@@ -118,7 +118,7 @@ public class ServerHandler {
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
             System.out.println("Created: " + establishTime.toString());
-            return createResponse(OPERATION_SUCCESS, establishTime.toString());
+            return createResponse(CREATE_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -147,7 +147,7 @@ public class ServerHandler {
                 meeting.setStudents(students);
             }
 
-            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -166,7 +166,7 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -213,7 +213,7 @@ public class ServerHandler {
                 break;
             }
 
-            return createResponse(OPERATION_SUCCESS, participateTime.toString());
+            return createResponse(UPDATE_SUCCESS, participateTime.toString());
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
@@ -239,7 +239,7 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
 
-            return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -261,6 +261,7 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             String selectedClassification = null;
 
+            Timestamp executedTime = null;
             while (rs.next()) {
                 selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
             }
@@ -273,16 +274,12 @@ public class ServerHandler {
                 ResultSet countRs = countPs.executeQuery();
                 int studentNum = 0;
                 while (countRs.next()) studentNum = countRs.getInt("count");
-
                 System.out.println("Number of participated students: " + studentNum);
-                if (studentNum == 1)
-                    return cancelAndUpdateMeeting(sId, mId);
-                else
-                    return cancelMeeting(sId, mId);
 
-            } else {
-                return cancelAndUpdateMeeting(sId, mId);
-            }
+                executedTime = studentNum == 1 ? cancelAndUpdateMeeting(sId, mId) : cancelMeeting(sId, mId);
+            } else executedTime = cancelAndUpdateMeeting(sId, mId);
+
+            return createResponse(UPDATE_SUCCESS, executedTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
@@ -293,7 +290,7 @@ public class ServerHandler {
         }
     }
 
-    private static String cancelAndUpdateMeeting(int sId, int mId) throws SQLException {
+    private static Timestamp cancelAndUpdateMeeting(int sId, int mId) throws SQLException {
         String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = '" + PENDING + "', " + SELECTED_CLASSIFICATION + " = null where " + ID + " = ? returning " + ESTABLISH_DATETIME;
         PreparedStatement updatePs = conn.prepareStatement(updateMeetingQuery);
         updatePs.setInt(1, mId);
@@ -314,10 +311,10 @@ public class ServerHandler {
 
         deletePs.executeQuery();
 
-        return createResponse(OPERATION_SUCCESS, establishDatetime.toString());
+        return establishDatetime;
     }
 
-    private static String cancelMeeting(int sId, int mId) throws SQLException {
+    private static Timestamp cancelMeeting(int sId, int mId) throws SQLException {
         String deleteQuery = "delete from " + PARTICIPATE + " where " + STUDENT_ID + " = ? and " + MEETING_ID + " = ? returning " + PARTICIPATE_DATETIME;
         PreparedStatement deletePs = conn.prepareStatement(deleteQuery);
         deletePs.setInt(1, sId);
@@ -327,6 +324,6 @@ public class ServerHandler {
         deletePs.executeQuery();
 
         Timestamp deleteTime = new Timestamp(System.currentTimeMillis());
-        return createResponse(OPERATION_SUCCESS, deleteTime.toString());
+        return deleteTime;
     }
 }

@@ -127,7 +127,7 @@ public class RegisterController implements Initializable {
                     response = response.replaceAll(NON_PRINTABLE_CHARACTER,"");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
-                    if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+                    if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
                         System.out.println(RegisterMessage.REGISTER_SUCCESS);

@@ -96,7 +96,7 @@ public class LoginController implements Initializable {
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
                     int code = Integer.parseInt(info[0]);
-                    if (code == OPERATION_SUCCESS) {
+                    if (code == CREATE_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
                         System.out.println(LoginMessage.LOGIN_SUCCESS);

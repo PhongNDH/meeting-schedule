@@ -66,7 +66,10 @@ public class ConstantValue {
 
 
     //Code
-    public static final int OPERATION_SUCCESS = 10;
+    public static final int CREATE_SUCCESS = 10;
+    public static final int QUERY_SUCCESS = 11;
+    public static final int UPDATE_SUCCESS = 12;
+    public static final int AUTHENTICATE_SUCCESS = 13;
     public static final int CLIENT_MISSING_INFO = 41;
     public static final int INCORRECT_FORMAT = 42;
     public static final int ACCOUNT_NOT_EXIST = 43;

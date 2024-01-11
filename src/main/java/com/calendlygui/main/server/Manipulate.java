@@ -91,6 +91,7 @@ public class Manipulate {
             String date = data[2];
 
             String result = handleViewMeetingsByDate(tId, date);
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -104,6 +105,7 @@ public class Manipulate {
             String content = data[2];
 
             String result = handleAddMinute(mId, content);
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -116,8 +118,7 @@ public class Manipulate {
 
             String result = handleViewHistory(tId);
 
-            System.out.println(result);
-
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -128,6 +129,7 @@ public class Manipulate {
     //STUDENT FUNCTIONS
     public static void viewAvailableSlots() {
         String result = handleViewAvailableSlots();
+        System.out.println("Result: " + result);
         out.println(result);
     }
 
@@ -138,6 +140,7 @@ public class Manipulate {
             String type = data[3];
 
             String result = handleScheduleMeeting(sId, mId, type);
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -151,6 +154,7 @@ public class Manipulate {
             String endDate = data[3];
 
             String result = handleViewMeetingsByWeek(sId, beginDate, endDate);
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -163,6 +167,7 @@ public class Manipulate {
             int mId = Integer.parseInt(data[2]);
 
             String result = handleCancelMeeting(sId, mId);
+            System.out.println("Result: " + result);
             out.println(result);
         } else {
             out.println(CLIENT_MISSING_INFO);
@@ -170,7 +175,8 @@ public class Manipulate {
     }
 
     public static void quit() {
-        String result = createResponse(OPERATION_SUCCESS, "Quit successfully");
+        String result = createResponse(CREATE_SUCCESS, "Quit successfully");
+        System.out.println("Result: " + result);
         out.println(result);
     }
 

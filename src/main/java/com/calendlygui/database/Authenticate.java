@@ -60,7 +60,7 @@ public class Authenticate {
 
 
         return createResponseWithUser(
-                OPERATION_SUCCESS,
+                CREATE_SUCCESS,
                 id,
                 name,
                 email,
@@ -110,6 +110,6 @@ public class Authenticate {
             return String.valueOf(INVALID_PASSWORD);
         }
 
-        return createResponseWithUser(OPERATION_SUCCESS, id, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
+        return createResponseWithUser(CREATE_SUCCESS, id, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
     }
 }
