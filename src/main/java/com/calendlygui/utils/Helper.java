@@ -27,15 +27,6 @@ public class Helper {
         return new Date[]{startDateTime, endDateTime};
     }
 
-    public static String convertFromDateToString(Timestamp timestamp) {
-        String res = "";
-        String displayHour = timestamp.toLocalDateTime().getHour() < 10 ? "0" + timestamp.toLocalDateTime().getHour() : String.valueOf(timestamp.toLocalDateTime().getHour());
-        String displayMinute = timestamp.toLocalDateTime().getMinute() < 10 ? "0" + timestamp.toLocalDateTime().getMinute() : String.valueOf(timestamp.toLocalDateTime().getMinute());
-
-        res += displayHour + ":" + displayMinute;
-        return res;
-    }
-
     public static String createRequest(String command, ArrayList<String> data) {
         StringBuilder request = new StringBuilder();
         request.append("/").append(command);
@@ -104,7 +95,7 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            Timestamp date = occur;
+            Timestamp date = new Timestamp(occur.getTime());
             date.setHours(0);
             date.setMinutes(0);
 
@@ -123,13 +114,11 @@ public class Helper {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
 
             String dateString = meetingInfo[2];
-            String occurString = dateString + " " + meetingInfo[3] + ":00";
-            String finishString = dateString + meetingInfo[4] + ":00";
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
                     meetingInfo[1], new Timestamp(formatter.parse(dateString).getTime()),
-                    new Timestamp(formatter.parse(occurString).getTime()),
-                    new Timestamp(formatter.parse(finishString).getTime()),
+                    new Timestamp(formatter.parse(meetingInfo[3]).getTime()),
+                    new Timestamp(formatter.parse(meetingInfo[4]).getTime()),
                     Integer.parseInt(meetingInfo[5]),
                     meetingInfo[6], meetingInfo[7],
                     meetingInfo[8]);
