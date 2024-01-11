@@ -16,9 +16,7 @@ import static org.controlsfx.glyphfont.FontAwesome.Glyph.USERS;
 
 public class Helper {
     static String timePattern = "yyyy-MM-dd HH:mm:ss";
-    static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
     static SimpleDateFormat formatter = new SimpleDateFormat(timePattern);
-    static SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
     public static Date[] convertToDate(String date, String startTime, String endTime) throws ParseException {
 
@@ -31,7 +29,10 @@ public class Helper {
 
     public static String convertFromDateToString(Timestamp timestamp) {
         String res = "";
-        res += timestamp.toLocalDateTime().getHour() + ":" + timestamp.toLocalDateTime().getMinute();
+        String displayHour = timestamp.toLocalDateTime().getHour() < 10 ? "0" + timestamp.toLocalDateTime().getHour() : String.valueOf(timestamp.toLocalDateTime().getHour());
+        String displayMinute = timestamp.toLocalDateTime().getMinute() < 10 ? "0" + timestamp.toLocalDateTime().getMinute() : String.valueOf(timestamp.toLocalDateTime().getMinute());
+
+        res += displayHour + ":" + displayMinute;
         return res;
     }
 
@@ -90,7 +91,7 @@ public class Helper {
         ArrayList<Meeting> meetings = new ArrayList<>();
 
         int id, teacherId;
-        String name, status, classification, selectedClassification, occurString, finishString;
+        String name, status, classification, selectedClassification;
         Timestamp occur, finish;
 
         while (rs.next()) {
@@ -103,12 +104,11 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            occur.setHours(0);
-            occur.setMinutes(0);
+            Timestamp date = occur;
+            date.setHours(0);
+            date.setMinutes(0);
 
-            occurString = convertFromDateToString(occur);
-            finishString = convertFromDateToString(finish);
-            Meeting newMeeting = new Meeting(id, name, occur, occurString, finishString, teacherId, classification, status, selectedClassification);
+            Meeting newMeeting = new Meeting(id, name, date, occur, finish, teacherId, classification, status, selectedClassification);
 
             meetings.add(newMeeting);
         }
@@ -121,10 +121,15 @@ public class Helper {
         ArrayList<Meeting> meetings = new ArrayList<>();
         for (int i = 1; i < data.length; i++) {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
+
+            String dateString = meetingInfo[2];
+            String occurString = dateString + " " + meetingInfo[3] + ":00";
+            String finishString = dateString + meetingInfo[4] + ":00";
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
-                    meetingInfo[1], new Timestamp(formatter.parse(meetingInfo[2]).getTime()),
-                    meetingInfo[3], meetingInfo[4],
+                    meetingInfo[1], new Timestamp(formatter.parse(dateString).getTime()),
+                    new Timestamp(formatter.parse(occurString).getTime()),
+                    new Timestamp(formatter.parse(finishString).getTime()),
                     Integer.parseInt(meetingInfo[5]),
                     meetingInfo[6], meetingInfo[7],
                     meetingInfo[8]);
