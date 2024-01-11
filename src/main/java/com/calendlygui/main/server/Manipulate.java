@@ -98,6 +98,18 @@ public class Manipulate {
         }
     }
 
+    public static void viewNoFilter(String[] data) {
+        if (data.length == 2) {
+            int tId = Integer.parseInt(data[1]);
+
+            String result = handleViewMeetings(tId);
+            System.out.println("Result: " + result);
+            out.println(result);
+        } else {
+            out.println(CLIENT_MISSING_INFO);
+        }
+    }
+
     public static void addMinute(String[] data) {
         if (data.length == 3) {
 //            int tId = Integer.parseInt(data[1]);

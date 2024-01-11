@@ -104,6 +104,23 @@ public class ServerHandler {
         }
     }
 
+    static String handleViewMeetings(int tId) {
+
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, tId);
+
+            ResultSet rs = ps.executeQuery();
+            ArrayList<Meeting> meetings = getMeetings(rs);
+
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
+        } catch (SQLException e) {
+            System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
+            return String.valueOf(SQL_ERROR);
+        }
+    }
+
     static String handleViewMeetingsByDate(int tId, String date) throws ParseException {
         Date fromDate = formatter.parse(date + " 00:00:00");
         Date toDate = formatter.parse(date + " 23:59:59");
@@ -150,11 +167,11 @@ public class ServerHandler {
     }
 
     public static String handleViewHistory(int tId) {
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? and " + MEETING_FINISH + " < CURRENT_TIMESTAMP";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
-            ps.setString(2, ACCEPT);
+            ps.setString(2, DONE);
 
             System.out.println(ps);
 
@@ -179,10 +196,12 @@ public class ServerHandler {
     }
 
     public static String handleViewAvailableSlots() {
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ? or (" + STATUS + " = ? and " + SELECTED_CLASSIFICATION + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, PENDING);
+            ps.setString(2, ACCEPT);
+            ps.setString(3, GROUP);
 
             System.out.println(ps);
 
@@ -190,7 +209,6 @@ public class ServerHandler {
             ArrayList<Meeting> meetings = getMeetings(rs);
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
-
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
@@ -199,20 +217,53 @@ public class ServerHandler {
 
     public static String handleScheduleMeeting(int sId, int mId, String type) {
         try {
+            //get student's participated meeting ids
+            String checkDuplicateTimeQuery = "select * from " + PARTICIPATE + " where " + STUDENT_ID + " = ?";
+            PreparedStatement checkDuplicatePs = conn.prepareStatement(checkDuplicateTimeQuery);
+            checkDuplicatePs.setInt(1, sId);
+            ResultSet checkDuplicateRs = checkDuplicatePs.executeQuery();
+            ArrayList<Integer> meetingIds = new ArrayList<>();
+            while (checkDuplicateRs.next()){
+                meetingIds.add(checkDuplicateRs.getInt(MEETING_ID));
+            }
+
+            //Get meetings from ids
+            String findScheduledTimeQuery = "select * from " + MEETING;
+            for (int i=0; i<meetingIds.size(); i++){
+                if(i == 0) findScheduledTimeQuery += " where " + ID + " = ?";
+                else findScheduledTimeQuery += " or " + ID + " = ?";
+            }
+            PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery);
+            for(int i = 0; i<meetingIds.size(); i++){
+                findScheduledTimePs.setInt(i + 1, meetingIds.get(i));
+            }
+            ResultSet findScheduledTimeRs = findScheduledTimePs.executeQuery();
+
+            //get desired meeting info
             String checkMeetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
             PreparedStatement checkMeetingPs = conn.prepareStatement(checkMeetingQuery);
             checkMeetingPs.setInt(1, mId);
             System.out.println(checkMeetingPs);
 
             ResultSet checkMeetingRs = checkMeetingPs.executeQuery();
+
+            Timestamp desiredOccur = null, desiredFinish = null;
             String selectedClassification = null;
             while (checkMeetingRs.next()) {
+                desiredOccur = checkMeetingRs.getTimestamp(MEETING_OCCUR);
+                desiredFinish = checkMeetingRs.getTimestamp(MEETING_FINISH);
                 selectedClassification = checkMeetingRs.getString(SELECTED_CLASSIFICATION);
             }
 
-            if (selectedClassification != null && (selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL)))
+            //if an individual selected or a group selected but user want individual
+            if (selectedClassification != null && (selectedClassification.equals(INDIVIDUAL)
+                    || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL)))
                 return String.valueOf(NOT_UP_TO_DATE);
 
+            //if there already have meetings at that time
+            if (checkDuplicateMeetingTime(desiredOccur, desiredFinish, findScheduledTimeRs)) return String.valueOf(DUPLICATE_SCHEDULE);
+
+            //otherwise, schedule is available
             String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
             String updateMeetingQuery = "update " + MEETING + " set " + STATUS + " = ?, " + SELECTED_CLASSIFICATION + " = ? where " + ID + " = ? returning " + ESTABLISH_DATETIME;
 

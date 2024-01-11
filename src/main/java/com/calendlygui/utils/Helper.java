@@ -282,4 +282,19 @@ public class Helper {
 
         return users;
     }
+
+    public static boolean checkDuplicateMeetingTime(Timestamp desiredOccur, Timestamp desiredFinish, ResultSet rs) throws SQLException {
+        //true means duplicated, false means available
+
+        Timestamp scheduledOccur, scheduledFinish;
+        while (rs.next()){
+            scheduledOccur = rs.getTimestamp(MEETING_OCCUR);
+            scheduledFinish = rs.getTimestamp(MEETING_FINISH);
+
+            if((desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
+                    || (desiredOccur.after(scheduledOccur) && desiredFinish.before(scheduledFinish)))
+                return true;
+        }
+        return false;
+    }
 }

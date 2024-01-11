@@ -21,6 +21,7 @@ public class ConstantValue {
     public static final String TEACHER_CREATE_MEETING = "TEACHER_CREATE_MEETING";
     public static final String TEACHER_EDIT_MEETING = "TEACHER_EDIT_MEETING";
     public static final String TEACHER_VIEW_MEETING_BY_DATE = "TEACHER_VIEW_MEETING_BY_DATE";
+    public static final String TEACHER_VIEW_MEETING = "TEACHER_VIEW_MEETING";
     public static final String TEACHER_ENTER_CONTENT = "TEACHER_ENTER_CONTENT";
     public static final String TEACHER_VIEW_HISTORY = "TEACHER_VIEW_HISTORY";
     public static final String STUDENT_VIEW_TIMESLOT = "STUDENT_VIEW_TIMESLOT";
@@ -40,6 +41,7 @@ public class ConstantValue {
     public static final String STATUS = "status";
     public static final String PENDING = "pending";
     public static final String ACCEPT = "accept";
+    public static final String DONE = "done";
     public static final String GROUP = "group";
     public static final String INDIVIDUAL = "individual";
     public static final String CLASSIFICATION = "classification";
