@@ -3,7 +3,7 @@ package com.calendlygui.controller.teacher;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.GeneralMessage;
-import com.calendlygui.constant.teacher.TimeslotMessage;
+import com.calendlygui.constant.TimeslotMessage;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
 import com.calendlygui.utils.SendData;
@@ -168,6 +168,11 @@ public class TeacherTimeslotController implements Initializable {
             System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
         }
+        Thread receiveThread = getReceiveThread();
+        receiveThread.start();
+    }
+
+    private Thread getReceiveThread() {
         Thread receiveThread = new Thread(() -> {
             try {
                 String response;
@@ -182,6 +187,10 @@ public class TeacherTimeslotController implements Initializable {
                     } else {
                         int code = Integer.parseInt(info[0]);
                         switch (code) {
+                            case DUPLICATE_SCHEDULE: {
+                                showErrorFromServerToUIAndConsole(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
+                                break;
+                            }
                             case SQL_ERROR: {
                                 //System.out.println(GeneralMessage.SERVER_WRONG);
                                 showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
@@ -204,8 +213,9 @@ public class TeacherTimeslotController implements Initializable {
         });
         //The JVM can terminate daemon without waiting for it to complete its task if all non-daemon threads finish their execution, .
         receiveThread.setDaemon(true);
-        receiveThread.start();
+        return receiveThread;
     }
+
 
     private boolean dealWithErrorMessageFromUI(LocalDate meetingTime, String beginTime, String endTime, String meetingName) {
         boolean isNameAdmissible = false;
@@ -223,11 +233,9 @@ public class TeacherTimeslotController implements Initializable {
 
         if (meetingTime == null) {
             datetimeErrorText.setText(GeneralMessage.REQUIRED_FIELD);
-        } else if(Format.getNumberOfDateFromNow(meetingTime) < 1){
+        } else if (Format.getNumberOfDateFromNow(meetingTime) < 1) {
             datetimeErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_PAST);
-        }
-
-        else if (Format.getNumberOfDateFromNow(meetingTime) > MAX_TIME_WAITING) {
+        } else if (Format.getNumberOfDateFromNow(meetingTime) > MAX_TIME_WAITING) {
             datetimeErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_SURPASS);
         } else {
             isDateAdmissible = true;
@@ -252,14 +260,14 @@ public class TeacherTimeslotController implements Initializable {
             endErrorText.setText("");
         }
 
-        if(isBeginAdmissible && isEndAdmissible) {
-            if(Format.getMinutesBetweenTwoTime(beginTime, endTime) > TIMESLOT_MAX_DURATION || Format.getMinutesBetweenTwoTime(beginTime, endTime) < TIMESLOT_MIN_DURATION){
+        if (isBeginAdmissible && isEndAdmissible) {
+            if (Format.getMinutesBetweenTwoTime(beginTime, endTime) > TIMESLOT_MAX_DURATION || Format.getMinutesBetweenTwoTime(beginTime, endTime) < TIMESLOT_MIN_DURATION) {
                 durationErrorText.setText(TimeslotMessage.TIMESLOT_DURATION_WRONG);
-            }else{
+            } else {
                 isDurationAdmissible = true;
                 durationErrorText.setText("");
             }
-        }else{
+        } else {
             durationErrorText.setText("");
         }
         return isBeginAdmissible && isEndAdmissible && isNameAdmissible && isDateAdmissible && isDurationAdmissible;
@@ -272,6 +280,10 @@ public class TeacherTimeslotController implements Initializable {
 
     private void dealWithErrorMessageFromServer(String message) {
         switch (message) {
+            case TimeslotMessage.TIMESLOT_TIME_CONFLICT -> {
+                otherErrorText.setText(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
+                Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);
+            }
             case GeneralMessage.SERVER_WRONG -> {
                 otherErrorText.setText(GeneralMessage.SERVER_WRONG);
                 Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);

@@ -110,6 +110,6 @@ public class Authenticate {
             return String.valueOf(INVALID_PASSWORD);
         }
 
-        return createResponseWithUser(CREATE_SUCCESS, id, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
+        return createResponseWithUser(AUTHENTICATE_SUCCESS, id, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
     }
 }

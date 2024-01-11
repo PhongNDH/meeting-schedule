@@ -229,8 +229,6 @@ public class Handler implements Runnable {
         }
     }
 
-
-
     //teacher
     void handleCreateMeeting(BufferedReader in, PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
         request = createRequest(
@@ -328,7 +326,6 @@ public class Handler implements Runnable {
             }
         }
     }
-
 
     //student
     void handleViewAvailableSlots(BufferedReader in, PrintWriter out) throws IOException, ParseException {

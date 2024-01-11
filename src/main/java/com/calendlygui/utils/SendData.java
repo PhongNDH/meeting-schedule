@@ -2,6 +2,7 @@ package com.calendlygui.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class SendData {
         out.println(request);
     }
 
-    public static void register( PrintWriter out, String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
+    public static void register(PrintWriter out, String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
         data.clear();
         data.add(username);
         data.add(email);
@@ -41,21 +42,24 @@ public class SendData {
     public static void viewAvailableSlots(PrintWriter out) {
         request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
         out.println(request);
+    }
 
-        //listen to response
-//        while (true) {
-//            response = in.readLine();
-//            if (response != null) {
-//                System.out.println(response);
-//
-//                String[] info = response.split(COMMAND_DELIMITER);
-//                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
-//                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
-//                    System.out.println(meetings.size());
-//                    for(Meeting meeting: meetings) System.out.println(meeting);
-//                    break;
-//                } else handleErrorResponse(info[0]);
-//            }
-//        }
+    public static void scheduleMeeting(PrintWriter out, int sId, int mId, String type) throws IOException, ParseException {
+        // /STUDENT_SCHEDULE_INDIVIDUAL_MEETING student_id  meeting_id
+        request = createRequest(STUDENT_SCHEDULE_MEETING, new ArrayList<>(List.of(String.valueOf(sId), String.valueOf(mId), type)));
+        out.println(request);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -39,6 +39,7 @@ import static com.calendlygui.utils.Helper.extractUserFromResponse;
 
 public class StudentTimeslotController implements Initializable {
     private ArrayList<Meeting> meetings = null;
+    private Meeting currentMeeting = null;
     @FXML
     private Button appointmentButton;
 
@@ -162,8 +163,20 @@ public class StudentTimeslotController implements Initializable {
     private Text errorText;
 
     @FXML
-    void joinMeeting(MouseEvent event) {
+    private Text meetingDetailErrorText;
 
+    @FXML
+    void closeDialog(MouseEvent event) {
+        Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
+        classificationCombobox.getItems().clear();
+        currentMeeting = null;
+        detailPane.setVisible(false);
+    }
+
+    @FXML
+    void joinMeeting(MouseEvent event) throws IOException, ParseException {
+        String type = classificationCombobox.getValue().toLowerCase();
+        SendData.scheduleMeeting(out, CalendlyApplication.user.getId(), currentMeeting.getId(), type);
     }
 
     @Override
@@ -177,7 +190,7 @@ public class StudentTimeslotController implements Initializable {
             CalendlyApplication.shutdown();
         }
 
-        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherId())));
+        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTeacherId() +" - "+data.getValue().getTeacherName()));
         dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
@@ -199,14 +212,18 @@ public class StudentTimeslotController implements Initializable {
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
                     int code = Integer.parseInt(info[0]);
-                    if (code == CREATE_SUCCESS) {
-                        CalendlyApplication.user = extractUserFromResponse(response);
+                    if (code == QUERY_SUCCESS) {
+                        //CalendlyApplication.user = extractUserFromResponse(response);
                         //navigateToHomePage();
                         meetings = extractMeetingsFromResponse(response);
                         System.out.println(meetings.size());
                         for(Meeting meeting: meetings) System.out.println(meeting);
                         showValueToMeetingTable(meetings);
-                    } else {
+                    }
+                    else if(code == UPDATE_SUCCESS){
+                        navigateToTimeslotPage();
+                    }
+                    else {
                         switch (code) {
                             case SQL_ERROR: {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
@@ -214,6 +231,10 @@ public class StudentTimeslotController implements Initializable {
                             }
                             case UNDEFINED_ERROR: {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
+                                break;
+                            }
+                            case NOT_UP_TO_DATE : {
+                                showErrorFromServerToUIAndConsole(GeneralMessage.NOT_UP_TO_DATE);
                                 break;
                             }
                         }
@@ -231,13 +252,6 @@ public class StudentTimeslotController implements Initializable {
         return receiveThread;
     }
 
-    @FXML
-    void closeDialog(MouseEvent event) {
-        Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
-        classificationCombobox.getItems().clear();
-        detailPane.setVisible(false);
-    }
-
     private void showErrorFromServerToUIAndConsole(String error) {
         System.out.println(error);
         dealWithErrorMessageFromServer(error);
@@ -251,8 +265,11 @@ public class StudentTimeslotController implements Initializable {
             case GeneralMessage.UNKNOWN_ERROR -> {
                 errorText.setText(GeneralMessage.UNKNOWN_ERROR);
             }
+            case GeneralMessage.NOT_UP_TO_DATE -> {
+                meetingDetailErrorText.setText(GeneralMessage.NOT_UP_TO_DATE);
+            }
             default -> {
-                Controller.setTextToEmpty(errorText);
+                Controller.setTextToEmpty(errorText, meetingDetailErrorText);
             }
         }
     }
@@ -267,16 +284,25 @@ public class StudentTimeslotController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     Meeting rowData = row.getItem();
+                    currentMeeting = rowData;
                     //System.out.println("Double click on: "+rowData.getTeacherId());
-                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
+                    teacherTextField.setText(rowData.getTeacherId() +" - "+rowData.getTeacherName());
                     beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
                     endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
                     nameTextField.setText(rowData.getName());
                     createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
                     classificationCombobox.getItems().clear();
                     if(Objects.equals(rowData.getClassification(), "both")){
-                        classificationCombobox.getItems().addAll("Group", "Individual");
-                        classificationCombobox.setValue("Group");
+                        System.out.println(currentMeeting.getSelectedClassification());
+                        if(Objects.equals(currentMeeting.getSelectedClassification(), "null")){
+                            classificationCombobox.getItems().addAll("Group", "Individual");
+                            classificationCombobox.setValue("Group");
+                        }
+                        else{
+                            classificationCombobox.getItems().add(Format.writeFirstCharacterInUppercase(currentMeeting.getSelectedClassification()));
+                            classificationCombobox.setValue(Format.writeFirstCharacterInUppercase(currentMeeting.getSelectedClassification()));
+                        }
+
                     }else{
                         classificationCombobox.getItems().add(Format.writeFirstCharacterInUppercase(rowData.getClassification()) );
                         classificationCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
@@ -290,6 +316,11 @@ public class StudentTimeslotController implements Initializable {
 
     private void navigateToHomePage() throws IOException {
         if (CalendlyApplication.user == null) return;
-        //Controller.navigateToOtherStage(signInButton, "teacher.fxml", "Teacher");
+        Controller.navigateToOtherStage(joinButton, "teacher.fxml", "Teacher");
+    }
+
+    private void navigateToTimeslotPage() throws IOException {
+        if (CalendlyApplication.user == null) return;
+        Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "Time slots");
     }
 }

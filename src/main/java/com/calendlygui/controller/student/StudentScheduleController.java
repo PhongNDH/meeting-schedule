@@ -1,6 +1,9 @@
 package com.calendlygui.controller.student;
 
 import com.calendlygui.CalendlyApplication;
+import com.calendlygui.constant.ConstantValue;
+import com.calendlygui.constant.GeneralMessage;
+import com.calendlygui.constant.TimeslotMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
@@ -14,12 +17,24 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import static com.calendlygui.CalendlyApplication.in;
+import static com.calendlygui.CalendlyApplication.out;
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.constant.ConstantValue.UNDEFINED_ERROR;
 
 public class StudentScheduleController implements Initializable {
 
@@ -113,6 +128,9 @@ public class StudentScheduleController implements Initializable {
     private Button cancelButton;
 
     @FXML
+    private Text errorText;
+
+    @FXML
     void logout(MouseEvent event) {
         if (CalendlyApplication.user != null) {
             CalendlyApplication.user = null;
@@ -171,6 +189,15 @@ public class StudentScheduleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
+            out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true, StandardCharsets.UTF_8);
+            in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            CalendlyApplication.shutdown();
+        }
+
         meetings.add(new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
                 Format.createTimestamp(2023, 12, 26, 8, 30),
                 Format.createTimestamp(2023, 12, 26, 8, 50), "Both","Pending"));
@@ -186,6 +213,43 @@ public class StudentScheduleController implements Initializable {
         filterDatetime.setVisible(false);
         showScheduledMeeting();
         filterCombobox();
+    }
+
+    private Thread getReceiveThread(){
+        Thread receiveThread = new Thread(() -> {
+            try {
+                String response;
+                while ((response = in.readLine()) != null) {
+                    response = response.replaceAll(NON_PRINTABLE_CHARACTER, "");
+                    System.out.println("Response: " + response);
+                    String[] info = response.split(COMMAND_DELIMITER);
+                    if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
+                        //navigateToHomePage();
+                        System.out.println(TimeslotMessage.TIMESLOT_SUCCESS);
+                    } else {
+                        int code = Integer.parseInt(info[0]);
+                        switch (code) {
+                            case SQL_ERROR: {
+                                showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
+                                break;
+                            }
+                            case UNDEFINED_ERROR: {
+                                showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                CalendlyApplication.shutdown();
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        receiveThread.setDaemon(true);
+        return receiveThread;
     }
 
     private void filterCombobox() {
@@ -260,4 +324,29 @@ public class StudentScheduleController implements Initializable {
             return row ;
         });
     }
+
+    private void showErrorFromServerToUIAndConsole(String error) {
+        System.out.println(error);
+        dealWithErrorMessageFromServer(error);
+    }
+
+    private void dealWithErrorMessageFromServer(String message) {
+        switch (message) {
+            case GeneralMessage.SERVER_WRONG -> {
+                errorText.setText(GeneralMessage.SERVER_WRONG);
+            }
+            case GeneralMessage.UNKNOWN_ERROR -> {
+                errorText.setText(GeneralMessage.UNKNOWN_ERROR);
+            }
+            default -> {
+                Controller.setTextToEmpty(errorText);
+            }
+        }
+    }
+
+    private void navigateToTimeslotPage() throws IOException {
+        if (CalendlyApplication.user == null) return;
+        //Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "Time slots");
+    }
+
 }
