@@ -18,7 +18,7 @@ public class Meeting {
         this.classification = classification;
     }
 
-    public Meeting(int id, int teacherId, String teacherName, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification) {
+    public Meeting(int id, int teacherId, String teacherName, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification, String status, String selectedClassification) {
         this.id = id;
         this.teacherId = teacherId;
         this.teacherName = teacherName;
@@ -27,6 +27,8 @@ public class Meeting {
         this.occurDatetime = occurDatetime;
         this.finishDatetime = finishDatetime;
         this.classification = classification;
+        this.selectedClassification = selectedClassification;
+        this.status = status;
     }
 
 
@@ -167,11 +169,13 @@ public class Meeting {
                 ", occur='" + Format.getStringFormatFromTimestamp(occurDatetime, "HH:mm") + '\'' +
                 ", finish='" + Format.getStringFormatFromTimestamp(finishDatetime, "HH:mm") + '\'' +
                 ", teacherId=" + teacherId +
+                ", teacherName=" + teacherName +
                 ", classification='" + classification + '\'' +
                 ", status='" + status + '\'' +
                 ", selectedClassification='" + selectedClassification + '\'' +
                 ", establishTime='" + Format.getStringFormatFromTimestamp(establishedDatetime, "yyyy-MM-dd HH:mm") + '\'' +
                 ", Contents: " + contents.size() +
+                ", Students: " + students.size() +
                 '}';
     }
 }

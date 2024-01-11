@@ -85,7 +85,7 @@ public class ServerHandler {
         Date fromDate = formatter.parse(date + " 00:00:00");
         Date toDate = formatter.parse(date + " 23:59:59");
 
-        String query = "select * from " + MEETING + " where " + MEETING_TEACHER_ID + " = ? and " + MEETING_OCCUR + " between ? and ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + MEETING_OCCUR + " between ? and ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
@@ -127,7 +127,7 @@ public class ServerHandler {
     }
 
     public static String handleViewHistory(int tId) {
-        String query = "select * from " + MEETING + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
@@ -156,7 +156,7 @@ public class ServerHandler {
     }
 
     public static String handleViewAvailableSlots() {
-        String query = "select * from " + MEETING + " where " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, PENDING);
@@ -221,10 +221,10 @@ public class ServerHandler {
     }
 
     public static String handleViewMeetingsByWeek(int sId, String beginDate, String endDate) {
-        String query = "select * from " + PARTICIPATE + " join " + MEETING +
-                " on " + PARTICIPATE + "." + MEETING_ID + " = " + MEETING + "." + ID +
-                " where " + STUDENT_ID + " = ?" +
-                " and " + MEETING_OCCUR + " >= ? and " + MEETING_OCCUR + " <= ?";
+        String query = "select m.*, p.*, u." + NAME + " as " + TEACHER_NAME + " from " + PARTICIPATE + " p join " + MEETING +
+                " m on p." + MEETING_ID + " = m." + ID + " join " + USERS + " u on u." + ID + " = m." + MEETING_TEACHER_ID +
+                " where " + STUDENT_ID + " = ? and " + MEETING_OCCUR + " >= ? and " + MEETING_OCCUR + " <= ?";
+        System.out.println(query);
         try {
             PreparedStatement ps = conn.prepareStatement(query);
 

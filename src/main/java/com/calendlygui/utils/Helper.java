@@ -59,10 +59,8 @@ public class Helper {
                     .append(meeting.getEstablishedDatetime()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getOccurDatetime()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getFinishDatetime()).append(DOUBLE_LINE_BREAK)
-//                    .append(Format.getStringFormatFromTimestamp(meeting.getOccurDatetime(), "dd-MM-yyyy HH:mm:ss")).append(DOUBLE_LINE_BREAK)
-//                    .append(Format.getStringFormatFromTimestamp(meeting.getOccurDatetime(), "HH:mm")).append(DOUBLE_LINE_BREAK)
-//                    .append(Format.getStringFormatFromTimestamp(meeting.getFinishDatetime(), "HH:mm")).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getTeacherId()).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getTeacherName()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getClassification()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getStatus()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getSelectedClassification()).append(DOUBLE_LINE_BREAK);
@@ -76,6 +74,7 @@ public class Helper {
 
             for(User student: meeting.getStudents()){
                 data
+                        .append(student.getId()).append(FIELD_DELIMITER)
                         .append(student.getUsername()).append(FIELD_DELIMITER)
                         .append(student.getEmail()).append(FIELD_DELIMITER)
                         .append(student.getRegisterDatetime()).append(FIELD_DELIMITER)
@@ -93,11 +92,13 @@ public class Helper {
 
         int id, teacherId;
         String name, status, classification, selectedClassification;
+        String teacher_name;
         Timestamp occur, finish, established;
 
         while (rs.next()) {
             id = rs.getInt(ID);
             teacherId = rs.getInt(MEETING_TEACHER_ID);
+            teacher_name = rs.getString(TEACHER_NAME);
             name = rs.getString(NAME);
             occur = rs.getTimestamp(MEETING_OCCUR);
             finish = rs.getTimestamp(MEETING_FINISH);
@@ -106,7 +107,8 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            Meeting newMeeting = new Meeting(id, teacherId, name, established, occur, finish, classification, selectedClassification, status);
+
+            Meeting newMeeting = new Meeting(id, teacherId, teacher_name,  name, established, occur, finish, classification, selectedClassification, status);
             meetings.add(newMeeting);
         }
 
@@ -122,17 +124,19 @@ public class Helper {
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
                     Integer.parseInt(meetingInfo[5]),
+                    meetingInfo[6],
                     meetingInfo[1],
                     new Timestamp(formatter.parse(meetingInfo[2]).getTime()),
                     new Timestamp(formatter.parse(meetingInfo[3]).getTime()),
                     new Timestamp(formatter.parse(meetingInfo[4]).getTime()),
-                    meetingInfo[6], meetingInfo[7],
+                    meetingInfo[7],
+                    meetingInfo[9],
                     meetingInfo[8]);
 
 //            List of minutes: meetingInfo[9]
-            if(meetingInfo.length >= 10 && !Objects.equals(meetingInfo[9], "")){
+            if(meetingInfo.length >= 11 && !Objects.equals(meetingInfo[10], "")){
                 ArrayList<Content> contents = new ArrayList<>();
-                String contentField = meetingInfo[9];
+                String contentField = meetingInfo[10];
                 String[] contentStrings = contentField.split(LINE_BREAK);
                 for(String minuteString: contentStrings){
                     String[] minuteData = minuteString.split(FIELD_DELIMITER);
@@ -143,9 +147,9 @@ public class Helper {
             }
 
 //            List of minutes: meetingInfo[10]
-            if(meetingInfo.length == 11 && !Objects.equals(meetingInfo[10], "")){
+            if(meetingInfo.length == 12 && !Objects.equals(meetingInfo[11], "")){
                 ArrayList<User> students = new ArrayList<>();
-                String studentField = meetingInfo[10];
+                String studentField = meetingInfo[11];
                 String[] studentStrings = studentField.split(LINE_BREAK);
                 for(String studentString: studentStrings){
                     String[] studentData = studentString.split(FIELD_DELIMITER);

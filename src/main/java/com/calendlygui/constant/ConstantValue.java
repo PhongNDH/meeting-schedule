@@ -46,6 +46,7 @@ public class ConstantValue {
     public static final String SELECTED_CLASSIFICATION = "selected_classification";
     public static final String ESTABLISH_DATETIME = "establish_datetime";
     public static final String PARTICIPATE_DATETIME = "participate_datetime";
+    public static final String TEACHER_NAME = "teacher_name";
 
     //Minute
     public static final String MINUTE = "minute";

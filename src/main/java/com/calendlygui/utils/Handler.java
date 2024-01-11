@@ -149,11 +149,11 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "10": {
-                            handleViewByWeek(in, out, 18, "2023-1-1", "2024-12-31");
+                            handleViewByWeek(in, out, 16, "2023-1-1", "2024-12-31");
                             break;
                         }
                         case "11": {
-                            handleCancelMeeting(in, out, 17, 11);
+                            handleCancelMeeting(in, out, 60, 10);
                             break;
                         }
                         default: {
@@ -384,6 +384,7 @@ public class Handler implements Runnable {
                 String[] info = response.split(COMMAND_DELIMITER);
                 if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
                     ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+                    for (Meeting meeting : meetings) System.out.println(meeting);
                     System.out.println(meetings.size());
                     break;
                 } else handleErrorResponse(info[0]);
