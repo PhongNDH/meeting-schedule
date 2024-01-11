@@ -49,7 +49,7 @@ public class Helper {
             data.append(COMMAND_DELIMITER)
                     .append(meeting.id).append(DOUBLE_LINE_BREAK)
                     .append(meeting.name).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.date).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.establishDate).append(DOUBLE_LINE_BREAK)
                     .append(meeting.occur).append(DOUBLE_LINE_BREAK)
                     .append(meeting.finish).append(DOUBLE_LINE_BREAK)
                     .append(meeting.tId).append(DOUBLE_LINE_BREAK)
@@ -83,24 +83,20 @@ public class Helper {
 
         int id, teacherId;
         String name, status, classification, selectedClassification;
-        Timestamp occur, finish;
+        Timestamp occur, finish, establishDate;
 
         while (rs.next()) {
             id = rs.getInt(ID);
             teacherId = rs.getInt(MEETING_TEACHER_ID);
             name = rs.getString(NAME);
+            establishDate = rs.getTimestamp(ESTABLISH_DATETIME);
             occur = rs.getTimestamp(MEETING_OCCUR);
             finish = rs.getTimestamp(MEETING_FINISH);
             status = rs.getString(STATUS);
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            Timestamp date = new Timestamp(occur.getTime());
-            date.setHours(0);
-            date.setMinutes(0);
-
-            Meeting newMeeting = new Meeting(id, name, date, occur, finish, teacherId, classification, status, selectedClassification);
-
+            Meeting newMeeting = new Meeting(id, name, establishDate, occur, finish, teacherId, classification, status, selectedClassification);
             meetings.add(newMeeting);
         }
 
@@ -113,10 +109,9 @@ public class Helper {
         for (int i = 1; i < data.length; i++) {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
 
-            String dateString = meetingInfo[2];
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
-                    meetingInfo[1], new Timestamp(formatter.parse(dateString).getTime()),
+                    meetingInfo[1], new Timestamp(formatter.parse(meetingInfo[2]).getTime()),
                     new Timestamp(formatter.parse(meetingInfo[3]).getTime()),
                     new Timestamp(formatter.parse(meetingInfo[4]).getTime()),
                     Integer.parseInt(meetingInfo[5]),

@@ -1,13 +1,12 @@
 package com.calendlygui.model;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Meeting {
     public int id;
     public String name;
-    public Timestamp date;
+    public Timestamp establishDate;
     public Timestamp occur;
     public Timestamp finish;
     public int tId;
@@ -23,7 +22,7 @@ public class Meeting {
                    int tId, String classification, String status, String selectedClassification) {
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.establishDate = date;
         this.occur = occur;
         this.finish = finish;
         this.tId = tId;
@@ -37,7 +36,7 @@ public class Meeting {
         return "Meeting{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", date='" + date + '\'' +
+                ", date='" + establishDate + '\'' +
                 ", occur='" + occur + '\'' +
                 ", finish='" + finish + '\'' +
                 ", tId=" + tId +
