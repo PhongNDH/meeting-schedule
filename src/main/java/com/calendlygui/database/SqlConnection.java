@@ -3,10 +3,15 @@ package com.calendlygui.database;
 import java.sql.*;
 
 public class SqlConnection {
+    private final static String ND_DATABASE_NAME = "networkprog";
+    private final static String ND_DATABASE_PASS = "Spyderpyg59@";
+    private final static String NDHP_DATABASE_NAME = "calendly";
+    private final static String NDHP_DATABASE_PASS = "Phongsql123";
+
     public static Connection connect() {
-        String url = "jdbc:postgresql://localhost:5432/calendly";
+        String url = "jdbc:postgresql://localhost:5432/" + ND_DATABASE_NAME;
         String user = "postgres";
-        String password = "Phongsql123";
+        String password = ND_DATABASE_PASS;
         try {
             return DriverManager.getConnection(url, user, password);
         } catch (SQLException var5) {

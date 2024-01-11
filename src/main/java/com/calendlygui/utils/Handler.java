@@ -77,70 +77,29 @@ public class Handler implements Runnable {
                     String message = inReader.readLine();
                     switch (message) {
                         case "1": {
-                            handleLogin(in, out, "j@gmail.com", "111111");
+                            handleLogin(in, out, "Vanh LEG", "111111");
                             break;
                         }
                         case "2": {
                             handleRegister(
                                     in, out,
-                                    "Joe Mama",
-                                    "joemama@gmail.com",
+                                    "Joe Mama 2",
+                                    "joemama2@gmail.com",
                                     "111111",
                                     true,
                                     false
-                            );
-                            handleRegister(
-                                    in, out,
-                                    "s1@gmail.com",
-                                    "Student one",
-                                    "111111",
-                                    true,
-                                    false
-                            );
-                            handleRegister(
-                                    in, out,
-                                    "s2@gmail.com",
-                                    "Student two",
-                                    "111111",
-                                    false,
-                                    false
-                            );
-                            handleRegister(
-                                    in, out,
-                                    "t1@gmail.com",
-                                    "Teacher 1",
-                                    "111111",
-                                    true,
-                                    true
-                            );
-                            handleRegister(
-                                    in, out,
-                                    "t2@gmail.com",
-                                    "Teacher 2",
-                                    "111111",
-                                    true,
-                                    true
                             );
                             break;
                         }
                         case "3": {
                             handleCreateMeeting(
                                     in, out,
-                                    "Checkpoint 1",
-                                    "2024-1-9",
-                                    "08:00",
-                                    "08:30",
+                                    "Checkpoint 69",
+                                    "2024-1-11",
+                                    "08:15",
+                                    "08:40",
                                     "individual",
                                     18);
-
-                            handleCreateMeeting(
-                                    in, out,
-                                    "GR1",
-                                    "2024-1-9",
-                                    "08:15",
-                                    "09:00",
-                                    "group",
-                                    19);
                             break;
                         }
                         case "4": {
@@ -185,16 +144,16 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "9": {
-                            handleScheduleMeeting(in, out, 16, 10, INDIVIDUAL);
-//                            handleScheduleMeeting(in, out, 17, 11, GROUP);
+//                            handleScheduleMeeting(in, out, 16, 10, INDIVIDUAL);
+                            handleScheduleMeeting(in, out, 16, 10, GROUP);
                             break;
                         }
                         case "10": {
-                            handleViewByWeek(in, out, 4, "2023-1-1", "2023-12-31");
+                            handleViewByWeek(in, out, 18, "2023-1-1", "2024-12-31");
                             break;
                         }
                         case "11": {
-                            handleCancelMeeting(in, out, 16, 11);
+                            handleCancelMeeting(in, out, 17, 11);
                             break;
                         }
                         default: {

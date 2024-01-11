@@ -3,6 +3,7 @@ package com.calendlygui.model.entity;
 import com.calendlygui.utils.Format;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Meeting {
@@ -28,7 +29,7 @@ public class Meeting {
         this.status = status;
     }
 
-    public Meeting(int id, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification,String selectedClassification, String status, List<Content> contents) {
+    public Meeting(int id, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification, String selectedClassification, String status, List<Content> contents) {
         this.id = id;
         this.name = name;
         this.establishedDatetime = establishedDatetime;
@@ -40,7 +41,7 @@ public class Meeting {
         this.contents = contents;
     }
 
-    public Meeting(int id,int teacherId, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification,String selectedClassification, String status) {
+    public Meeting(int id, int teacherId, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification, String selectedClassification, String status) {
         this.id = id;
         this.teacherId = teacherId;
         this.name = name;
@@ -83,9 +84,9 @@ public class Meeting {
 
     String status;
 
-    List<Content> contents;
+    List<Content> contents = new ArrayList<>();
 
-    List<User> students;
+    List<User> students = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -144,14 +145,14 @@ public class Meeting {
         return "Meeting{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", date='" + Format.getStringFormatFromTimestamp(occurDatetime,"yyyy-MM-dd")  + '\'' +
-                ", occur='" + Format.getStringFormatFromTimestamp(occurDatetime,"HH:mm") + '\'' +
-                ", finish='" + Format.getStringFormatFromTimestamp(finishDatetime,"HH:mm") + '\'' +
+                ", date='" + Format.getStringFormatFromTimestamp(occurDatetime, "yyyy-MM-dd") + '\'' +
+                ", occur='" + Format.getStringFormatFromTimestamp(occurDatetime, "HH:mm") + '\'' +
+                ", finish='" + Format.getStringFormatFromTimestamp(finishDatetime, "HH:mm") + '\'' +
                 ", teacherId=" + teacherId +
                 ", classification='" + classification + '\'' +
                 ", status='" + status + '\'' +
                 ", selectedClassification='" + selectedClassification + '\'' +
-                ", establishTime='" + Format.getStringFormatFromTimestamp(establishedDatetime,"yyyy-MM-dd HH:mm") + '\'' +
+                ", establishTime='" + Format.getStringFormatFromTimestamp(establishedDatetime, "yyyy-MM-dd HH:mm") + '\'' +
                 ", Contents: " + contents.size() +
                 '}';
     }
