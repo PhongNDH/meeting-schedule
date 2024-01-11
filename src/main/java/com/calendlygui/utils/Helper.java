@@ -16,8 +16,12 @@ import static org.controlsfx.glyphfont.FontAwesome.Glyph.USERS;
 
 public class Helper {
     static String timePattern = "yyyy-MM-dd HH:mm:ss";
-    static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
+//    static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
     static SimpleDateFormat formatter = new SimpleDateFormat(timePattern);
+
+    public static Timestamp toTimeStamp(String date, String time) throws ParseException {
+        return new Timestamp(formatter.parse(date + " " + time).getTime());
+    }
 
     public static Date[] convertToDate(String date, String startTime, String endTime) throws ParseException {
 

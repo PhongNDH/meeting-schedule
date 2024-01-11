@@ -93,10 +93,10 @@ public class Handler implements Runnable {
                         case "3": {
                             handleCreateMeeting(
                                     in, out,
-                                    "Checkpoint 69",
-                                    "2024-1-11",
-                                    "08:15",
-                                    "08:40",
+                                    "Checkpoint 96",
+                                    "2024-1-9",
+                                    "9:00",
+                                    "9:15",
                                     "individual",
                                     18);
                             break;
@@ -437,6 +437,9 @@ public class Handler implements Runnable {
             case SQL_ERROR: {
                 System.out.println("Sql error");
                 break;
+            }
+            case DUPLICATE_SCHEDULE: {
+                System.out.println("Already existed another scheduled meeting. Choose another time");
             }
             default: {
                 System.out.println("Unknown error");

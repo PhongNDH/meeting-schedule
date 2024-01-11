@@ -19,14 +19,37 @@ public class ServerHandler {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static String handleCreateMeeting(String name, int tId, String date, String begin, String end, String classification) throws ParseException {
+        //query meetings in a day to check duplicate
+        Timestamp filterDateStart = toTimeStamp(date, "00:00:00");
+        Timestamp filterDateEnd = toTimeStamp(date, "23:59:59");
+
+        //format data to compare amd insert if not duplicated
         Date[] convertedTime = convertToDate(date, begin, end);
-        String insertQuery = "insert into " + MEETING + "(" +
-                NAME + ", " + MEETING_OCCUR + ", " + MEETING_FINISH + ", " + MEETING_TEACHER_ID + ", " + CLASSIFICATION + ") values (?, ?, ?, ?, ?) returning " + ESTABLISH_DATETIME;
+        Timestamp occur = new Timestamp(convertedTime[0].getTime());
+        Timestamp finish = new Timestamp(convertedTime[1].getTime());
         try {
+            String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " >= ? and " + MEETING_OCCUR + " <= ?";
+            PreparedStatement checkPs = conn.prepareStatement(checkQuery);
+            checkPs.setTimestamp(1, filterDateStart);
+            checkPs.setTimestamp(2, filterDateEnd);
+
+            ResultSet checkRs = checkPs.executeQuery();
+            while (checkRs.next()) {
+                Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
+                Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
+
+                if (occur.before(alreadyOccur) && finish.after(alreadyFinish)
+                        || occur.after(alreadyOccur) && occur.before(alreadyFinish))
+                    return String.valueOf(DUPLICATE_SCHEDULE);
+            }
+
+            //if not duplicate then can insert
+            String insertQuery = "insert into " + MEETING + "(" +
+                    NAME + ", " + MEETING_OCCUR + ", " + MEETING_FINISH + ", " + MEETING_TEACHER_ID + ", " + CLASSIFICATION + ") values (?, ?, ?, ?, ?) returning " + ESTABLISH_DATETIME;
             PreparedStatement ps = conn.prepareStatement(insertQuery);
             ps.setString(1, name);
-            ps.setTimestamp(2, new Timestamp(convertedTime[0].getTime()));
-            ps.setTimestamp(3, new Timestamp(convertedTime[1].getTime()));
+            ps.setTimestamp(2, occur);
+            ps.setTimestamp(3, finish);
             ps.setInt(4, tId);
             ps.setString(5, classification);
 
@@ -183,10 +206,10 @@ public class ServerHandler {
 
             ResultSet checkMeetingRs = checkMeetingPs.executeQuery();
             String selectedClassification = null;
-            while (checkMeetingRs.next()){
+            while (checkMeetingRs.next()) {
                 selectedClassification = checkMeetingRs.getString(SELECTED_CLASSIFICATION);
             }
-            if(selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL))
+            if (selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL))
                 return String.valueOf(NOT_UP_TO_DATE);
 
             String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
