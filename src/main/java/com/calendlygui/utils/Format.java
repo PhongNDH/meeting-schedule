@@ -82,4 +82,9 @@ public class Format {
         return totalEndMinutes - totalStartMinutes;
     }
 
+    public static String writeFirstCharacterInUppercase(String string){
+        String firstCharacter = string.substring(0,1);
+        String remainString = string.substring(1);
+        return firstCharacter.toUpperCase() + remainString;
+    }
 }

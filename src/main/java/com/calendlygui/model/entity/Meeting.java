@@ -18,6 +18,19 @@ public class Meeting {
         this.classification = classification;
     }
 
+    public Meeting(int id, int teacherId, String teacherName, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification) {
+        this.id = id;
+        this.teacherId = teacherId;
+        this.teacherName = teacherName;
+        this.name = name;
+        this.establishedDatetime = establishedDatetime;
+        this.occurDatetime = occurDatetime;
+        this.finishDatetime = finishDatetime;
+        this.classification = classification;
+    }
+
+
+
     public Meeting(int id, int teacherId, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String selectedClassification, String status) {
         this.id = id;
         this.teacherId = teacherId;
@@ -68,7 +81,8 @@ public class Meeting {
     int id;
 
     int teacherId;
-    //String teacherName;
+
+    String teacherName;
 
     String name;
 
@@ -138,6 +152,10 @@ public class Meeting {
 
     public void setStudents(List<User> students) {
         this.students = students;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
     }
 
     @Override

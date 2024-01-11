@@ -162,6 +162,11 @@ public class StudentTimeslotController implements Initializable {
     @FXML
     private Text errorText;
 
+    @FXML
+    void joinMeeting(MouseEvent event) {
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -173,14 +178,20 @@ public class StudentTimeslotController implements Initializable {
             CalendlyApplication.shutdown();
         }
 
-        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getId())));
+        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherId())));
         dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
-        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getClassification()));
+        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
 
         SendData.viewAvailableSlots(out);
 
+        Thread receiveThread = getReceiveThread();
+        receiveThread.start();
+        
+    }
+
+    private Thread getReceiveThread() {
         Thread receiveThread = new Thread(() -> {
             try {
                 String response;
@@ -192,36 +203,10 @@ public class StudentTimeslotController implements Initializable {
                     if (code == OPERATION_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         //navigateToHomePage();
-                        //meetings = extractMeetingsFromResponse(response);
+                        meetings = extractMeetingsFromResponse(response);
                         System.out.println(meetings.size());
                         for(Meeting meeting: meetings) System.out.println(meeting);
-                        ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
-
-                        meetingTable.setItems(data);
-
-                        meetingTable.setRowFactory(tv -> {
-                            TableRow<Meeting> row = new TableRow<>();
-                            row.setOnMouseClicked(event -> {
-                                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                                    Meeting rowData = row.getItem();
-                                    //System.out.println("Double click on: "+rowData.getTeacherId());
-                                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
-                                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-                                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
-                                    nameTextField.setText(rowData.getName());
-                                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                                    if(Objects.equals(rowData.getClassification(), "Both")){
-                                        classificationCombobox.getItems().addAll("Group", "Individual");
-                                        classificationCombobox.setValue("Group");
-                                    }else{
-                                        classificationCombobox.getItems().add(rowData.getClassification());
-                                        classificationCombobox.setValue(rowData.getClassification());
-                                    }
-                                    detailPane.setVisible(true);
-                                }
-                            });
-                            return row ;
-                        });
+                        showValueToMeetingTable(meetings);
                     } else {
                         switch (code) {
                             case SQL_ERROR: {
@@ -244,44 +229,7 @@ public class StudentTimeslotController implements Initializable {
         });
 
         receiveThread.setDaemon(true);
-        receiveThread.start();
-
-//        ObservableList<Meeting> data = FXCollections.observableArrayList(
-//                new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-//                        Format.createTimestamp(2023, 12, 26, 8, 30),
-//                        Format.createTimestamp(2023, 12, 26, 8, 50), "Both"),
-//                new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-//                        Format.createTimestamp(2023, 12, 26, 8, 30),
-//                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group")
-//        );
-
-//        ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
-//
-//        meetingTable.setItems(data);
-//
-//        meetingTable.setRowFactory(tv -> {
-//            TableRow<Meeting> row = new TableRow<>();
-//            row.setOnMouseClicked(event -> {
-//                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-//                    Meeting rowData = row.getItem();
-//                    //System.out.println("Double click on: "+rowData.getTeacherId());
-//                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
-//                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-//                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
-//                    nameTextField.setText(rowData.getName());
-//                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-//                    if(Objects.equals(rowData.getClassification(), "Both")){
-//                        classificationCombobox.getItems().addAll("Group", "Individual");
-//                        classificationCombobox.setValue("Group");
-//                    }else{
-//                        classificationCombobox.getItems().add(rowData.getClassification());
-//                        classificationCombobox.setValue(rowData.getClassification());
-//                    }
-//                    detailPane.setVisible(true);;
-//                }
-//            });
-//            return row ;
-//        });
+        return receiveThread;
     }
 
     @FXML
@@ -289,11 +237,6 @@ public class StudentTimeslotController implements Initializable {
         Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
         classificationCombobox.getItems().clear();
         detailPane.setVisible(false);
-    }
-
-    @FXML
-    void joinMeeting(MouseEvent event) {
-
     }
 
     private void showErrorFromServerToUIAndConsole(String error) {
@@ -313,6 +256,37 @@ public class StudentTimeslotController implements Initializable {
                 Controller.setTextToEmpty(errorText);
             }
         }
+    }
+
+    private void showValueToMeetingTable(List<Meeting> meetings){
+        ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
+
+        meetingTable.setItems(data);
+
+        meetingTable.setRowFactory(tv -> {
+            TableRow<Meeting> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    Meeting rowData = row.getItem();
+                    //System.out.println("Double click on: "+rowData.getTeacherId());
+                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
+                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+                    nameTextField.setText(rowData.getName());
+                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
+                    classificationCombobox.getItems().clear();
+                    if(Objects.equals(rowData.getClassification(), "both")){
+                        classificationCombobox.getItems().addAll("Group", "Individual");
+                        classificationCombobox.setValue("Group");
+                    }else{
+                        classificationCombobox.getItems().add(Format.writeFirstCharacterInUppercase(rowData.getClassification()) );
+                        classificationCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
+                    }
+                    detailPane.setVisible(true);
+                }
+            });
+            return row ;
+        });
     }
 
     private void navigateToHomePage() throws IOException {
