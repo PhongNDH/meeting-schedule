@@ -136,7 +136,7 @@ public class Helper {
                 String[] minuteStrings = minuteField.split(LINE_BREAK);
                 for(String minuteString: minuteStrings){
                     String[] minuteData = minuteString.split(FIELD_DELIMITER);
-                    minutes.add(new Minute(new Timestamp((dateFormatter.parse(minuteData[0])).getTime()), minuteData[1]));
+                    minutes.add(new Minute(new Timestamp((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(minuteData[0])).getTime()), minuteData[1]));
                 }
 
                 newMeeting.minutes = minutes;
@@ -202,7 +202,7 @@ public class Helper {
             content = rs.getString(CONTENT);
             time = rs.getTimestamp(ESTABLISH_DATETIME);
 
-            Minute newMinute = new Minute(new Timestamp(time.getTime()), content);
+            Minute newMinute = new Minute(time, content);
             minutes.add(newMinute);
         }
 
