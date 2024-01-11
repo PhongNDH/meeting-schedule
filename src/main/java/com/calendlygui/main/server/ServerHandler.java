@@ -209,7 +209,8 @@ public class ServerHandler {
             while (checkMeetingRs.next()) {
                 selectedClassification = checkMeetingRs.getString(SELECTED_CLASSIFICATION);
             }
-            if (selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL))
+
+            if (selectedClassification != null && (selectedClassification.equals(INDIVIDUAL) || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL)))
                 return String.valueOf(NOT_UP_TO_DATE);
 
             String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
