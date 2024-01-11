@@ -2,6 +2,7 @@ package com.calendlygui.controller;
 
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
+import com.calendlygui.constant.GeneralMessage;
 import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.SendData;
@@ -64,7 +65,7 @@ public class LoginController implements Initializable {
 
         if (dealWithErrorMessageFromUI(email, password)) {
             try {
-                SendData.handleLogin(in, out, email, password);
+                SendData.login(out, email, password);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -80,7 +81,7 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-            out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
+            out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true,StandardCharsets.UTF_8);
             in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -90,83 +91,40 @@ public class LoginController implements Initializable {
         Thread receiveThread = new Thread(() -> {
             try {
                 String response;
-                while ((response = in.readLine()) != null) {
-                    response = response.trim();
+                while (!(response = in.readLine()).isEmpty()) {
+                    response = response.replaceAll(NON_PRINTABLE_CHARACTER,"");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
                     int code = Integer.parseInt(info[0]);
                     if (code == OPERATION_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
-                        System.out.println("Navigate to home screen");
+                        System.out.println(LoginMessage.LOGIN_SUCCESS);
                     } else {
                         switch (code) {
                             case ACCOUNT_NOT_EXIST: {
-                                System.out.println("This account does not exist");
-                                showErrorFromServerToUIAndConsole("This account does not exist");
+                                //System.out.println(LoginMessage.LOGIN_EMAIL_NOT_EXIST);
+                                showErrorFromServerToUIAndConsole(LoginMessage.LOGIN_EMAIL_NOT_EXIST);
                                 break;
                             }
                             case INVALID_PASSWORD: {
-                                System.out.println("Invalid password");
-                                showErrorFromServerToUIAndConsole("Invalid password");
+                                //System.out.println(LoginMessage.LOGIN_PASSWORD_NOT_MATCH);
+                                showErrorFromServerToUIAndConsole(LoginMessage.LOGIN_PASSWORD_NOT_MATCH);
                                 break;
                             }
                             case SQL_ERROR: {
-                                System.out.println("Sql error");
-                                showErrorFromServerToUIAndConsole("Sql error");
+                                //System.out.println(GeneralMessage.SERVER_WRONG);
+                                showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
                                 break;
                             }
                             case UNDEFINED_ERROR: {
-                                System.out.println("Unknown error");
-                                showErrorFromServerToUIAndConsole("Unknown error");
+                                //System.out.println(GeneralMessage.UNKNOWN_ERROR);
+                                showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
                                 break;
                             }
                         }
                     }
                 }
-//                Object responseObject;
-//                Response response = null;
-//                while (true) {
-//                    responseObject = CalendlyApplication.inObject.readObject();
-//                    if(responseObject instanceof Response) response = (Response) responseObject;
-//                    System.out.println("Response received : " + response);
-//                    if(response == null) return;
-//                    if(response.getBody() instanceof String){
-//                        System.out.println((String) response.getBody());
-//                    }
-//                    else{
-//                        switch (response.getCode()) {
-//                            case 0: {
-//                                User user = ((User) response.getBody());
-//                                System.out.println("SUCCESS");
-//                                System.out.println(user.getUsername());
-//                                CalendlyApplication.user = user;
-//                                navigateToHomePage();
-//                                break;
-//                            }
-//                            case 1: {
-//                                System.out.println("CLIENT ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                            case 2: {
-//                                System.out.println("SERVER ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                            case 3: {
-//                                System.out.println("SQL ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                            default: {
-//                                System.out.println("UNKNOWN ERROR");
-//                                System.out.println(((ErrorMessage) response.getBody()).getContent());
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
@@ -181,8 +139,8 @@ public class LoginController implements Initializable {
 
     private void dealWithErrorMessageFromServer(String message) {
         switch (message) {
-            case LoginMessage.LOGIN_SERVER_WRONG -> {
-                errorText.setText(LoginMessage.LOGIN_SERVER_WRONG);
+            case GeneralMessage.SERVER_WRONG -> {
+                errorText.setText(GeneralMessage.SERVER_WRONG);
                 Controller.setTextToEmpty(passwordText, emailText);
             }
             case LoginMessage.LOGIN_PASSWORD_NOT_MATCH -> {
@@ -203,13 +161,13 @@ public class LoginController implements Initializable {
         boolean isValidEmail = false;
         boolean isValidPassword = false;
         if (email.trim().isEmpty()) {
-            emailText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
+            emailText.setText(GeneralMessage.REQUIRED_FIELD);
         } else {
             emailText.setText("");
             isValidEmail = true;
         }
         if (password.isEmpty()) {
-            passwordText.setText(LoginMessage.LOGIN_REQUIRED_FIELD);
+            passwordText.setText(GeneralMessage.REQUIRED_FIELD);
         } else {
             passwordText.setText("");
             isValidPassword = true;

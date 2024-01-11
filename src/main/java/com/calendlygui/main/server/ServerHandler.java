@@ -1,8 +1,8 @@
 package com.calendlygui.main.server;
 
 import com.calendlygui.database.SqlConnection;
-import com.calendlygui.model.Meeting;
-import com.calendlygui.model.Minute;
+import com.calendlygui.model.entity.Content;
+import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.model.entity.User;
 
 import java.sql.*;
@@ -10,7 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.utils.Helper.*;
@@ -38,7 +37,8 @@ public class ServerHandler {
             while (rs.next())
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
-            System.out.println("Created: " + establishTime.toString());
+            assert establishTime != null;
+            System.out.println("Created: " + establishTime);
             return createResponse(OPERATION_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
@@ -141,10 +141,10 @@ public class ServerHandler {
             System.out.println("Found " + meetings.size() + " in history");
 
             for (Meeting meeting : meetings) {
-                ArrayList<Minute> minutes = getMinutes(conn, meeting.id);
-                ArrayList<User> students = getStudentsInPastMeetings(conn, meeting.id);
-                meeting.minutes = minutes;
-                meeting.students = students;
+                ArrayList<Content> contents = getMinutes(conn, meeting.getId());
+                ArrayList<User> students = getStudentsInPastMeetings(conn, meeting.getId());
+                meeting.setContents(contents);
+                meeting.setStudents(students);
             }
 
             return createResponseWithMeetingList(OPERATION_SUCCESS, meetings);

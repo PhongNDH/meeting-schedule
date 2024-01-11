@@ -166,7 +166,7 @@
                         <TableColumn fx:id="typeTableColumn" prefWidth="132.66668701171875" text="Classification" />
                     </columns>
                 </TableView>
-            <Pane fx:id="detailPane" layoutX="40.0" layoutY="120.0" prefHeight="393.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;">
+            <Pane fx:id="detailPane" layoutX="40.0" layoutY="120.0" prefHeight="393.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
                <children>
                   <Text layoutX="85.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Created date" />
                   <TextField fx:id="beginTextField" editable="false" layoutX="181.0" layoutY="181.0" prefHeight="25.0" prefWidth="303.0" />
@@ -211,6 +211,7 @@
                   </Text>
                </children>
             </Pane>
+            <Text fx:id="errorText" fill="RED" layoutX="40.0" layoutY="501.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="569.9999999999999" />
             </children></Pane>
     </children>
 </AnchorPane>

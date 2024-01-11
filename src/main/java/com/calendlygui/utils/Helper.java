@@ -1,7 +1,7 @@
 package com.calendlygui.utils;
 
-import com.calendlygui.model.Meeting;
-import com.calendlygui.model.Minute;
+import com.calendlygui.model.entity.Content;
+import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.model.entity.User;
 
 import java.sql.*;
@@ -18,7 +18,6 @@ public class Helper {
     static String timePattern = "yyyy-MM-dd HH:mm:ss";
     static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
     static SimpleDateFormat formatter = new SimpleDateFormat(timePattern);
-    static SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
     public static Date[] convertToDate(String date, String startTime, String endTime) throws ParseException {
 
@@ -47,32 +46,32 @@ public class Helper {
         return code + COMMAND_DELIMITER + message;
     }
 
-    public static String createResponseWithUser(int code, String name, String email, String time, String isTeacher, String gender){
-        return code + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
+    public static String createResponseWithUser(int code, int id, String name, String email, String time, String isTeacher, String gender){
+        return code + COMMAND_DELIMITER + id + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
     }
 
     public static String createResponseWithMeetingList(int code, ArrayList<Meeting> meetings) {
         StringBuilder data = new StringBuilder();
         for (Meeting meeting : meetings) {
             data.append(COMMAND_DELIMITER)
-                    .append(meeting.id).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.name).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.date).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.occur).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.finish).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.tId).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.classification).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.status).append(DOUBLE_LINE_BREAK)
-                    .append(meeting.selectedClassification).append(DOUBLE_LINE_BREAK);
+                    .append(meeting.getId()).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getName()).append(DOUBLE_LINE_BREAK)
+                    .append(Format.getStringFormatFromTimestamp(meeting.getOccurDatetime(), "dd/MM/yyyy 00:00:00")).append(DOUBLE_LINE_BREAK)
+                    .append(Format.getStringFormatFromTimestamp(meeting.getOccurDatetime(), "HH:mm")).append(DOUBLE_LINE_BREAK)
+                    .append(Format.getStringFormatFromTimestamp(meeting.getFinishDatetime(), "HH:mm")).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getTeacherId()).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getClassification()).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getStatus()).append(DOUBLE_LINE_BREAK)
+                    .append(meeting.getSelectedClassification()).append(DOUBLE_LINE_BREAK);
 
-            for(Minute minute: meeting.minutes){
-                data.append(minute.time).append(FIELD_DELIMITER).append(minute.content).append(LINE_BREAK);
+            for(Content content: meeting.getContents()){
+                data.append(content.getDate()).append(FIELD_DELIMITER).append(content.getContent()).append(LINE_BREAK);
             }
 
-            if(!meeting.minutes.isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
+            if(!meeting.getContents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
             data.append(DOUBLE_LINE_BREAK);
 
-            for(User student: meeting.students){
+            for(User student: meeting.getStudents()){
                 data
                         .append(student.getUsername()).append(FIELD_DELIMITER)
                         .append(student.getEmail()).append(FIELD_DELIMITER)
@@ -81,7 +80,7 @@ public class Helper {
                         .append(student.getGender()).append(LINE_BREAK);
             }
 
-            if(!meeting.students.isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
+            if(!meeting.getStudents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
         }
         return String.valueOf(code) + data;
     }
@@ -90,8 +89,8 @@ public class Helper {
         ArrayList<Meeting> meetings = new ArrayList<>();
 
         int id, teacherId;
-        String name, status, classification, selectedClassification, occurString, finishString;
-        Timestamp occur, finish;
+        String name, status, classification, selectedClassification;
+        Timestamp occur, finish, established;
 
         while (rs.next()) {
             id = rs.getInt(ID);
@@ -99,16 +98,12 @@ public class Helper {
             name = rs.getString(NAME);
             occur = rs.getTimestamp(MEETING_OCCUR);
             finish = rs.getTimestamp(MEETING_FINISH);
+            established = rs.getTimestamp(ESTABLISH_DATETIME);
             status = rs.getString(STATUS);
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            String date = formatter.format(occur.getTime());
-
-            occurString = convertFromDateToString(occur);
-            finishString = convertFromDateToString(finish);
-            Meeting newMeeting = new Meeting(id, name, date, occurString, finishString, teacherId, classification, status, selectedClassification);
-
+            Meeting newMeeting = new Meeting(id, teacherId, name, established, occur, finish, classification, selectedClassification, status);
             meetings.add(newMeeting);
         }
 
@@ -120,25 +115,28 @@ public class Helper {
         ArrayList<Meeting> meetings = new ArrayList<>();
         for (int i = 1; i < data.length; i++) {
             String[] meetingInfo = data[i].split(DOUBLE_LINE_BREAK);
+
             Meeting newMeeting = new Meeting(
                     Integer.parseInt(meetingInfo[0]),
-                    meetingInfo[1], meetingInfo[2],
-                    meetingInfo[3], meetingInfo[4],
                     Integer.parseInt(meetingInfo[5]),
+                    meetingInfo[1],
+                    new Timestamp(formatter.parse(meetingInfo[2]).getTime()),
+                    new Timestamp(formatter.parse(meetingInfo[3]).getTime()),
+                    new Timestamp(formatter.parse(meetingInfo[4]).getTime()),
                     meetingInfo[6], meetingInfo[7],
                     meetingInfo[8]);
 
 //            List of minutes: meetingInfo[9]
             if(meetingInfo.length >= 10 && !Objects.equals(meetingInfo[9], "")){
-                ArrayList<Minute> minutes = new ArrayList<>();
-                String minuteField = meetingInfo[9];
-                String[] minuteStrings = minuteField.split(LINE_BREAK);
-                for(String minuteString: minuteStrings){
+                ArrayList<Content> contents = new ArrayList<>();
+                String contentField = meetingInfo[9];
+                String[] contentStrings = contentField.split(LINE_BREAK);
+                for(String minuteString: contentStrings){
                     String[] minuteData = minuteString.split(FIELD_DELIMITER);
-                    minutes.add(new Minute(dateFormatter.parse(minuteData[0]), minuteData[1]));
+                    contents.add(new Content(minuteData[1],new Timestamp((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(minuteData[0])).getTime())));
                 }
 
-                newMeeting.minutes = minutes;
+                newMeeting.setContents(contents);
             }
 
 //            List of minutes: meetingInfo[10]
@@ -149,15 +147,16 @@ public class Helper {
                 for(String studentString: studentStrings){
                     String[] studentData = studentString.split(FIELD_DELIMITER);
                     students.add(new User(
+                            Integer.parseInt(studentData[0]),
+                            studentData[2],
                             studentData[1],
-                            studentData[0],
-                            new Timestamp(formatter.parse(studentData[2]).getTime()),
-                            Objects.equals(studentData[3], "true"),
-                            Objects.equals(studentData[4], "true")
+                            new Timestamp(formatter.parse(studentData[3]).getTime()),
+                            Objects.equals(studentData[4], "true"),
+                            Objects.equals(studentData[5], "true")
                     ));
                 }
 
-                newMeeting.students = students;
+                newMeeting.setStudents(students);
             }
 
             meetings.add(newMeeting);
@@ -167,25 +166,27 @@ public class Helper {
 
     public static User extractUserFromResponse(String response) throws ParseException {
         String[] data = response.split(COMMAND_DELIMITER);
-        if(data.length == 6){
+        if(data.length == 7){
             return new User(
-                    data[1],
+                    Integer.parseInt(data[1]),
                     data[2],
-                    Timestamp.valueOf(data[3]),
-                    Objects.equals(data[4], "true"),
-                    Objects.equals(data[5], "true")
+                    data[3],
+                    new Timestamp(formatter.parse(data[4]).getTime()),
+                    Objects.equals(data[5], "true"),
+                    Objects.equals(data[6], "true")
             );
         }
+
         return null;
     }
 
-    public static ArrayList<Minute> getMinutes(Connection conn, int meetingId) throws SQLException {
-        ArrayList<Minute> minutes = new ArrayList<>();
+    public static ArrayList<Content> getMinutes(Connection conn, int meetingId) throws SQLException {
+        ArrayList<Content> contents = new ArrayList<>();
 
-        String minuteQuery;
-        minuteQuery = "select * from " + MINUTE + " where " + MEETING_ID + " = ?";
+        String contentQuery;
+        contentQuery = "select * from " + MINUTE + " where " + MEETING_ID + " = ?";
 
-        PreparedStatement ps = conn.prepareStatement(minuteQuery);
+        PreparedStatement ps = conn.prepareStatement(contentQuery);
         ps.setInt(1, meetingId);
 
         System.out.println(ps);
@@ -198,13 +199,13 @@ public class Helper {
             content = rs.getString(CONTENT);
             time = rs.getTimestamp(ESTABLISH_DATETIME);
 
-            Minute newMinute = new Minute(new Date(time.getTime()), content);
-            minutes.add(newMinute);
+            Content newContent = new Content(content, time);
+            contents.add(newContent);
         }
 
-        System.out.println("Minutes: " + minutes.size());
+        System.out.println("Contents: " + contents.size());
 
-        return minutes;
+        return contents;
     }
 
     public static ArrayList<User> getStudentsInPastMeetings(Connection conn, int meetingId) throws SQLException {
@@ -262,7 +263,7 @@ public class Helper {
             isTeacher = rs.getBoolean(IS_TEACHER);
             registerDatetime = rs.getTimestamp(REGISTER_DATETIME);
 
-            User tmpUser = new User(name, email, registerDatetime, isTeacher, gender);
+            User tmpUser = new User(id, name, email, registerDatetime, isTeacher, gender);
             users.add(tmpUser);
         }
 

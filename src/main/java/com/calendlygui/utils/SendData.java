@@ -1,6 +1,5 @@
 package com.calendlygui.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -15,38 +14,47 @@ public class SendData {
     private static String request;
     private static ArrayList<String> data = new ArrayList<>();
 
-    public static void handleLogin(BufferedReader in, PrintWriter out, String account, String password) throws IOException {
+    public static void login(PrintWriter out, String account, String password) throws IOException {
         request = createRequest(LOGIN, new ArrayList<>(List.of(account, password)));
         out.println(request);
-        //listen to response
-//        while (true) {
-//            response = in.readLine();
-//            if (response != null) {
-//                System.out.println("Response: " + response);
-//                String[] info = response.split(DELIMITER);
-//                if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
-//                break;
-//            }
-//        }
     }
 
-    public static void handleRegister(BufferedReader in, PrintWriter out, String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
+    public static void register( PrintWriter out, String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException {
         data.clear();
         data.add(username);
         data.add(email);
         data.add(password);
+
         data.add(isMale ? "true" : "false");
         data.add(isTeacher ? "true" : "false");
         request = createRequest(REGISTER, data);
         out.println(request);
+    }
 
+    public static void createMeeting(PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
+        request = createRequest(
+                TEACHER_CREATE_MEETING,
+                new ArrayList<>(List.of(String.valueOf(tId), name, dateTime, begin, end, classification)));
+        out.println(request);
+    }
+
+    public static void viewAvailableSlots(PrintWriter out) {
+        request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
+        out.println(request);
+
+        //listen to response
 //        while (true) {
 //            response = in.readLine();
 //            if (response != null) {
-//                System.out.println("Response: " + response);
-//                String[] info = response.split(DELIMITER);
-//                if (info[0].contains(SUCCESS)) System.out.println("Navigate to home screen");
-//                break;
+//                System.out.println(response);
+//
+//                String[] info = response.split(COMMAND_DELIMITER);
+//                if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
+//                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+//                    System.out.println(meetings.size());
+//                    for(Meeting meeting: meetings) System.out.println(meeting);
+//                    break;
+//                } else handleErrorResponse(info[0]);
 //            }
 //        }
     }

@@ -4,9 +4,8 @@ import com.calendlygui.database.Authenticate;
 import com.calendlygui.utils.Validate;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.main.server.Server.ConnectionHandler.out;
@@ -16,10 +15,10 @@ import static com.calendlygui.utils.Helper.createResponse;
 
 public class Manipulate {
 
-    public static void register(String[] registerInfo) throws IOException {
+    public static void register(String[] registerInfo, PrintWriter out) throws IOException {
         if (registerInfo.length == 6) {
             if ((!registerInfo[4].equals("false") && !registerInfo[4].equals("true") || !registerInfo[5].equals("false") && !registerInfo[5].equals("true")) && !Validate.checkEmailFormat(registerInfo[1])) {
-                out.write(INCORRECT_FORMAT);
+                out.println(INCORRECT_FORMAT);
             } else {
                 String email = registerInfo[1];
                 String username = registerInfo[2];
@@ -28,14 +27,15 @@ public class Manipulate {
                 boolean isTeacher = registerInfo[5].equals("true");
 
                 String result = Authenticate.register(email, username, password, gender, isTeacher);
+                System.out.println("Result: " + result);
                 out.println(result);
             }
         } else {
-            out.write(INCORRECT_FORMAT);
+            out.println(INCORRECT_FORMAT);
         }
     }
 
-    public static void signIn(String[] loginInfo) {
+    public static void signIn(String[] loginInfo, PrintWriter out) {
         if (loginInfo.length == 3) {
             String email = loginInfo[1];
             String password = loginInfo[2];
@@ -44,7 +44,7 @@ public class Manipulate {
             System.out.println("Result: " + result);
             out.println(result);
         } else {
-            out.write(INCORRECT_FORMAT);
+            out.println(INCORRECT_FORMAT);
         }
     }
 

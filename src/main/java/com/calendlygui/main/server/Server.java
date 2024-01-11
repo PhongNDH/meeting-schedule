@@ -35,7 +35,7 @@ public class Server implements Runnable {
             while (!done) {
                 Socket client = server.accept();
                 ConnectionHandler handler = new ConnectionHandler(client);
-                this.connections.add(handler);
+                connections.add(handler);
                 pool.execute(handler);
             }
 
@@ -63,6 +63,7 @@ public class Server implements Runnable {
         private final Socket client;
         public static ObjectOutputStream outObject;
         private BufferedReader in;
+
         public static PrintWriter out;
 
         public ConnectionHandler(Socket client) {
@@ -71,9 +72,9 @@ public class Server implements Runnable {
 
         public void run() {
             try {
-                out = new PrintWriter(new OutputStreamWriter(this.client.getOutputStream(), StandardCharsets.UTF_8) , true);
-                outObject = new ObjectOutputStream(this.client.getOutputStream());
-                in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
+                out = new PrintWriter(client.getOutputStream(), true, StandardCharsets.UTF_8);
+                outObject = new ObjectOutputStream(client.getOutputStream());
+                in = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.UTF_8));
 
                 String request;
                 while ((request = in.readLine()) != null) {
@@ -93,11 +94,9 @@ public class Server implements Runnable {
                 if(out != null){
                     out.close();
                 }
-                outObject.close();
-                if (!this.client.isClosed()) {
+                if (!client.isClosed()) {
                     client.close();
                 }
-
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -105,8 +104,8 @@ public class Server implements Runnable {
         private void processRequest(String request) throws IOException, ParseException {
             System.out.println("Request: " + request);
             String[] data = request.split(COMMAND_DELIMITER);
-            if (data[0].contains(REGISTER))                             Manipulate.register(data);
-            else if (data[0].contains(LOGIN))                           Manipulate.signIn(data);
+            if (data[0].contains(REGISTER))                             Manipulate.register(data, out);
+            else if (data[0].contains(LOGIN))                           Manipulate.signIn(data, out);
             else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
             else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data);
             else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data);

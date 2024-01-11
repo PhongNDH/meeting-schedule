@@ -1,7 +1,7 @@
 package com.calendlygui.utils;
 
 import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.model.Meeting;
+import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.model.entity.User;
 
 import java.io.*;
@@ -77,14 +77,14 @@ public class Handler implements Runnable {
                     String message = inReader.readLine();
                     switch (message) {
                         case "1": {
-                            handleLogin(in, out, "Vanh LEG", "111111");
+                            handleLogin(in, out, "j@gmail.com", "111111");
                             break;
                         }
                         case "2": {
                             handleRegister(
                                     in, out,
-                                    "vl@gmail.com",
-                                    "Vanh LEG",
+                                    "Joe Mama",
+                                    "joemama@gmail.com",
                                     "111111",
                                     true,
                                     false
@@ -351,7 +351,7 @@ public class Handler implements Runnable {
     }
 
     void handleViewPastMeetings(BufferedReader in, PrintWriter out, int tId) throws IOException, ParseException {
-//        TEACHER_VIEW_HISTORY  teacher_id
+        // TEACHER_VIEW_HISTORY  teacher_id
         request = createRequest(TEACHER_VIEW_HISTORY, new ArrayList<>(List.of(String.valueOf(tId))));
         out.println(request);
 
@@ -376,7 +376,6 @@ public class Handler implements Runnable {
     void handleViewAvailableSlots(BufferedReader in, PrintWriter out) throws IOException, ParseException {
         request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
         out.println(request);
-
         //listen to response
         while (true) {
             response = in.readLine();

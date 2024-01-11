@@ -1,5 +1,7 @@
 package com.calendlygui.model.entity;
 
+import com.calendlygui.utils.Format;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -37,6 +39,19 @@ public class Meeting {
         this.status = status;
         this.contents = contents;
     }
+
+    public Meeting(int id,int teacherId, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String classification,String selectedClassification, String status) {
+        this.id = id;
+        this.teacherId = teacherId;
+        this.name = name;
+        this.establishedDatetime = establishedDatetime;
+        this.occurDatetime = occurDatetime;
+        this.finishDatetime = finishDatetime;
+        this.selectedClassification = selectedClassification;
+        this.classification = classification;
+        this.status = status;
+    }
+
 
     public Meeting(int id, String name, Timestamp establishedDatetime, Timestamp occurDatetime, Timestamp finishDatetime, String selectedClassification, String status, List<Content> contents) {
         this.id = id;
@@ -114,5 +129,30 @@ public class Meeting {
 
     public List<Content> getContents() {
         return contents;
+    }
+
+    public void setContents(List<Content> contents) {
+        this.contents = contents;
+    }
+
+    public void setStudents(List<User> students) {
+        this.students = students;
+    }
+
+    @Override
+    public String toString() {
+        return "Meeting{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date='" + Format.getStringFormatFromTimestamp(occurDatetime,"yyyy-MM-dd")  + '\'' +
+                ", occur='" + Format.getStringFormatFromTimestamp(occurDatetime,"HH:mm") + '\'' +
+                ", finish='" + Format.getStringFormatFromTimestamp(finishDatetime,"HH:mm") + '\'' +
+                ", teacherId=" + teacherId +
+                ", classification='" + classification + '\'' +
+                ", status='" + status + '\'' +
+                ", selectedClassification='" + selectedClassification + '\'' +
+                ", establishTime='" + Format.getStringFormatFromTimestamp(establishedDatetime,"yyyy-MM-dd HH:mm") + '\'' +
+                ", Contents: " + contents.size() +
+                '}';
     }
 }

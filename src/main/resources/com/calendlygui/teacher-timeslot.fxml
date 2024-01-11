@@ -202,11 +202,18 @@
                 </Text>
                 <TextField fx:id="beginTextField" layoutX="104.0" layoutY="294.0" prefHeight="25.0" prefWidth="169.0" />
                 <TextField fx:id="endTextField" layoutX="376.0" layoutY="294.0" prefHeight="25.0" prefWidth="169.0" />
-                <Button fx:id="meetingCreationButton" layoutX="240.0" layoutY="465.0" mnemonicParsing="false" onMouseClicked="#createTimeSlot" prefHeight="35.0" prefWidth="169.0" style="-fx-font-weight: 800;" stylesheets="@../../style/teacher.css" text="Create" textFill="WHITE">
+                <Button fx:id="meetingCreationButton" layoutX="241.0" layoutY="459.0" mnemonicParsing="false" onMouseClicked="#createTimeSlot" prefHeight="35.0" prefWidth="169.0" style="-fx-font-weight: 800;" stylesheets="@../../style/teacher.css" text="Create" textFill="WHITE">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor>
                 </Button>
+            <Text fx:id="meetingNameErrorText" fill="RED" layoutX="105.0" layoutY="210.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="440.9999999999999" />
+            <Text fx:id="datetimeErrorText" fill="RED" layoutX="178.0" layoutY="245.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" wrappingWidth="366.33331298828114" />
+            <Text fx:id="classificationErrorText" fill="RED" layoutX="104.0" layoutY="414.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="440.9999999999999" />
+            <Text fx:id="beginErrorText" fill="RED" layoutX="104.0" layoutY="332.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="168.9999999999999" />
+            <Text fx:id="endErrorText" fill="RED" layoutX="376.0" layoutY="332.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="168.9999999999999" />
+            <Text fx:id="otherErrorText" fill="RED" layoutX="104.0" layoutY="524.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="440.9999999999999" />
+            <Text fx:id="durationErrorText" fill="RED" layoutX="104.0" layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="440.9999999999999" />
             </children>
         </Pane>
     </children>

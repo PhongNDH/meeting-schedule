@@ -181,7 +181,7 @@ public class StudentScheduleController implements Initializable {
         meetings.add(new Meeting(3, 1, "Third Meeting", Format.createTimestamp(2023, 12, 27, 8, 30),
                 Format.createTimestamp(2024, 1, 5, 6, 20),
                 Format.createTimestamp(2024, 1, 5, 6, 50), "Individual", "Pending"));
-        Format.changeDatePickerFormat(filterDatetime);
+        Controller.changeFormatForDatepicker(filterDatetime);
         filterCombobox.setValue("All");
         filterDatetime.setVisible(false);
         showScheduledMeeting();

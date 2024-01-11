@@ -2,10 +2,8 @@ package com.calendlygui.controller;
 
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.constant.LoginMessage;
+import com.calendlygui.constant.GeneralMessage;
 import com.calendlygui.constant.RegisterMessage;
-import com.calendlygui.model.ErrorMessage;
-import com.calendlygui.model.entity.User;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.SendData;
 import com.calendlygui.utils.Validate;
@@ -15,13 +13,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ResourceBundle;
 
@@ -107,7 +103,7 @@ public class RegisterController implements Initializable {
         boolean isTeacher = occupation.getSelectedToggle().equals(teacherOccupation);
         if (dealWithErrorMessageFromUI(email, username, password, confirmedPassword)) {
             try {
-                SendData.handleRegister(in, out, email, username, password, isMale, isTeacher);
+                SendData.register(out, email, username, password, isMale, isTeacher);
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println(e.getMessage());
             }
@@ -119,8 +115,7 @@ public class RegisterController implements Initializable {
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
-            CalendlyApplication.inObject = new ObjectInputStream(CalendlyApplication.client.getInputStream());
-            CalendlyApplication.outObject = new ObjectOutputStream(CalendlyApplication.client.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
@@ -129,80 +124,38 @@ public class RegisterController implements Initializable {
             try {
                 String response;
                 while ((response = in.readLine()) != null) {
+                    response = response.replaceAll(NON_PRINTABLE_CHARACTER,"");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
                     if (Integer.parseInt(info[0]) == OPERATION_SUCCESS) {
                         CalendlyApplication.user = extractUserFromResponse(response);
                         navigateToHomePage();
-                        System.out.println("Navigate to home screen");
+                        System.out.println(RegisterMessage.REGISTER_SUCCESS);
                     } else {
                         int code = Integer.parseInt(info[0]);
                         switch (code) {
                             case ACCOUNT_EXIST: {
-                                System.out.println("This account already exist");
-                                showErrorFromServerToUIAndConsole("This account already exist");
+                                //System.out.println(RegisterMessage.REGISTER_EMAIL_EXIST);
+                                showErrorFromServerToUIAndConsole(RegisterMessage.REGISTER_EMAIL_EXIST);
                                 break;
                             }
                             case SQL_ERROR: {
-                                System.out.println("Sql error");
-                                showErrorFromServerToUIAndConsole("Sql error");
+                                //System.out.println(GeneralMessage.SERVER_WRONG);
+                                showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
                                 break;
                             }
                             case UNDEFINED_ERROR: {
-                                System.out.println("Unknown error");
-                                System.out.println("Unknown error");
+                                //System.out.println(GeneralMessage.UNKNOWN_ERROR);
+                                showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
                                 break;
                             }
                         }
                     }
                 }
-//                Object responseObject;
-//                Response response = null;
-//                while (true) {
-//                    responseObject = CalendlyApplication.inObject.readObject();
-//                    if(responseObject instanceof Response) response = (Response) responseObject;
-//                    System.out.println("Response received : " + response);
-//                    if(response == null) return;
-//                    if(response.getBody() instanceof String){
-//                        System.out.println((String) response.getBody());
-//                    }
-//                    else{
-//                        switch (response.getCode()) {
-//                            case 0: {
-//                                User user = ((User) response.getBody());
-//                                System.out.println("SUCCESS");
-//                                System.out.println(user.getUsername());
-//                                CalendlyApplication.user = user;
-//                                navigateToHomePage();
-//                                break;
-//                            }
-//                            case 1: {
-//                                System.out.println("CLIENT ERROR");
-//                                System.out.println(((ErrorMessage) response.getBody()).getContent());
-//                                break;
-//                            }
-//                            case 2: {
-//                                System.out.println("SERVER ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                            case 3: {
-//                                System.out.println("SQL ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                            default: {
-//                                System.out.println("UNKNOWN ERROR");
-//                                showErrorFromServerToUIAndConsole((ErrorMessage) response.getBody());
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
-            } catch (ParseException e) {
+            } catch (ParseException | NumberFormatException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -213,8 +166,8 @@ public class RegisterController implements Initializable {
 
     private void dealWithErrorMessageFromServer(String message) {
         switch (message) {
-            case RegisterMessage.REGISTER_SERVER_WRONG -> {
-                errorText.setText(LoginMessage.LOGIN_SERVER_WRONG);
+            case GeneralMessage.SERVER_WRONG -> {
+                errorText.setText(GeneralMessage.SERVER_WRONG);
                 Controller.setTextToEmpty(passwordText, emailText, usernameText, comfirmPasswordText);
             }
             case RegisterMessage.REGISTER_EMAIL_EXIST -> {
@@ -233,7 +186,7 @@ public class RegisterController implements Initializable {
         boolean isValidPasswordConfirmation = false;
         boolean isValidUsername = false;
         if (email.trim().isEmpty()) {
-            emailText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
+            emailText.setText(GeneralMessage.REQUIRED_FIELD);
         } else if (!Validate.checkEmailFormat(email)) {
             emailText.setText(RegisterMessage.REGISTER_EMAIL_NOT_VALID);
         } else {
@@ -241,7 +194,7 @@ public class RegisterController implements Initializable {
             isValidEmail = true;
         }
         if (password.isEmpty()) {
-            passwordText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
+            passwordText.setText(GeneralMessage.REQUIRED_FIELD);
         } else if (password.length() < 6) {
             passwordText.setText(RegisterMessage.REGISTER_PASSWORD_NOT_STRONG);
         } else {
@@ -255,7 +208,7 @@ public class RegisterController implements Initializable {
             isValidPasswordConfirmation = true;
         }
         if (username.trim().isEmpty()) {
-            usernameText.setText(RegisterMessage.REGISTER_REQUIRED_FIELD);
+            usernameText.setText(GeneralMessage.REQUIRED_FIELD);
         } else if (!Validate.checkName(username)) {
             usernameText.setText(RegisterMessage.REGISTER_USERNAME_NOT_VALID);
         } else {
@@ -277,6 +230,4 @@ public class RegisterController implements Initializable {
         else
             Controller.navigateToOtherStage(registerButton, "student.fxml", "Student");
     }
-
-
 }

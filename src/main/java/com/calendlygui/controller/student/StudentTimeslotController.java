@@ -1,9 +1,13 @@
 package com.calendlygui.controller.student;
 
 import com.calendlygui.CalendlyApplication;
+import com.calendlygui.constant.ConstantValue;
+import com.calendlygui.constant.GeneralMessage;
+import com.calendlygui.constant.LoginMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
+import com.calendlygui.utils.SendData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,12 +16,30 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static com.calendlygui.CalendlyApplication.in;
+import static com.calendlygui.CalendlyApplication.out;
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.utils.Helper.extractMeetingsFromResponse;
+import static com.calendlygui.utils.Helper.extractUserFromResponse;
+
 public class StudentTimeslotController implements Initializable {
+    private ArrayList<Meeting> meetings = null;
     @FXML
     private Button appointmentButton;
 
@@ -137,48 +159,129 @@ public class StudentTimeslotController implements Initializable {
     @FXML
     private ComboBox<String> classificationCombobox;
 
+    @FXML
+    private Text errorText;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherId())));
+        try {
+            CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
+            out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true, StandardCharsets.UTF_8);
+            in = new BufferedReader(new InputStreamReader(CalendlyApplication.client.getInputStream(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            CalendlyApplication.shutdown();
+        }
+
+        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getId())));
         dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getClassification()));
 
-        ObservableList<Meeting> data = FXCollections.observableArrayList(
-                new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 50), "Both"),
-                new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group")
-        );
+        SendData.viewAvailableSlots(out);
 
-        meetingTable.setItems(data);
+        Thread receiveThread = new Thread(() -> {
+            try {
+                String response;
+                while ((response = in.readLine()) != null) {
+                    response = response.replaceAll(NON_PRINTABLE_CHARACTER,"");
+                    System.out.println("Response: " + response);
+                    String[] info = response.split(COMMAND_DELIMITER);
+                    int code = Integer.parseInt(info[0]);
+                    if (code == OPERATION_SUCCESS) {
+                        CalendlyApplication.user = extractUserFromResponse(response);
+                        //navigateToHomePage();
+                        //meetings = extractMeetingsFromResponse(response);
+                        System.out.println(meetings.size());
+                        for(Meeting meeting: meetings) System.out.println(meeting);
+                        ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
-        meetingTable.setRowFactory(tv -> {
-            TableRow<Meeting> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                    Meeting rowData = row.getItem();
-                    //System.out.println("Double click on: "+rowData.getTeacherId());
-                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
-                    nameTextField.setText(rowData.getName());
-                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                    if(Objects.equals(rowData.getClassification(), "Both")){
-                        classificationCombobox.getItems().addAll("Group", "Individual");
-                        classificationCombobox.setValue("Group");
-                    }else{
-                        classificationCombobox.getItems().add(rowData.getClassification());
-                        classificationCombobox.setValue(rowData.getClassification());
+                        meetingTable.setItems(data);
+
+                        meetingTable.setRowFactory(tv -> {
+                            TableRow<Meeting> row = new TableRow<>();
+                            row.setOnMouseClicked(event -> {
+                                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                                    Meeting rowData = row.getItem();
+                                    //System.out.println("Double click on: "+rowData.getTeacherId());
+                                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
+                                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+                                    nameTextField.setText(rowData.getName());
+                                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
+                                    if(Objects.equals(rowData.getClassification(), "Both")){
+                                        classificationCombobox.getItems().addAll("Group", "Individual");
+                                        classificationCombobox.setValue("Group");
+                                    }else{
+                                        classificationCombobox.getItems().add(rowData.getClassification());
+                                        classificationCombobox.setValue(rowData.getClassification());
+                                    }
+                                    detailPane.setVisible(true);
+                                }
+                            });
+                            return row ;
+                        });
+                    } else {
+                        switch (code) {
+                            case SQL_ERROR: {
+                                showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
+                                break;
+                            }
+                            case UNDEFINED_ERROR: {
+                                showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
+                                break;
+                            }
+                        }
                     }
-                    detailPane.setVisible(true);;
                 }
-            });
-            return row ;
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                CalendlyApplication.shutdown();
+            } catch (ParseException | NumberFormatException e) {
+                System.out.println(e.getMessage());
+            }
         });
+
+        receiveThread.setDaemon(true);
+        receiveThread.start();
+
+//        ObservableList<Meeting> data = FXCollections.observableArrayList(
+//                new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 50), "Both"),
+//                new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group")
+//        );
+
+//        ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
+//
+//        meetingTable.setItems(data);
+//
+//        meetingTable.setRowFactory(tv -> {
+//            TableRow<Meeting> row = new TableRow<>();
+//            row.setOnMouseClicked(event -> {
+//                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+//                    Meeting rowData = row.getItem();
+//                    //System.out.println("Double click on: "+rowData.getTeacherId());
+//                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
+//                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+//                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+//                    nameTextField.setText(rowData.getName());
+//                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
+//                    if(Objects.equals(rowData.getClassification(), "Both")){
+//                        classificationCombobox.getItems().addAll("Group", "Individual");
+//                        classificationCombobox.setValue("Group");
+//                    }else{
+//                        classificationCombobox.getItems().add(rowData.getClassification());
+//                        classificationCombobox.setValue(rowData.getClassification());
+//                    }
+//                    detailPane.setVisible(true);;
+//                }
+//            });
+//            return row ;
+//        });
     }
 
     @FXML
@@ -191,5 +294,29 @@ public class StudentTimeslotController implements Initializable {
     @FXML
     void joinMeeting(MouseEvent event) {
 
+    }
+
+    private void showErrorFromServerToUIAndConsole(String error) {
+        System.out.println(error);
+        dealWithErrorMessageFromServer(error);
+    }
+
+    private void dealWithErrorMessageFromServer(String message) {
+        switch (message) {
+            case GeneralMessage.SERVER_WRONG -> {
+                errorText.setText(GeneralMessage.SERVER_WRONG);
+            }
+            case GeneralMessage.UNKNOWN_ERROR -> {
+                errorText.setText(GeneralMessage.UNKNOWN_ERROR);
+            }
+            default -> {
+                Controller.setTextToEmpty(errorText);
+            }
+        }
+    }
+
+    private void navigateToHomePage() throws IOException {
+        if (CalendlyApplication.user == null) return;
+        //Controller.navigateToOtherStage(signInButton, "teacher.fxml", "Teacher");
     }
 }

@@ -36,7 +36,6 @@ public class CalendlyApplication extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             //RegisterController registerController = fxmlLoader.getController();
-
             stage.setTitle("Login");
             stage.setScene(scene);
             stage.show();

@@ -3,10 +3,15 @@ package com.calendlygui.controller.teacher;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.utils.Controller;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 
-public class TeacherController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class TeacherController implements Initializable {
     @FXML
     private Button appointmentButton;
 
@@ -30,6 +35,9 @@ public class TeacherController {
 
     @FXML
     private Button timeslotButton;
+
+    @FXML
+    private Text nameText;
 
     @FXML
     void navigateToAppointment(MouseEvent event) {
@@ -71,6 +79,12 @@ public class TeacherController {
             CalendlyApplication.user = null;
         }
         Controller.navigateToOtherStage(logoutButton, "login.fxml","Login");
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        if(CalendlyApplication.user != null)
+            nameText.setText(CalendlyApplication.user.getUsername() + "!");
     }
 
 }

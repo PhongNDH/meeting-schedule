@@ -5,12 +5,14 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,6 +20,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Objects;
 
@@ -92,6 +95,30 @@ public class Controller {
                 avatarImage.setImage(new Image(Objects.requireNonNull(Controller.class.getResource("/assets/avatar/female.png")).toExternalForm()));
             }
         }
+    }
+
+    public static void changeFormatForDatepicker(DatePicker datePicker){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        // Set the StringConverter for the DateTimePicker to format dates
+        datePicker.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(LocalDate object) {
+                if (object != null) {
+                    return formatter.format(object);
+                } else {
+                    return "";
+                }
+            }
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, formatter);
+                } else {
+                    return null;
+                }
+            }
+        });
     }
 
 }
