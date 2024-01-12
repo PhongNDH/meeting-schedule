@@ -196,7 +196,7 @@ public class StudentTimeslotController implements Initializable {
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
 
-        SendData.viewAvailableSlots(out);
+        SendData.viewAvailableSlots(out, CalendlyApplication.user.getId());
 
         Thread receiveThread = getReceiveThread();
         receiveThread.start();
