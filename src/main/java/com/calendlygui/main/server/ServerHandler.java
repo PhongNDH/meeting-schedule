@@ -200,6 +200,7 @@ public class ServerHandler {
 
     public static String handleViewAvailableSlots(int sId) {
         try {
+            //select already chosen meetings (ready - group) and exclude from the list
             String getAlreadyScheduledMeetingIds = "select * from " + PARTICIPATE + " where " + STUDENT_ID + " = ?";
             PreparedStatement getAlreadyScheduledMeetingIdPs = conn.prepareStatement(getAlreadyScheduledMeetingIds);
             getAlreadyScheduledMeetingIdPs.setInt(1, sId);
@@ -212,6 +213,7 @@ public class ServerHandler {
             }
             System.out.println("Scheduled: " + scheduledMeetingIds.size());
 
+            //query available slots and exclude those above
             String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ? or (" + STATUS + " = ? and " + SELECTED_CLASSIFICATION + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
             for(int i=0; i<scheduledMeetingIds.size(); i++){
                 query += " and m." + ID + " != ?";
@@ -249,12 +251,12 @@ public class ServerHandler {
             }
 
             //Get meetings from ids
-            String findScheduledTimeQuery = "select * from " + MEETING;
+            StringBuilder findScheduledTimeQuery = new StringBuilder("select * from " + MEETING);
             for (int i=0; i<meetingIds.size(); i++){
-                if(i == 0) findScheduledTimeQuery += " where " + ID + " = ?";
-                else findScheduledTimeQuery += " or " + ID + " = ?";
+                if(i == 0) findScheduledTimeQuery.append(" where " + ID + " = ?");
+                else findScheduledTimeQuery.append(" or " + ID + " = ?");
             }
-            PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery);
+            PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery.toString());
             for(int i = 0; i<meetingIds.size(); i++){
                 findScheduledTimePs.setInt(i + 1, meetingIds.get(i));
             }
@@ -306,7 +308,6 @@ public class ServerHandler {
             Timestamp participateTime = null;
             while (participateRs.next()) {
                 participateTime = participateRs.getTimestamp(PARTICIPATE_DATETIME);
-                break;
             }
 
             assert participateTime != null;
@@ -420,7 +421,43 @@ public class ServerHandler {
 
         deletePs.executeQuery();
 
-        Timestamp deleteTime = new Timestamp(System.currentTimeMillis());
-        return deleteTime;
+        return new Timestamp(System.currentTimeMillis());
+    }
+
+    public static String handleViewScheduled(int sId){
+        try {
+            String findMeetingIdQuery = "select * from " + PARTICIPATE + " where " + STUDENT_ID + " = ?";
+            PreparedStatement findMeetingIdPs = conn.prepareStatement(findMeetingIdQuery);
+            findMeetingIdPs.setInt(1, sId);
+            System.out.println(findMeetingIdPs);
+
+            ResultSet findMeetingIdRs = findMeetingIdPs.executeQuery();
+            ArrayList<Integer> meetingIds = new ArrayList<>();
+            while (findMeetingIdRs.next()){
+                meetingIds.add(findMeetingIdRs.getInt(MEETING_ID));
+            }
+            System.out.println("Meeting found: " + meetingIds.size());
+
+            StringBuilder meetingQuery = new StringBuilder("select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID);
+            for(int i=0; i<meetingIds.size(); i++){
+                if(i == 0) meetingQuery.append(" where m." + ID + " = ?");
+                else meetingQuery.append(" or m." + ID + " = ?");
+            }
+            PreparedStatement meetingQueryPs = conn.prepareStatement(meetingQuery.toString());
+            for(int i=0; i<meetingIds.size(); i++){
+                meetingQueryPs.setInt(i+1, meetingIds.get(i));
+            }
+            System.out.println(meetingQueryPs);
+
+            ResultSet meetingQueryRs = meetingQueryPs.executeQuery();
+            ArrayList<Meeting> meetings = getMeetings(meetingQueryRs);
+            System.out.println("Meeting found: " + meetings.size());
+
+            return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+            return String.valueOf(SQL_ERROR);
+        }
+
     }
 }

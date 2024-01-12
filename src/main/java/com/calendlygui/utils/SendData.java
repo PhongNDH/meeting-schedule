@@ -49,18 +49,4 @@ public class SendData {
         request = createRequest(STUDENT_SCHEDULE_MEETING, new ArrayList<>(List.of(String.valueOf(sId), String.valueOf(mId), type)));
         out.println(request);
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

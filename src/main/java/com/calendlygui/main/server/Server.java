@@ -117,10 +117,11 @@ public class Server implements Runnable {
             else if (data[0].contains(STUDENT_SCHEDULE_MEETING))        Manipulate.scheduleMeeting(data);
             else if (data[0].contains(STUDENT_VIEW_MEETING_BY_WEEK))    Manipulate.viewByWeek(data);
             else if (data[0].contains(STUDENT_CANCEL_MEETING))          Manipulate.cancelMeeting(data);
+            else if (data[0].contains(STUDENT_VIEW_SCHEDULED))          Manipulate.viewScheduled(data);
 
             else if (request.equals("/" + QUIT))                        Manipulate.quit();
             else {
-            // String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
+                // String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
                 out.println(INCORRECT_FORMAT);
             }
         }

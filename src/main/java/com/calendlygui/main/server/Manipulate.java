@@ -191,6 +191,18 @@ public class Manipulate {
         }
     }
 
+    public static void viewScheduled(String[] data) {
+        if(data.length == 2){
+            int sId = Integer.parseInt(data[1]);
+
+            String result = handleViewScheduled(sId);
+            System.out.println("Result: " + result);
+            out.println(result);
+        } else {
+            out.println(CLIENT_MISSING_INFO);
+        }
+    }
+
     public static void quit() {
         String result = createResponse(CREATE_SUCCESS, "Quit successfully");
         System.out.println("Result: " + result);

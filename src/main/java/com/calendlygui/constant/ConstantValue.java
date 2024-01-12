@@ -28,6 +28,7 @@ public class ConstantValue {
     public static final String STUDENT_SCHEDULE_MEETING = "STUDENT_SCHEDULE_MEETING";
     public static final String STUDENT_VIEW_MEETING_BY_WEEK = "STUDENT_VIEW_MEETING_BY_WEEK";
     public static final String STUDENT_CANCEL_MEETING = "STUDENT_CANCEL_MEETING";
+    public static final String STUDENT_VIEW_SCHEDULED = "STUDENT_VIEW_SCHEDULED";
     public static final String QUIT = "QUIT";
 
     //FIELDS

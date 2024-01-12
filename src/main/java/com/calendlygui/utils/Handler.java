@@ -175,6 +175,9 @@ public class Handler implements Runnable {
                             //teacher view all scheduled meeting
                             handleView(in, out, 69);
                         }
+                        case "12A": {
+                            handleStudentViewScheduledMeeting(66);
+                        }
                         default: {
                         }
                     }
@@ -184,6 +187,26 @@ public class Handler implements Runnable {
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+            }
+        }
+    }
+
+    void handleStudentViewScheduledMeeting(int sId) throws IOException, ParseException {
+        request = createRequest(STUDENT_VIEW_SCHEDULED, new ArrayList<>(List.of(String.valueOf(sId))));
+        out.println(request);
+
+        while (true) {
+            response = in.readLine();
+
+            if (response != null) {
+                System.out.println(response);
+
+                String[] info = response.split(COMMAND_DELIMITER);
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
+                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+                    for(Meeting meeting: meetings) System.out.println(meeting);
+                    break;
+                } else handleErrorResponse(info[0]);
             }
         }
     }
