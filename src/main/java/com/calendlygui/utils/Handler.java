@@ -76,37 +76,53 @@ public class Handler implements Runnable {
                     String message = inReader.readLine();
                     switch (message) {
                         case "1": {
-                            handleLogin(in, out, "Vanh LEG", "111111");
+                            handleLogin(in, out, "Nguyen Dai", "111111");
                             break;
                         }
                         case "2": {
                             handleRegister(
                                     in, out,
-                                    "Joe Mama 2",
-                                    "joemama2@gmail.com",
+                                    "sbj@gmail.com",
+                                    "Joe Biden",
                                     "111111",
                                     true,
-                                    false
+                                    true
                             );
                             break;
                         }
                         case "3": {
                             handleCreateMeeting(
                                     in, out,
-                                    "Checkpoint 96",
+                                    "Check point 1",
                                     "2024-1-9",
                                     "9:00",
                                     "9:15",
-                                    "individual",
-                                    18);
+                                    "both",
+                                    69);
+                            handleCreateMeeting(
+                                    in, out,
+                                    "Check point 3",
+                                    "2024-1-9",
+                                    "9:10",
+                                    "9:30",
+                                    "both",
+                                    69);
+                            handleCreateMeeting(
+                                    in, out,
+                                    "Check point 2",
+                                    "2024-1-9",
+                                    "10:10",
+                                    "10:30",
+                                    "group",
+                                    69);
                             break;
                         }
                         case "4": {
                             handleEditMeeting(
                                     in, out,
-                                    10,
+                                    25,
                                     "Check point 1 (Edited)",
-                                    "2024-1-9",
+                                    "2024-1-8",
                                     "08:00",
                                     "08:30",
                                     "accept",
@@ -115,21 +131,19 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "5": {
-                            handleViewByDate(in, out, 18, "2024-1-9");
-                            handleViewByDate(in, out, 19, "2024-1-9");
+                            handleViewByDate(in, out, 69, "2024-1-9");
+                            handleViewByDate(in, out, 69, "2024-1-8");
                             break;
                         }
                         case "6": {
-                            handleAddMinute(in, out, 10, "Check student 1");
-                            handleAddMinute(in, out, 10, "Check student 2");
-                            handleAddMinute(in, out, 10, "Check student 3");
-                            handleAddMinute(in, out, 11, "Assign project");
-                            handleAddMinute(in, out, 11, "Check project's progress");
+                            handleAddMinute(in, out, 25, "Check student 1");
+                            handleAddMinute(in, out, 25, "Check student 2");
+                            handleAddMinute(in, out, 25, "Check student 3");
                             break;
                         }
                         case "7": {
                             try {
-                                handleViewPastMeetings(in, out, 18);
+                                handleViewPastMeetings(in, out, 69);
 //                                handleViewPastMeetings(19);
                             } catch (ParseException e){
                                 System.out.println(e.getMessage());
@@ -139,21 +153,27 @@ public class Handler implements Runnable {
 
                         //student
                         case "8": {
-                            handleViewAvailableSlots(in, out);
+                            handleViewAvailableSlots(in, out, 66);
                             break;
                         }
                         case "9": {
 //                            handleScheduleMeeting(in, out, 16, 10, INDIVIDUAL);
-                            handleScheduleMeeting(in, out, 16, 10, GROUP);
+                            handleScheduleMeeting(in, out, 66, 26, INDIVIDUAL);
+                            handleScheduleMeeting(in, out, 67, 26, INDIVIDUAL);
+                            handleScheduleMeeting(in, out, 68, 26, GROUP);
                             break;
                         }
                         case "10": {
-                            handleViewByWeek(in, out, 16, "2023-1-1", "2024-12-31");
+                            handleViewByWeek(in, out, 66, "2023-1-1", "2024-12-31");
                             break;
                         }
                         case "11": {
-                            handleCancelMeeting(in, out, 60, 10);
+                            handleCancelMeeting(in, out, 66, 26);
                             break;
+                        }
+                        case "12": {
+                            //teacher view all scheduled meeting
+                            handleView(in, out, 69);
                         }
                         default: {
                         }
@@ -168,6 +188,26 @@ public class Handler implements Runnable {
         }
     }
 
+    void handleView(BufferedReader in, PrintWriter out, int tId) throws IOException, ParseException {
+        request = createRequest(TEACHER_VIEW_MEETING, new ArrayList<>(List.of(String.valueOf(tId))));
+        out.println(request);
+
+        while (true) {
+            response = in.readLine();
+
+            if (response != null) {
+                System.out.println(response);
+
+                String[] info = response.split(COMMAND_DELIMITER);
+                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
+                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+                    for(Meeting meeting: meetings) System.out.println(meeting);
+                    break;
+                } else handleErrorResponse(info[0]);
+            }
+        }
+    }
+
     void handleLogin(BufferedReader in, PrintWriter out, String account, String password) throws IOException, ClassNotFoundException, ParseException {
         request = createRequest(LOGIN, new ArrayList<>(List.of(account, password)));
         out.println(request);
@@ -178,7 +218,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
+                if (Integer.parseInt(info[0]) == AUTHENTICATE_SUCCESS) {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
@@ -188,7 +228,7 @@ public class Handler implements Runnable {
         }
     }
 
-    void handleRegister(BufferedReader in, PrintWriter out, String username, String email, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException, ParseException {
+    void handleRegister(BufferedReader in, PrintWriter out, String email, String username, String password, boolean isMale, boolean isTeacher) throws IOException, ClassNotFoundException, ParseException {
         data.clear();
         data.add(username);
         data.add(email);
@@ -203,7 +243,7 @@ public class Handler implements Runnable {
             if (response != null) {
                 System.out.println("Response: " + response);
                 String[] info = response.split(COMMAND_DELIMITER);
-                if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
+                if (Integer.parseInt(info[0]) == AUTHENTICATE_SUCCESS) {
                     User currentUser = extractUserFromResponse(response);
                     System.out.println(currentUser);
                     System.out.println("Navigate to home screen");
@@ -228,6 +268,8 @@ public class Handler implements Runnable {
             }
         }
     }
+
+
 
     //teacher
     void handleCreateMeeting(BufferedReader in, PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
@@ -327,9 +369,10 @@ public class Handler implements Runnable {
         }
     }
 
+
     //student
-    void handleViewAvailableSlots(BufferedReader in, PrintWriter out) throws IOException, ParseException {
-        request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
+    void handleViewAvailableSlots(BufferedReader in, PrintWriter out, int sId) throws IOException, ParseException {
+        request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>(List.of(String.valueOf(sId))));
         out.println(request);
         //listen to response
         while (true) {
