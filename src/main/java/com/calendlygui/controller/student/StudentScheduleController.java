@@ -7,6 +7,7 @@ import com.calendlygui.constant.TimeslotMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
+import com.calendlygui.utils.SendData;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +26,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.constant.ConstantValue.UNDEFINED_ERROR;
+import static com.calendlygui.utils.Helper.extractMeetingsFromResponse;
 
 public class StudentScheduleController implements Initializable {
 
@@ -198,24 +201,26 @@ public class StudentScheduleController implements Initializable {
             CalendlyApplication.shutdown();
         }
 
+        Controller.changeFormatForDatepicker(filterDatetime);
+        SendData.viewScheduledMeeting(out, CalendlyApplication.user.getId());
+
         Thread receiveThread = getReceiveThread();
         receiveThread.start();
 
-        meetings.add(new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 50), "Both","Pending"));
-        meetings.add(new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 30),
-                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group", "Pending")
-                );
-        meetings.add(new Meeting(3, 1, "Third Meeting", Format.createTimestamp(2023, 12, 27, 8, 30),
-                Format.createTimestamp(2024, 1, 5, 6, 20),
-                Format.createTimestamp(2024, 1, 5, 6, 50), "Individual", "Pending"));
-        Controller.changeFormatForDatepicker(filterDatetime);
-        filterCombobox.setValue("All");
-        filterDatetime.setVisible(false);
-        showScheduledMeeting();
-        filterCombobox();
+//        meetings.add(new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+//                Format.createTimestamp(2023, 12, 26, 8, 30),
+//                Format.createTimestamp(2023, 12, 26, 8, 50), "Both","Pending"));
+//        meetings.add(new Meeting(2, 2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 30),
+//                        Format.createTimestamp(2023, 12, 26, 8, 50), "Group", "Pending")
+//                );
+//        meetings.add(new Meeting(3, 1, "Third Meeting", Format.createTimestamp(2023, 12, 27, 8, 30),
+//                Format.createTimestamp(2024, 1, 5, 6, 20),
+//                Format.createTimestamp(2024, 1, 5, 6, 50), "Individual", "Pending"));
+//        filterCombobox.setValue("All");
+//        filterDatetime.setVisible(false);
+//        showScheduledMeeting();
+//        filterCombobox();
     }
 
     private Thread getReceiveThread(){
@@ -226,9 +231,14 @@ public class StudentScheduleController implements Initializable {
                     response = response.replaceAll(NON_PRINTABLE_CHARACTER, "");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
-                    if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
+                    if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
                         //navigateToHomePage();
-                        System.out.println(TimeslotMessage.TIMESLOT_SUCCESS);
+                        meetings = extractMeetingsFromResponse(response);
+                        for(Meeting meeting: meetings) System.out.println(meeting);
+                        filterCombobox.setValue("All");
+                        filterDatetime.setVisible(false);
+                        showScheduledMeeting();
+                        filterCombobox();
                     } else {
                         int code = Integer.parseInt(info[0]);
                         switch (code) {
@@ -246,7 +256,7 @@ public class StudentScheduleController implements Initializable {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | ParseException e) {
                 throw new RuntimeException(e);
             }
         });

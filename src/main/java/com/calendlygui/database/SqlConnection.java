@@ -9,9 +9,9 @@ public class SqlConnection {
     private final static String NDHP_DATABASE_PASS = "Phongsql123";
 
     public static Connection connect() {
-        String url = "jdbc:postgresql://localhost:5432/" + ND_DATABASE_NAME;
+        String url = "jdbc:postgresql://localhost:5432/" + NDHP_DATABASE_NAME;
         String user = "postgres";
-        String password = ND_DATABASE_PASS;
+        String password = NDHP_DATABASE_PASS;
         try {
             return DriverManager.getConnection(url, user, password);
         } catch (SQLException var5) {
