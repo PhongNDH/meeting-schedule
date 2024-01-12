@@ -269,8 +269,6 @@ public class Handler implements Runnable {
         }
     }
 
-
-
     //teacher
     void handleCreateMeeting(BufferedReader in, PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
         request = createRequest(
@@ -368,7 +366,6 @@ public class Handler implements Runnable {
             }
         }
     }
-
 
     //student
     void handleViewAvailableSlots(BufferedReader in, PrintWriter out, int sId) throws IOException, ParseException {
@@ -486,7 +483,6 @@ public class Handler implements Runnable {
             }
         }
     }
-
 
     public static void main(String[] args) throws UnknownHostException {
         Handler handler = new Handler(InetAddress.getLocalHost(), ConstantValue.PORT);

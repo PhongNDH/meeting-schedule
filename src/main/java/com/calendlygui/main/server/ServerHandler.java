@@ -309,6 +309,7 @@ public class ServerHandler {
                 break;
             }
 
+            assert participateTime != null;
             return createResponse(UPDATE_SUCCESS, participateTime.toString());
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());

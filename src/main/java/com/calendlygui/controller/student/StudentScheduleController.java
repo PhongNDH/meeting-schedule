@@ -198,6 +198,9 @@ public class StudentScheduleController implements Initializable {
             CalendlyApplication.shutdown();
         }
 
+        Thread receiveThread = getReceiveThread();
+        receiveThread.start();
+
         meetings.add(new Meeting(1, 1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
                 Format.createTimestamp(2023, 12, 26, 8, 30),
                 Format.createTimestamp(2023, 12, 26, 8, 50), "Both","Pending"));
