@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 
 import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.main.server.Server.ConnectionHandler.out;
 import static com.calendlygui.main.server.ServerHandler.*;
 import static com.calendlygui.utils.Helper.createResponse;
 
@@ -48,7 +49,7 @@ public class Manipulate {
     }
 
     //TEACHER FUNCTIONS
-    public static void createMeeting(String[] data, PrintWriter out) throws ParseException {
+    public static void createMeeting(String[] data) throws ParseException {
         if (data.length == 7) {
             int tId = Integer.parseInt(data[1]);
             String name = data[2];
@@ -66,7 +67,7 @@ public class Manipulate {
     }
 
 
-    public static void editMeeting(String[] data, PrintWriter out) throws ParseException {
+    public static void editMeeting(String[] data) throws ParseException {
         if (data.length == 8) {
             int id = Integer.parseInt(data[1]);
             String name = data[2];
@@ -84,7 +85,7 @@ public class Manipulate {
         }
     }
 
-    public static void viewByDate(String[] data, PrintWriter out) throws ParseException {
+    public static void viewByDate(String[] data) throws ParseException {
         if (data.length == 3) {
             int tId = Integer.parseInt(data[1]);
             String date = data[2];
@@ -97,7 +98,19 @@ public class Manipulate {
         }
     }
 
-    public static void addMinute(String[] data, PrintWriter out) {
+    public static void viewNoFilter(String[] data) {
+        if (data.length == 2) {
+            int tId = Integer.parseInt(data[1]);
+
+            String result = handleViewMeetings(tId);
+            System.out.println("Result: " + result);
+            out.println(result);
+        } else {
+            out.println(CLIENT_MISSING_INFO);
+        }
+    }
+
+    public static void addMinute(String[] data) {
         if (data.length == 3) {
 //            int tId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[1]);
@@ -111,7 +124,7 @@ public class Manipulate {
         }
     }
 
-    public static void viewHistory(String[] data, PrintWriter out) {
+    public static void viewHistory(String[] data) {
         if (data.length == 2) {
             int tId = Integer.parseInt(data[1]);
 
@@ -126,13 +139,18 @@ public class Manipulate {
 
 
     //STUDENT FUNCTIONS
-    public static void viewAvailableSlots(PrintWriter out) {
-        String result = handleViewAvailableSlots();
-        System.out.println("Result: " + result);
-        out.println(result);
+    public static void viewAvailableSlots(String[] data) {
+        if(data.length == 2){
+            int sId = Integer.parseInt(data[1]);
+            String result = handleViewAvailableSlots(sId);
+            System.out.println("Result: " + result);
+            out.println(result);
+        } else {
+            out.println(CLIENT_MISSING_INFO);
+        }
     }
 
-    public static void scheduleMeeting(String[] data, PrintWriter out) {
+    public static void scheduleMeeting(String[] data) {
         if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[2]);
@@ -146,7 +164,7 @@ public class Manipulate {
         }
     }
 
-    public static void viewByWeek(String[] data, PrintWriter out) {
+    public static void viewByWeek(String[] data) {
         if (data.length == 4) {
             int sId = Integer.parseInt(data[1]);
             String beginDate = data[2];
@@ -160,7 +178,7 @@ public class Manipulate {
         }
     }
 
-    public static void cancelMeeting(String[] data, PrintWriter out) {
+    public static void cancelMeeting(String[] data) {
         if (data.length == 3) {
             int sId = Integer.parseInt(data[1]);
             int mId = Integer.parseInt(data[2]);
@@ -173,7 +191,7 @@ public class Manipulate {
         }
     }
 
-    public static void quit(PrintWriter out) {
+    public static void quit() {
         String result = createResponse(CREATE_SUCCESS, "Quit successfully");
         System.out.println("Result: " + result);
         out.println(result);

@@ -106,18 +106,19 @@ public class Server implements Runnable {
             String[] data = request.split(COMMAND_DELIMITER);
             if (data[0].contains(REGISTER))                             Manipulate.register(data, out);
             else if (data[0].contains(LOGIN))                           Manipulate.signIn(data, out);
-            else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data, out);
-            else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data, out);
-            else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data, out);
-            else if (data[0].contains(TEACHER_ENTER_CONTENT))           Manipulate.addMinute(data, out);
-            else if (data[0].contains(TEACHER_VIEW_HISTORY))            Manipulate.viewHistory(data, out);
+            else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
+            else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data);
+            else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data);
+            else if (data[0].contains(TEACHER_VIEW_MEETING))            Manipulate.viewNoFilter(data);
+            else if (data[0].contains(TEACHER_ENTER_CONTENT))           Manipulate.addMinute(data);
+            else if (data[0].contains(TEACHER_VIEW_HISTORY))            Manipulate.viewHistory(data);
 
-            else if (data[0].contains(STUDENT_VIEW_TIMESLOT))           Manipulate.viewAvailableSlots(out);
-            else if (data[0].contains(STUDENT_SCHEDULE_MEETING))        Manipulate.scheduleMeeting(data, out);
-            else if (data[0].contains(STUDENT_VIEW_MEETING_BY_WEEK))    Manipulate.viewByWeek(data, out);
-            else if (data[0].contains(STUDENT_CANCEL_MEETING))          Manipulate.cancelMeeting(data, out);
+            else if (data[0].contains(STUDENT_VIEW_TIMESLOT))           Manipulate.viewAvailableSlots(data);
+            else if (data[0].contains(STUDENT_SCHEDULE_MEETING))        Manipulate.scheduleMeeting(data);
+            else if (data[0].contains(STUDENT_VIEW_MEETING_BY_WEEK))    Manipulate.viewByWeek(data);
+            else if (data[0].contains(STUDENT_CANCEL_MEETING))          Manipulate.cancelMeeting(data);
 
-            else if (request.equals("/" + QUIT))                        Manipulate.quit(out);
+            else if (request.equals("/" + QUIT))                        Manipulate.quit();
             else {
 //                String error = createResponse(FAIL, CLIENTSIDE_ERROR, new ArrayList<>(List.of(INCORRECT_FORMAT)));
                 out.println(INCORRECT_FORMAT);

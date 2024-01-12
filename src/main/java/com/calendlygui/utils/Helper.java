@@ -16,7 +16,7 @@ import static org.controlsfx.glyphfont.FontAwesome.Glyph.USERS;
 
 public class Helper {
     static String timePattern = "yyyy-MM-dd HH:mm:ss";
-//    static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
+    //    static String datePattern = "EEE MMM dd HH:mm:ss zzz yyyy";
     static SimpleDateFormat formatter = new SimpleDateFormat(timePattern);
 
     public static Timestamp toTimeStamp(String date, String time) throws ParseException {
@@ -281,5 +281,20 @@ public class Helper {
         System.out.println("Users: " + users.size());
 
         return users;
+    }
+
+    public static boolean checkDuplicateMeetingTime(Timestamp desiredOccur, Timestamp desiredFinish, ResultSet rs) throws SQLException {
+        //true means duplicated, false means available
+
+        Timestamp scheduledOccur, scheduledFinish;
+        while (rs.next()){
+            scheduledOccur = rs.getTimestamp(MEETING_OCCUR);
+            scheduledFinish = rs.getTimestamp(MEETING_FINISH);
+
+            if((desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
+                    || (desiredOccur.after(scheduledOccur) && desiredFinish.before(scheduledFinish)))
+                return true;
+        }
+        return false;
     }
 }

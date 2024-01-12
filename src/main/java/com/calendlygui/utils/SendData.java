@@ -39,8 +39,8 @@ public class SendData {
         out.println(request);
     }
 
-    public static void viewAvailableSlots(PrintWriter out) {
-        request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>());
+    public static void viewAvailableSlots(PrintWriter out, int sId) {
+        request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>(List.of(String.valueOf(sId))));
         out.println(request);
     }
 
