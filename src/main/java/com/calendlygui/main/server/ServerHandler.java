@@ -438,6 +438,8 @@ public class ServerHandler {
             }
             System.out.println("Meeting found: " + meetingIds.size());
 
+            if(meetingIds.isEmpty()) return createResponseWithMeetingList(QUERY_SUCCESS, new ArrayList<>());
+
             StringBuilder meetingQuery = new StringBuilder("select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID);
             for(int i=0; i<meetingIds.size(); i++){
                 if(i == 0) meetingQuery.append(" where m." + ID + " = ?");
