@@ -1,5 +1,8 @@
 package com.calendlygui.utils;
 
+import com.calendlygui.model.entity.Meeting;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -8,6 +11,7 @@ import java.util.List;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.utils.Helper.createRequest;
+import static com.calendlygui.utils.Helper.extractMeetingsFromResponse;
 
 public class SendData {
 
@@ -32,13 +36,7 @@ public class SendData {
         out.println(request);
     }
 
-    public static void createMeeting(PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
-        request = createRequest(
-                TEACHER_CREATE_MEETING,
-                new ArrayList<>(List.of(String.valueOf(tId), name, dateTime, begin, end, classification)));
-        out.println(request);
-    }
-
+    // STUDENT
     public static void viewAvailableSlots(PrintWriter out, int sId) {
         request = createRequest(STUDENT_VIEW_TIMESLOT, new ArrayList<>(List.of(String.valueOf(sId))));
         out.println(request);
@@ -53,6 +51,39 @@ public class SendData {
     public static void viewScheduledMeeting(PrintWriter out, int sId){
         request = createRequest(STUDENT_VIEW_SCHEDULED, new ArrayList<>(List.of(String.valueOf(sId))));
         out.println(request);
+    }
+
+    public static void cancelMeeting(PrintWriter out, int sId, int mId) {
+        request = createRequest(STUDENT_CANCEL_MEETING, new ArrayList<>(List.of(String.valueOf(sId), String.valueOf(mId))));
+        out.println(request);
+    }
+
+
+    // TEACHER
+    public static void createMeeting(PrintWriter out, String name, String dateTime, String begin, String end, String classification, int tId) throws IOException, ClassNotFoundException {
+        request = createRequest(
+                TEACHER_CREATE_MEETING,
+                new ArrayList<>(List.of(String.valueOf(tId), name, dateTime, begin, end, classification)));
+        out.println(request);
+    }
+    public static void viewStudentScheduledMeetings(PrintWriter out, int tId) {
+        request = createRequest(TEACHER_VIEW_MEETING, new ArrayList<>(List.of(String.valueOf(tId))));
+        out.println(request);
+
+//        while (true) {
+//            response = in.readLine();
+//
+//            if (response != null) {
+//                System.out.println(response);
+//
+//                String[] info = response.split(COMMAND_DELIMITER);
+//                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
+//                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+//                    for(Meeting meeting: meetings) System.out.println(meeting);
+//                    break;
+//                } else handleErrorResponse(info[0]);
+//            }
+//        }
     }
 
 }

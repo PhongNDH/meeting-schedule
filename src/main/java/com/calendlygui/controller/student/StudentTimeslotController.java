@@ -3,6 +3,7 @@ package com.calendlygui.controller.student;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.GeneralMessage;
+import com.calendlygui.constant.TimeslotMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
@@ -190,10 +191,10 @@ public class StudentTimeslotController implements Initializable {
             CalendlyApplication.shutdown();
         }
 
-        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTeacherId() +" - "+data.getValue().getTeacherName()));
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
+        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTeacherName()));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"dd/MM/yyyy")));
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(),"HH:mm")));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "HH:mm")));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
 
         SendData.viewAvailableSlots(out, CalendlyApplication.user.getId());
@@ -221,6 +222,7 @@ public class StudentTimeslotController implements Initializable {
                         showValueToMeetingTable(meetings);
                     }
                     else if(code == UPDATE_SUCCESS){
+                        System.out.println(GeneralMessage.JOIN_MEETING_SUCCESS);
                         navigateToTimeslotPage();
                     }
                     else {
@@ -235,6 +237,10 @@ public class StudentTimeslotController implements Initializable {
                             }
                             case NOT_UP_TO_DATE : {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.NOT_UP_TO_DATE);
+                                break;
+                            }
+                            case DUPLICATE_SCHEDULE : {
+                                showErrorFromServerToUIAndConsole(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
                                 break;
                             }
                         }
@@ -286,11 +292,11 @@ public class StudentTimeslotController implements Initializable {
                     Meeting rowData = row.getItem();
                     currentMeeting = rowData;
                     //System.out.println("Double click on: "+rowData.getTeacherId());
-                    teacherTextField.setText(rowData.getTeacherId() +" - "+rowData.getTeacherName());
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+                    teacherTextField.setText(rowData.getTeacherName());
+                    beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "HH:mm dd/MM/yyyy"));
+                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(), "HH:mm dd/MM/yyyy"));
                     nameTextField.setText(rowData.getName());
-                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
+                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(), "dd/MM/yyyy"));
                     classificationCombobox.getItems().clear();
                     if(Objects.equals(rowData.getClassification(), "both")){
                         System.out.println(currentMeeting.getSelectedClassification());

@@ -43,6 +43,8 @@ public class StudentScheduleController implements Initializable {
 
     private List<Meeting> meetings = new ArrayList<>();
 
+    private Meeting currentMeeting = null;
+
     @FXML
     private Button appointmentButton;
 
@@ -182,12 +184,13 @@ public class StudentScheduleController implements Initializable {
 
     @FXML
     void cancelMeeting(MouseEvent event) {
-
+        SendData.cancelMeeting(out, CalendlyApplication.user.getId(), currentMeeting.getId());
     }
 
     @FXML
     void closeDialog(MouseEvent event) {
         detailPane.setVisible(false);
+        currentMeeting = null;
     }
 
     @Override
@@ -239,7 +242,12 @@ public class StudentScheduleController implements Initializable {
                         filterDatetime.setVisible(false);
                         showScheduledMeeting();
                         filterCombobox();
-                    } else {
+                    }
+                    else if(Integer.parseInt(info[0]) == UPDATE_SUCCESS){
+                        System.out.println(GeneralMessage.CANCEL_MEETING_SUCCESS);
+                        navigateToScheduledPage();
+                    }
+                    else {
                         int code = Integer.parseInt(info[0]);
                         switch (code) {
                             case SQL_ERROR: {
@@ -307,12 +315,12 @@ public class StudentScheduleController implements Initializable {
     }
 
     private void showScheduledMeeting() {
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
-        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherId())));
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
-        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSelectedClassification()));
-        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"dd/MM/yyyy")));
+        teacherTableColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getTeacherName())));
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "HH:mm")));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"HH:mm")));
+        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
+        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
@@ -323,14 +331,15 @@ public class StudentScheduleController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     Meeting rowData = row.getItem();
+                    currentMeeting = rowData;
                     //System.out.println("Double click on: "+rowData.getTeacherId());
-                    teacherTextField.setText(String.valueOf(rowData.getTeacherId()));
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                    teacherTextField.setText(String.valueOf(rowData.getTeacherName()));
+                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(),"HH:mm dd/MM/yyyy"));
+                    beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "HH:mm dd/MM/yyyy"));
                     nameTextField.setText(rowData.getName());
-                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                    classificationTextField.setText(rowData.getSelectedClassification());
-                    statusTextField.setText(rowData.getStatus());
+                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(),"dd/MM/yyyy"));
+                    classificationTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getSelectedClassification()));
+                    statusTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getStatus()));
                     detailPane.setVisible(true);
                 }
             });
@@ -360,6 +369,11 @@ public class StudentScheduleController implements Initializable {
     private void navigateToTimeslotPage() throws IOException {
         if (CalendlyApplication.user == null) return;
         //Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "Time slots");
+    }
+
+    private void navigateToScheduledPage() throws IOException {
+        if (CalendlyApplication.user == null) return;
+        Controller.navigateToOtherStage(cancelButton, "student-schedule.fxml", "Appointment");
     }
 
 }

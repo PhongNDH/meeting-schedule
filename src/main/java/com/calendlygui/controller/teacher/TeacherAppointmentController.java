@@ -8,6 +8,7 @@ import com.calendlygui.model.entity.Content;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
+import com.calendlygui.utils.SendData;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +27,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.constant.ConstantValue.UNDEFINED_ERROR;
+import static com.calendlygui.utils.Helper.extractMeetingsFromResponse;
 
 public class TeacherAppointmentController implements Initializable {
     private List<Meeting> meetings = new ArrayList<>();
@@ -233,11 +236,12 @@ public class TeacherAppointmentController implements Initializable {
             System.out.println(e.getMessage());
             CalendlyApplication.shutdown();
         }
+
+        SendData.viewStudentScheduledMeetings(out, CalendlyApplication.user.getId());
+
         Thread receiveThread = getReceiveThread();
         receiveThread.start();
 
-
-        initializeScheduleMeeting();
     }
 
     private Thread getReceiveThread() {
@@ -248,12 +252,13 @@ public class TeacherAppointmentController implements Initializable {
                     response = response.replaceAll(NON_PRINTABLE_CHARACTER, "");
                     System.out.println("Response: " + response);
                     String[] info = response.split(COMMAND_DELIMITER);
-                    if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
-                        //CalendlyApplication.user = extractUserFromResponse(response);
+                    int code = Integer.parseInt(info[0]);
+                    if (code == QUERY_SUCCESS) {
                         //navigateToHomePage();
-                        System.out.println(TimeslotMessage.TIMESLOT_SUCCESS);
+                        meetings = extractMeetingsFromResponse(response);
+                        for (Meeting meeting : meetings) System.out.println(meeting);
+                        initializeScheduleMeeting();
                     } else {
-                        int code = Integer.parseInt(info[0]);
                         switch (code) {
                             case SQL_ERROR: {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
@@ -269,7 +274,7 @@ public class TeacherAppointmentController implements Initializable {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 CalendlyApplication.shutdown();
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | ParseException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -287,11 +292,9 @@ public class TeacherAppointmentController implements Initializable {
         switch (message) {
             case GeneralMessage.UNKNOWN_ERROR -> {
                 errorText.setText(GeneralMessage.UNKNOWN_ERROR);
-//                Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);
             }
             case GeneralMessage.SERVER_WRONG -> {
                 errorText.setText(GeneralMessage.SERVER_WRONG);
-//                Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);
             }
             default -> {
                 Controller.setTextToEmpty(errorText);
@@ -299,37 +302,7 @@ public class TeacherAppointmentController implements Initializable {
         }
     }
 
-    private void initializeScheduleMeeting(){
-        meetings.add(new Meeting(1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 50), "Both", "Individuals", "Ready", new ArrayList<>() {
-            {
-                add(new Content(1, 1, "Content 1", Format.createTimestamp(2023, 12, 25, 8, 30)));
-                add(new Content(2, 1, "Content 2", Format.createTimestamp(2023, 12, 26, 8, 30)));
-            }
-        }));
-
-        meetings.add(new Meeting(2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 30),
-                Format.createTimestamp(2023, 12, 26, 8, 50), "Group", "Group", "Available", new ArrayList<>())
-        );
-        meetings.add(new Meeting(3, "Third Meeting", Format.createTimestamp(2023, 12, 27, 8, 30),
-                Format.createTimestamp(2024, 1, 5, 6, 20),
-                Format.createTimestamp(2024, 1, 5, 6, 50), "Individual", "Individual", "Available", new ArrayList<>() {
-            {
-                add(new Content(3, 3, "Content 3", Format.createTimestamp(2023, 12, 28, 9, 30)));
-                add(new Content(4, 3, "Content 4", Format.createTimestamp(2023, 12, 29, 15, 19)));
-            }
-        }));
-
-        meetings.add(new Meeting(4, "Forth Meeting", Format.createTimestamp(2023, 12, 28, 8, 30),
-                Format.createTimestamp(2024, 1, 4, 6, 20),
-                Format.createTimestamp(2024, 1, 4, 6, 50), "Individual", "Not yet", "Available", new ArrayList<>() {
-            {
-                add(new Content(5, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", Format.createTimestamp(2023, 12, 28, 9, 30)));
-            }
-        }));
-
+    private void initializeScheduleMeeting() {
         showScheduledMeeting();
 
         filterCombobox.setValue("All");
@@ -342,9 +315,9 @@ public class TeacherAppointmentController implements Initializable {
         dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
-        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSelectedClassification()));
-        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getClassification()));
-        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Objects.equals(data.getValue().getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
+        typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
+        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
@@ -353,24 +326,24 @@ public class TeacherAppointmentController implements Initializable {
         meetingTable.setRowFactory(tv -> {
             TableRow<Meeting> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Meeting rowData = row.getItem();
                     currentMeeting = rowData;
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) + " " + Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) + " " + Format.getDateFromTimestamp(rowData.getFinishDatetime()));
                     nameTextField.setText(rowData.getName());
                     createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                    typeTextField.setText(rowData.getClassification());
-                    selectedTypeTextField.setText(rowData.getSelectedClassification());
-                    statusTextField.setText(rowData.getStatus());
+                    typeTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
+                    selectedTypeTextField.setText(Objects.equals(rowData.getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(rowData.getSelectedClassification()));
+                    statusTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getStatus()));
                     detailPane.setVisible(true);
 
-                    if(!Objects.equals(rowData.getStatus(), "Ready")){
+                    if (!Objects.equals(rowData.getStatus(), "Ready")) {
                         editButton.setDisable(false);
                         typeTextField.setEditable(true);
                         endTextField.setEditable(true);
                         beginTextField.setEditable(true);
-                    }else{
+                    } else {
                         editButton.setDisable(true);
                     }
                     showContent();
@@ -392,7 +365,7 @@ public class TeacherAppointmentController implements Initializable {
                 case "By date":
                     filterDatetime.setVisible(true);
                     filterDatetime.setValue(LocalDate.now());
-                    List<Meeting> meetingsByDate= meetings.stream()
+                    List<Meeting> meetingsByDate = meetings.stream()
                             .filter(meeting -> Objects.equals(Format.getLocalDateFromTimestamp(meeting.getOccurDatetime()), LocalDate.now()))
                             .toList();
                     ObservableList<Meeting> dataByDate = FXCollections.observableArrayList(meetingsByDate);
@@ -404,8 +377,8 @@ public class TeacherAppointmentController implements Initializable {
     private void showMeetingByDate() {
         filterDatetime.setOnAction(event -> {
             LocalDate selectedDate = filterDatetime.getValue();
-            List<Meeting> meetingsByDate= meetings.stream()
-                    .filter(meeting -> Objects.equals(Format.getLocalDateFromTimestamp(meeting.getOccurDatetime()) ,selectedDate))
+            List<Meeting> meetingsByDate = meetings.stream()
+                    .filter(meeting -> Objects.equals(Format.getLocalDateFromTimestamp(meeting.getOccurDatetime()), selectedDate))
                     .toList();
             ObservableList<Meeting> dataByDate = FXCollections.observableArrayList(meetingsByDate);
             meetingTable.setItems(dataByDate);
@@ -413,7 +386,7 @@ public class TeacherAppointmentController implements Initializable {
     }
 
     private void showContent() {
-        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getDate())+" " +Format.getDateFromTimestamp(data.getValue().getDate())));
+        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getDate()) + " " + Format.getDateFromTimestamp(data.getValue().getDate())));
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
         ObservableList<Content> contents = FXCollections.observableArrayList(currentMeeting.getContents());
         contentTable.setItems(contents);
@@ -421,7 +394,7 @@ public class TeacherAppointmentController implements Initializable {
         contentTable.setRowFactory(ct -> {
             TableRow<Content> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Content content = row.getItem();
                     currentContentTextArea.setText(content.getContent());
                 }
@@ -429,7 +402,6 @@ public class TeacherAppointmentController implements Initializable {
             return row;
         });
     }
-
 
 
 }
