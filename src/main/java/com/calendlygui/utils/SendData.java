@@ -50,7 +50,6 @@ public class SendData {
         out.println(request);
     }
 
-    public static void viewScheduledMeeting(PrintWriter out)
 }
 
 
