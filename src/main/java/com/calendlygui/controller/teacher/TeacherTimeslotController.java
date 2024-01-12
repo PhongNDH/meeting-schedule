@@ -288,6 +288,10 @@ public class TeacherTimeslotController implements Initializable {
                 otherErrorText.setText(GeneralMessage.SERVER_WRONG);
                 Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);
             }
+            case GeneralMessage.UNKNOWN_ERROR -> {
+                otherErrorText.setText(GeneralMessage.UNKNOWN_ERROR);
+                Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText);
+            }
             default -> {
                 Controller.setTextToEmpty(datetimeErrorText, beginErrorText, endErrorText, otherErrorText);
             }

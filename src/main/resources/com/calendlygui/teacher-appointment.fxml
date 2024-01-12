@@ -159,7 +159,7 @@
             </children></VBox>
         <Pane layoutX="250.0" prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: #fff59d;">
             <children>
-            <TableView fx:id="meetingTable" layoutX="40.0" layoutY="209.0" prefHeight="318.0" prefWidth="570.0">
+            <TableView fx:id="meetingTable" layoutX="40.0" layoutY="209.0" prefHeight="301.0" prefWidth="570.0">
                <columns>
                   <TableColumn fx:id="dateTableColumn" prefWidth="95.0" text="Date" />
                   <TableColumn fx:id="beginTableColumn" prefWidth="85.0" text="Begin" />
@@ -247,6 +247,7 @@
                   </Pane>
                </children>
             </Pane>
+            <Text fx:id="errorText" fill="RED" layoutX="40.0" layoutY="523.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="570.0" />
             </children></Pane>
     </children>
 </AnchorPane>
