@@ -23,13 +23,13 @@ public class Helper {
         return new Timestamp(formatter.parse(date + " " + time).getTime());
     }
 
-    public static Date[] convertToDate(String date, String startTime, String endTime) throws ParseException {
+    public static Timestamp[] convertToTimestamp(String date, String startTime, String endTime) throws ParseException {
 
         // Parse the input strings to LocalDateTime
         Date startDateTime = formatter.parse(date + " " + startTime + ":00");
         Date endDateTime = formatter.parse(date + " " + endTime + ":00");
 
-        return new Date[]{startDateTime, endDateTime};
+        return new Timestamp[]{new Timestamp(startDateTime.getTime()), new Timestamp(endDateTime.getTime())};
     }
 
     public static String convertFromDateToString(Timestamp timestamp) {
@@ -293,6 +293,25 @@ public class Helper {
 
             if((desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
                     || (desiredOccur.after(scheduledOccur) && desiredFinish.before(scheduledFinish)))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean checkDuplicationForNewMeeting(Connection conn, Timestamp filterDateStart, Timestamp filterDateEnd, int tId, Timestamp occur, Timestamp finish) throws SQLException {
+        String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " between ? and ? and " + MEETING_TEACHER_ID + " = ?";
+        PreparedStatement checkPs = conn.prepareStatement(checkQuery);
+        checkPs.setTimestamp(1, filterDateStart);
+        checkPs.setTimestamp(2, filterDateEnd);
+        checkPs.setInt(3, tId);
+
+        ResultSet checkRs = checkPs.executeQuery();
+        while (checkRs.next()) {
+            Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
+            Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
+
+            if (occur.before(alreadyOccur) && finish.after(alreadyFinish)
+                    || occur.after(alreadyOccur) && occur.before(alreadyFinish))
                 return true;
         }
         return false;

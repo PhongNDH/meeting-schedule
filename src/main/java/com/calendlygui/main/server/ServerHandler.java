@@ -5,7 +5,6 @@ import com.calendlygui.model.entity.Content;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.model.entity.User;
 
-import java.security.PrivilegedAction;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,20 +18,22 @@ public class ServerHandler {
     private static final Connection conn = SqlConnection.connect();
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    static String handleCreateMeeting(String name, int tId, String date, String begin, String end, String classification) throws ParseException {
-        //query meetings in a day to check duplicate
-        Timestamp filterDateStart = toTimeStamp(date, "00:00:00");
-        Timestamp filterDateEnd = toTimeStamp(date, "23:59:59");
-
-        //format data to compare amd insert if not duplicated
-        Date[] convertedTime = convertToDate(date, begin, end);
-        Timestamp occur = new Timestamp(convertedTime[0].getTime());
-        Timestamp finish = new Timestamp(convertedTime[1].getTime());
+    static String handleCreateMeeting(String name, int tId, String date, String begin, String end, String classification) {
         try {
-            String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " >= ? and " + MEETING_OCCUR + " <= ?";
+            //query meetings in a day to check duplicate
+            Timestamp filterDateStart = toTimeStamp(date, "00:00:00");
+            Timestamp filterDateEnd = toTimeStamp(date, "23:59:59");
+
+            //format data to compare amd insert if not duplicated
+            Timestamp[] convertedTime = convertToTimestamp(date, begin, end);
+            Timestamp occur = convertedTime[0];
+            Timestamp finish = convertedTime[1];
+            //query meetings occur on that day
+            String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " between ? and ? and " + MEETING_TEACHER_ID + " = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkQuery);
             checkPs.setTimestamp(1, filterDateStart);
             checkPs.setTimestamp(2, filterDateEnd);
+            checkPs.setInt(3, tId);
 
             ResultSet checkRs = checkPs.executeQuery();
             while (checkRs.next()) {
@@ -61,34 +62,68 @@ public class ServerHandler {
             while (rs.next())
                 establishTime = rs.getTimestamp(ESTABLISH_DATETIME);
 
-            assert establishTime != null;
             System.out.println("Created: " + establishTime);
             return createResponse(CREATE_SUCCESS, establishTime.toString());
 
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
+        } catch (ParseException e) {
+            System.out.println(PARSE_EXCEPTION + ": " + e.getMessage());
+            return String.valueOf(PARSE_ERROR);
         }
     }
 
-    static String handleEditMeeting(int id, String name, String date, String begin, String end, String status, String selectedClassification) throws ParseException {
-        Date[] convertedTime = convertToDate(date, begin, end);
-        String insertQuery = "update " + MEETING +
-                " set " + NAME + " = ?," +
-                MEETING_OCCUR + " = ?," +
-                MEETING_FINISH + " = ?," +
-                STATUS + " = ?," +
-                SELECTED_CLASSIFICATION + " = ?" +
-                " where " + ID + " = ?" +
-                " returning " + ESTABLISH_DATETIME;
+    static String handleEditMeeting(int id, String name, String date, String begin, String end, String status, String classification, String selectedClassification, int tId) {
         try {
-            PreparedStatement ps = conn.prepareStatement(insertQuery);
+            //filter to select meetings on that date
+            Timestamp filterDateStart = toTimeStamp(date, "00:00:00");
+            Timestamp filterDateEnd = toTimeStamp(date, "23:59:59");
+
+            //desired occur and finish time
+            Timestamp[] convertedTime = convertToTimestamp(date, begin, end);
+            Timestamp occur = convertedTime[0];
+            Timestamp finish = convertedTime[1];
+
+            //check other meeting from that teacher to see if duplicated, exclude from the meeting itself
+            String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " between ? and ? and " + MEETING_TEACHER_ID + " = ? and " + ID + " != ?";
+            PreparedStatement checkPs = conn.prepareStatement(checkQuery);
+            checkPs.setTimestamp(1, filterDateStart);
+            checkPs.setTimestamp(2, filterDateEnd);
+            checkPs.setInt(3, tId);
+            checkPs.setInt(4, id);
+            System.out.println(checkPs);
+
+            ResultSet checkRs = checkPs.executeQuery();
+            while (checkRs.next()) {
+                Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
+                Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
+
+                if (occur.equals(alreadyOccur)
+                        || occur.before(alreadyOccur) && finish.after(alreadyFinish)
+                        || occur.after(alreadyOccur) && occur.before(alreadyFinish))
+                    return String.valueOf(DUPLICATE_SCHEDULE);
+            }
+
+            //if ok then update
+            String updateQuery = "update " + MEETING +
+                    " set " + NAME + " = ?, " +
+                    MEETING_OCCUR + " = ?, " +
+                    MEETING_FINISH + " = ?, " +
+                    STATUS + " = ?, " +
+                    CLASSIFICATION + " = ?, " +
+                    SELECTED_CLASSIFICATION + " = ?" +
+                    " where " + ID + " = ?" +
+                    " returning " + ESTABLISH_DATETIME;
+
+            PreparedStatement ps = conn.prepareStatement(updateQuery);
             ps.setString(1, name);
-            ps.setTimestamp(2, new Timestamp(convertedTime[0].getTime()));
-            ps.setTimestamp(3, new Timestamp(convertedTime[1].getTime()));
+            ps.setTimestamp(2, occur);
+            ps.setTimestamp(3, finish);
             ps.setString(4, status);
-            ps.setString(5, selectedClassification);
-            ps.setInt(6, id);
+            ps.setString(5, classification);
+            ps.setString(6, selectedClassification);
+            ps.setInt(7, id);
 
             System.out.println(ps);
 
@@ -102,17 +137,22 @@ public class ServerHandler {
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
+        } catch (ParseException e) {
+            System.out.println("Parse error: " + e.getMessage());
+            return String.valueOf(PARSE_ERROR);
         }
     }
 
-    static String handleViewMeetings(int tId) {
+    static String handleViewScheduledMeetings(int tId) {
 
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? or (" + STATUS + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
+//        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? or (" + STATUS + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
-            ps.setString(2, PENDING);
-            ps.setString(3, ACCEPT);
+            ps.setString(2, ACCEPT);
+//            ps.setString(3, ACCEPT);
+            System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
@@ -124,12 +164,12 @@ public class ServerHandler {
         }
     }
 
-    static String handleViewMeetingsByDate(int tId, String date) throws ParseException {
-        Date fromDate = formatter.parse(date + " 00:00:00");
-        Date toDate = formatter.parse(date + " 23:59:59");
-
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + MEETING_OCCUR + " between ? and ?";
+    static String handleViewMeetingsByDate(int tId, String date) {
         try {
+            Date fromDate = formatter.parse(date + " 00:00:00");
+            Date toDate = formatter.parse(date + " 23:59:59");
+
+            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + MEETING_OCCUR + " between ? and ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
             ps.setTimestamp(2, new Timestamp(fromDate.getTime()));
@@ -142,6 +182,9 @@ public class ServerHandler {
         } catch (SQLException e) {
             System.out.println(SQL_EXCEPTION + ": " + e.getMessage());
             return String.valueOf(SQL_ERROR);
+        } catch (ParseException e) {
+            System.out.println(PARSE_EXCEPTION + ": " + e.getMessage());
+            return String.valueOf(PARSE_ERROR);
         }
     }
 
@@ -208,21 +251,21 @@ public class ServerHandler {
 
             ResultSet getAlreadyScheduledMeetingIdRs = getAlreadyScheduledMeetingIdPs.executeQuery();
             ArrayList<Integer> scheduledMeetingIds = new ArrayList<>();
-            while (getAlreadyScheduledMeetingIdRs.next()){
+            while (getAlreadyScheduledMeetingIdRs.next()) {
                 scheduledMeetingIds.add(getAlreadyScheduledMeetingIdRs.getInt(MEETING_ID));
             }
             System.out.println("Scheduled: " + scheduledMeetingIds.size());
 
             //query available slots and exclude those above
             String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ? or (" + STATUS + " = ? and " + SELECTED_CLASSIFICATION + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
-            for(int i=0; i<scheduledMeetingIds.size(); i++){
+            for (int i = 0; i < scheduledMeetingIds.size(); i++) {
                 query += " and m." + ID + " != ?";
             }
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, PENDING);
             ps.setString(2, ACCEPT);
             ps.setString(3, GROUP);
-            for(int i=0; i<scheduledMeetingIds.size(); i++){
+            for (int i = 0; i < scheduledMeetingIds.size(); i++) {
                 ps.setInt(i + 4, scheduledMeetingIds.get(i));
             }
 
@@ -246,18 +289,18 @@ public class ServerHandler {
             checkDuplicatePs.setInt(1, sId);
             ResultSet checkDuplicateRs = checkDuplicatePs.executeQuery();
             ArrayList<Integer> meetingIds = new ArrayList<>();
-            while (checkDuplicateRs.next()){
+            while (checkDuplicateRs.next()) {
                 meetingIds.add(checkDuplicateRs.getInt(MEETING_ID));
             }
 
             //Get meetings from ids
             StringBuilder findScheduledTimeQuery = new StringBuilder("select * from " + MEETING);
-            for (int i=0; i<meetingIds.size(); i++){
-                if(i == 0) findScheduledTimeQuery.append(" where " + ID + " = ?");
+            for (int i = 0; i < meetingIds.size(); i++) {
+                if (i == 0) findScheduledTimeQuery.append(" where " + ID + " = ?");
                 else findScheduledTimeQuery.append(" or " + ID + " = ?");
             }
             PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery.toString());
-            for(int i = 0; i<meetingIds.size(); i++){
+            for (int i = 0; i < meetingIds.size(); i++) {
                 findScheduledTimePs.setInt(i + 1, meetingIds.get(i));
             }
             ResultSet findScheduledTimeRs = findScheduledTimePs.executeQuery();
@@ -284,7 +327,8 @@ public class ServerHandler {
                 return String.valueOf(NOT_UP_TO_DATE);
 
             //if there already have meetings at that time
-            if (checkDuplicateMeetingTime(desiredOccur, desiredFinish, findScheduledTimeRs)) return String.valueOf(DUPLICATE_SCHEDULE);
+            if (checkDuplicateMeetingTime(desiredOccur, desiredFinish, findScheduledTimeRs))
+                return String.valueOf(DUPLICATE_SCHEDULE);
 
             //otherwise, schedule is available
             String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
@@ -349,9 +393,9 @@ public class ServerHandler {
     }
 
     public static String handleCancelMeeting(int sId, int mId) {
-        String meetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
-
         try {
+            //get meeting's classification
+            String meetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
             PreparedStatement ps = conn.prepareStatement(meetingQuery);
             ps.setInt(1, mId);
             System.out.println(ps);
@@ -359,10 +403,11 @@ public class ServerHandler {
             ResultSet rs = ps.executeQuery();
             String selectedClassification = null;
 
-            Timestamp executedTime = null;
+            Timestamp executedTime;
             while (rs.next()) {
                 selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
             }
+
             if (selectedClassification.equals(GROUP)) {
                 String countStudentQuery = "select count(*) from " + PARTICIPATE + " where " + MEETING_ID + " = ?";
                 PreparedStatement countPs = conn.prepareStatement(countStudentQuery);
@@ -424,7 +469,7 @@ public class ServerHandler {
         return new Timestamp(System.currentTimeMillis());
     }
 
-    public static String handleViewScheduled(int sId){
+    public static String handleViewScheduled(int sId) {
         try {
             String findMeetingIdQuery = "select * from " + PARTICIPATE + " where " + STUDENT_ID + " = ?";
             PreparedStatement findMeetingIdPs = conn.prepareStatement(findMeetingIdQuery);
@@ -433,19 +478,20 @@ public class ServerHandler {
 
             ResultSet findMeetingIdRs = findMeetingIdPs.executeQuery();
             ArrayList<Integer> meetingIds = new ArrayList<>();
-            while (findMeetingIdRs.next()){
+            while (findMeetingIdRs.next()) {
                 meetingIds.add(findMeetingIdRs.getInt(MEETING_ID));
             }
             System.out.println("Meeting found: " + meetingIds.size());
 
+            if (meetingIds.isEmpty()) return createResponseWithMeetingList(QUERY_SUCCESS, new ArrayList<>());
             StringBuilder meetingQuery = new StringBuilder("select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID);
-            for(int i=0; i<meetingIds.size(); i++){
-                if(i == 0) meetingQuery.append(" where m." + ID + " = ?");
+            for (int i = 0; i < meetingIds.size(); i++) {
+                if (i == 0) meetingQuery.append(" where m." + ID + " = ?");
                 else meetingQuery.append(" or m." + ID + " = ?");
             }
             PreparedStatement meetingQueryPs = conn.prepareStatement(meetingQuery.toString());
-            for(int i=0; i<meetingIds.size(); i++){
-                meetingQueryPs.setInt(i+1, meetingIds.get(i));
+            for (int i = 0; i < meetingIds.size(); i++) {
+                meetingQueryPs.setInt(i + 1, meetingIds.get(i));
             }
             System.out.println(meetingQueryPs);
 
@@ -454,10 +500,9 @@ public class ServerHandler {
             System.out.println("Meeting found: " + meetings.size());
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             return String.valueOf(SQL_ERROR);
         }
-
     }
 }
