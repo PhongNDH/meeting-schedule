@@ -127,9 +127,6 @@ public class TeacherAppointmentController implements Initializable {
     private TextField statusTextField;
 
     @FXML
-    private TextField typeTextField;
-
-    @FXML
     private Button closeContentButton;
 
     @FXML
@@ -155,6 +152,30 @@ public class TeacherAppointmentController implements Initializable {
 
     @FXML
     private Text errorText;
+
+    @FXML
+    private DatePicker occurDatePicker;
+
+    @FXML
+    private ComboBox<String> typeCombobox;
+
+    @FXML
+    private Text durationDateEditedErrorText;
+
+    @FXML
+    private Text endEditedErrorText;
+
+    @FXML
+    private Text nameEditedErrorText;
+
+    @FXML
+    private Text occurDateEditedErrorText;
+
+    @FXML
+    private Text beginEditedErrorText;
+
+    @FXML
+    private Text contentErrorText;
 
 
     @FXML
@@ -304,7 +325,8 @@ public class TeacherAppointmentController implements Initializable {
 
     private void initializeScheduleMeeting() {
         showScheduledMeeting();
-
+        Controller.changeFormatForDatepicker(filterDatetime);
+        Controller.changeFormatForDatepicker(occurDatePicker);
         filterCombobox.setValue("All");
         filterDatetime.setVisible(false);
         filterCombobox();
@@ -312,9 +334,9 @@ public class TeacherAppointmentController implements Initializable {
     }
 
     private void showScheduledMeeting() {
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getFinishDatetime())));
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "HH:mm")));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"dd/MM/yyyy")));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "HH:mm")));
         selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Objects.equals(data.getValue().getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
         statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
@@ -329,22 +351,39 @@ public class TeacherAppointmentController implements Initializable {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Meeting rowData = row.getItem();
                     currentMeeting = rowData;
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) + " " + Format.getDateFromTimestamp(rowData.getOccurDatetime()));
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) + " " + Format.getDateFromTimestamp(rowData.getFinishDatetime()));
+
+                    beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "HH:mm"));
+                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(),"HH:mm"));
                     nameTextField.setText(rowData.getName());
-                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                    typeTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
+                    occurDatePicker.setValue(Format.getLocalDateFromTimestamp(rowData.getOccurDatetime()));
+                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(),"dd/MM/yyyy"));
+//                    typeCombobox.getItems().clear();
+//                    typeCombobox.getItems().add(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
+//                    typeCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
                     selectedTypeTextField.setText(Objects.equals(rowData.getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(rowData.getSelectedClassification()));
                     statusTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getStatus()));
                     detailPane.setVisible(true);
 
-                    if (!Objects.equals(rowData.getStatus(), "Ready")) {
+                    if (!Objects.equals(rowData.getStatus(), READY)) {
                         editButton.setDisable(false);
-                        typeTextField.setEditable(true);
                         endTextField.setEditable(true);
                         beginTextField.setEditable(true);
+                        occurDatePicker.setEditable(true);
+                        nameTextField.setEditable(true);
+
+                        typeCombobox.getItems().clear();
+                        typeCombobox.getItems().addAll("Group","Individual","Both");
+                        typeCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
                     } else {
                         editButton.setDisable(true);
+                        endTextField.setEditable(false);
+                        beginTextField.setEditable(false);
+                        occurDatePicker.setEditable(false);
+                        nameTextField.setEditable(false);
+
+                        typeCombobox.getItems().clear();
+                        typeCombobox.getItems().add(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
+                        typeCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
                     }
                     showContent();
                 }

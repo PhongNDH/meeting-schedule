@@ -112,7 +112,7 @@ public class ServerHandler {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
             ps.setString(2, PENDING);
-            ps.setString(3, ACCEPT);
+            ps.setString(3, READY);
 
             ResultSet rs = ps.executeQuery();
             ArrayList<Meeting> meetings = getMeetings(rs);
@@ -174,7 +174,7 @@ public class ServerHandler {
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
-            ps.setString(2, ACCEPT);
+            ps.setString(2, READY);
 
             System.out.println(ps);
 
@@ -220,7 +220,7 @@ public class ServerHandler {
             }
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, PENDING);
-            ps.setString(2, ACCEPT);
+            ps.setString(2, READY);
             ps.setString(3, GROUP);
             for(int i=0; i<scheduledMeetingIds.size(); i++){
                 ps.setInt(i + 4, scheduledMeetingIds.get(i));
@@ -295,7 +295,7 @@ public class ServerHandler {
             participatePs.setInt(2, mId);
 
             PreparedStatement updateMeetingPs = conn.prepareStatement(updateMeetingQuery);
-            updateMeetingPs.setString(1, ACCEPT);
+            updateMeetingPs.setString(1, READY);
             updateMeetingPs.setString(2, type);
             updateMeetingPs.setInt(3, mId);
 
