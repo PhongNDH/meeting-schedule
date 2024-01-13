@@ -9,8 +9,10 @@ public class GeneralMessage {
 
     public static final String NOT_UP_TO_DATE = "Someone interacted with the data source, reload to update";
 
-    public static final String CANCEL_MEETING_SUCCESS = "Cancel meeting successfully";
+    public static final String STUDENT_CANCEL_MEETING_SUCCESS = "Cancel meeting successfully";
 
-    public static final String JOIN_MEETING_SUCCESS = "Join meeting successfully";
+    public static final String STUDENT_JOIN_MEETING_SUCCESS = "Join meeting successfully";
+
+    public static final String TEACHER_ADD_CONTENT_SUCCESS = "Add content successfully";
 }
 

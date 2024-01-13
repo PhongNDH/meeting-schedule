@@ -224,6 +224,7 @@ public class TeacherAppointmentController implements Initializable {
     void closeDialog(MouseEvent event) {
         detailPane.setVisible(false);
         currentMeeting = null;
+        Controller.setTextToEmpty(errorText,contentErrorText,beginEditedErrorText, endEditedErrorText, durationDateEditedErrorText, occurDateEditedErrorText,nameEditedErrorText);
     }
 
     @FXML
@@ -249,12 +250,18 @@ public class TeacherAppointmentController implements Initializable {
 
     @FXML
     void addContent(MouseEvent event) {
-
+        if(contentTextArea.getText().isEmpty()){
+            contentErrorText.setText(GeneralMessage.REQUIRED_FIELD);
+        }else{
+            contentErrorText.setText("");
+            SendData.addContent(out,currentMeeting.getId(), contentTextArea.getText());
+        }
     }
 
     @FXML
     void closeContentPane(MouseEvent event) {
         contentPane.setVisible(false);
+        Controller.setTextToEmpty(errorText,contentErrorText);
     }
 
     @FXML
@@ -295,7 +302,15 @@ public class TeacherAppointmentController implements Initializable {
                         meetings = extractMeetingsFromResponse(response);
                         for (Meeting meeting : meetings) System.out.println(meeting);
                         initializeScheduleMeeting();
-                    } else {
+                    }
+                    else if (code == UPDATE_SUCCESS){
+
+                    }
+                    else if (code == CREATE_SUCCESS){
+                        System.out.println(GeneralMessage.TEACHER_ADD_CONTENT_SUCCESS);
+                        navigateToAppointment(addContentButton);
+                    }
+                    else {
                         switch (code) {
                             case SQL_ERROR: {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
@@ -514,5 +529,9 @@ public class TeacherAppointmentController implements Initializable {
         });
     }
 
+    private void navigateToAppointment(Button button) {
+        if (CalendlyApplication.user == null) return;
+        Controller.navigateToOtherStage(button, "teacher-appointment.fxml", "Appointment");
+    }
 
 }

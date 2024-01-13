@@ -244,7 +244,7 @@ public class StudentScheduleController implements Initializable {
                         filterCombobox();
                     }
                     else if(Integer.parseInt(info[0]) == UPDATE_SUCCESS){
-                        System.out.println(GeneralMessage.CANCEL_MEETING_SUCCESS);
+                        System.out.println(GeneralMessage.STUDENT_CANCEL_MEETING_SUCCESS);
                         navigateToScheduledPage();
                     }
                     else {

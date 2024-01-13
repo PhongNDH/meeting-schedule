@@ -76,7 +76,6 @@ public class SendData {
         request = createRequest(TEACHER_EDIT_MEETING,
                 new ArrayList<>(List.of(String.valueOf(id), name, dateTime, begin, end, status, selectedClassification)));
         out.println(request);
-
 //        while (true) {
 //            response = in.readLine();
 //            if (response != null) {
@@ -85,6 +84,45 @@ public class SendData {
 //                if (Integer.parseInt(info[0]) == UPDATE_SUCCESS) System.out.println("UPDATE DONE");
 //                else handleErrorResponse(info[0]);
 //                break;
+//            }
+//        }
+    }
+
+    public static void addContent(PrintWriter out, int mId, String content) {
+//        /TEACHER_ENTER_CONTENT  teacher_id  meeting_id  content
+        request = createRequest(TEACHER_ENTER_CONTENT, new ArrayList<>(List.of(String.valueOf(mId), content)));
+        out.println(request);
+
+        //listen to response
+//        while (true) {
+//            response = in.readLine();
+//            if (response != null) {
+//                System.out.println("Response: " + response);
+//                String[] info = response.split(COMMAND_DELIMITER);
+//                if(Integer.parseInt(info[0]) == CREATE_SUCCESS){
+//                    System.out.println("DO SOMETHING");
+//                } else handleErrorResponse(info[0]);
+//                break;
+//            }
+//        }
+    }
+
+    public static void viewHistory(PrintWriter out, int tId) throws IOException, ParseException {
+        // TEACHER_VIEW_HISTORY  teacher_id
+        request = createRequest(TEACHER_VIEW_HISTORY, new ArrayList<>(List.of(String.valueOf(tId))));
+        out.println(request);
+//        while (true) {
+//            response = in.readLine();
+//            if (response != null) {
+//                System.out.println(response);
+//
+//                String[] info = response.split(COMMAND_DELIMITER);
+//                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
+//                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
+//                    System.out.println(meetings.size());
+//                    for(Meeting meeting: meetings) System.out.println(meeting);
+//                    break;
+//                } else handleErrorResponse(info[0]);
 //            }
 //        }
     }

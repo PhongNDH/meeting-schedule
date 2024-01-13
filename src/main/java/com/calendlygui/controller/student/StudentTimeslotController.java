@@ -222,7 +222,7 @@ public class StudentTimeslotController implements Initializable {
                         showValueToMeetingTable(meetings);
                     }
                     else if(code == UPDATE_SUCCESS){
-                        System.out.println(GeneralMessage.JOIN_MEETING_SUCCESS);
+                        System.out.println(GeneralMessage.STUDENT_JOIN_MEETING_SUCCESS);
                         navigateToTimeslotPage();
                     }
                     else {
