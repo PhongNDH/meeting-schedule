@@ -228,7 +228,23 @@ public class TeacherAppointmentController implements Initializable {
 
     @FXML
     void editMeeting(MouseEvent event) {
+        String meetingName = nameTextField.getText();
+        LocalDate occurDate = occurDatePicker.getValue();
+        String beginTime = beginTextField.getText();
+        String endTime = endTextField.getText();
+        String classification = typeCombobox.getValue().toLowerCase();
+        String selectedClassification = selectedTypeTextField.getText().toLowerCase();
+        String status = statusTextField.getText();
 
+        if (dealWithErrorMessageFromUI(occurDate, beginTime, endTime, meetingName)) {
+//            try {
+//                SendData.editMeeting(out, currentMeeting.getId(),meetingName, Format.getStringFormatFromLocalDate(occurDate), beginTime, endTime, status, selectedClassification);
+//            } catch (IOException | ClassNotFoundException e) {
+//                System.out.println(e.getMessage());
+//            }
+
+            System.out.println("Start to edit");
+        }
     }
 
     @FXML
@@ -304,6 +320,62 @@ public class TeacherAppointmentController implements Initializable {
         return receiveThread;
     }
 
+    private boolean dealWithErrorMessageFromUI(LocalDate meetingTime, String beginTime, String endTime, String meetingName) {
+        boolean isBeginAcceptable = false;
+        boolean isEndAcceptable= false;
+        boolean isDateAcceptable= false;
+        boolean isNameAcceptable = false;
+        boolean isDurationAcceptable = false;
+
+        if (meetingName.isEmpty()) {
+            nameEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
+        } else {
+            nameEditedErrorText.setText("");
+            isNameAcceptable = true;
+        }
+
+        if (meetingTime == null) {
+            occurDateEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
+        } else if (Format.getNumberOfDateFromNow(meetingTime) < 1) {
+            occurDateEditedErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_PAST);
+        } else if (Format.getNumberOfDateFromNow(meetingTime) > MAX_TIME_WAITING) {
+            occurDateEditedErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_SURPASS);
+        } else {
+            isDateAcceptable = true;
+            occurDateEditedErrorText.setText("");
+        }
+
+        if (beginTime.isEmpty()) {
+            beginEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
+        } else if (!Format.CheckFormat(beginTime, TIME_FORMAT)) {
+            beginEditedErrorText.setText(TimeslotMessage.TIMESLOT_TIME_WRONG_FORMAT);
+        } else {
+            isBeginAcceptable = true;
+            beginEditedErrorText.setText("");
+        }
+
+        if (endTime.isEmpty()) {
+            endEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
+        } else if (!Format.CheckFormat(endTime, TIME_FORMAT)) {
+            endEditedErrorText.setText(TimeslotMessage.TIMESLOT_TIME_WRONG_FORMAT);
+        } else {
+            isEndAcceptable = true;
+            endEditedErrorText.setText("");
+        }
+
+        if (isBeginAcceptable && isEndAcceptable) {
+            if (Format.getMinutesBetweenTwoTime(beginTime, endTime) > TIMESLOT_MAX_DURATION || Format.getMinutesBetweenTwoTime(beginTime, endTime) < TIMESLOT_MIN_DURATION) {
+                durationDateEditedErrorText.setText(TimeslotMessage.TIMESLOT_DURATION_WRONG);
+            } else {
+                isDurationAcceptable = true;
+                durationDateEditedErrorText.setText("");
+            }
+        } else {
+            durationDateEditedErrorText.setText("");
+        }
+        return isBeginAcceptable && isEndAcceptable && isNameAcceptable && isDateAcceptable && isDurationAcceptable;
+    }
+
     private void showErrorFromServerToUIAndConsole(String error) {
         System.out.println(error);
         dealWithErrorMessageFromServer(error);
@@ -335,7 +407,7 @@ public class TeacherAppointmentController implements Initializable {
 
     private void showScheduledMeeting() {
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "HH:mm")));
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"dd/MM/yyyy")));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "dd/MM/yyyy")));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "HH:mm")));
         selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Objects.equals(data.getValue().getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
@@ -353,10 +425,10 @@ public class TeacherAppointmentController implements Initializable {
                     currentMeeting = rowData;
 
                     beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "HH:mm"));
-                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(),"HH:mm"));
+                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(), "HH:mm"));
                     nameTextField.setText(rowData.getName());
                     occurDatePicker.setValue(Format.getLocalDateFromTimestamp(rowData.getOccurDatetime()));
-                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(),"dd/MM/yyyy"));
+                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(), "dd/MM/yyyy"));
 //                    typeCombobox.getItems().clear();
 //                    typeCombobox.getItems().add(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
 //                    typeCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
@@ -372,7 +444,7 @@ public class TeacherAppointmentController implements Initializable {
                         nameTextField.setEditable(true);
 
                         typeCombobox.getItems().clear();
-                        typeCombobox.getItems().addAll("Group","Individual","Both");
+                        typeCombobox.getItems().addAll("Group", "Individual", "Both");
                         typeCombobox.setValue(Format.writeFirstCharacterInUppercase(rowData.getClassification()));
                     } else {
                         editButton.setDisable(true);

@@ -66,22 +66,25 @@ public class SendData {
                 new ArrayList<>(List.of(String.valueOf(tId), name, dateTime, begin, end, classification)));
         out.println(request);
     }
+
     public static void viewStudentScheduledMeetings(PrintWriter out, int tId) {
         request = createRequest(TEACHER_VIEW_MEETING, new ArrayList<>(List.of(String.valueOf(tId))));
+        out.println(request);
+    }
+
+    public static void editMeeting(PrintWriter out, int id, String name, String dateTime, String begin, String end, String status, String selectedClassification) {
+        request = createRequest(TEACHER_EDIT_MEETING,
+                new ArrayList<>(List.of(String.valueOf(id), name, dateTime, begin, end, status, selectedClassification)));
         out.println(request);
 
 //        while (true) {
 //            response = in.readLine();
-//
 //            if (response != null) {
-//                System.out.println(response);
-//
+//                System.out.println("Response: " + response);
 //                String[] info = response.split(COMMAND_DELIMITER);
-//                if (Integer.parseInt(info[0]) == QUERY_SUCCESS) {
-//                    ArrayList<Meeting> meetings = extractMeetingsFromResponse(response);
-//                    for(Meeting meeting: meetings) System.out.println(meeting);
-//                    break;
-//                } else handleErrorResponse(info[0]);
+//                if (Integer.parseInt(info[0]) == UPDATE_SUCCESS) System.out.println("UPDATE DONE");
+//                else handleErrorResponse(info[0]);
+//                break;
 //            }
 //        }
     }
