@@ -144,6 +144,7 @@ public class ServerHandler {
     }
 
     static String handleViewScheduledMeetings(int tId) {
+
         String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? or (" + STATUS + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
 //        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
         try {
@@ -154,7 +155,7 @@ public class ServerHandler {
             System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(rs);
+            ArrayList<Meeting> meetings = getMeetings(rs, conn);
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
         } catch (SQLException e) {
@@ -173,9 +174,10 @@ public class ServerHandler {
             ps.setInt(1, tId);
             ps.setTimestamp(2, new Timestamp(fromDate.getTime()));
             ps.setTimestamp(3, new Timestamp(toDate.getTime()));
+            System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(rs);
+            ArrayList<Meeting> meetings = getMeetings(rs, conn);
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
         } catch (SQLException e) {
@@ -221,7 +223,7 @@ public class ServerHandler {
             System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(rs);
+            ArrayList<Meeting> meetings = getMeetings(rs, conn);
 
             System.out.println("Found " + meetings.size() + " in history");
 
@@ -271,7 +273,7 @@ public class ServerHandler {
             System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(rs);
+            ArrayList<Meeting> meetings = getMeetings(rs, conn);
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
         } catch (SQLException e) {
@@ -378,7 +380,7 @@ public class ServerHandler {
             System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(rs);
+            ArrayList<Meeting> meetings = getMeetings(rs, conn);
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);
 
@@ -495,7 +497,7 @@ public class ServerHandler {
             System.out.println(meetingQueryPs);
 
             ResultSet meetingQueryRs = meetingQueryPs.executeQuery();
-            ArrayList<Meeting> meetings = getMeetings(meetingQueryRs);
+            ArrayList<Meeting> meetings = getMeetings(meetingQueryRs, conn);
             System.out.println("Meeting found: " + meetings.size());
 
             return createResponseWithMeetingList(QUERY_SUCCESS, meetings);

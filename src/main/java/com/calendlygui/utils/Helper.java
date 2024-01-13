@@ -91,7 +91,7 @@ public class Helper {
         return String.valueOf(code) + data;
     }
 
-    public static ArrayList<Meeting> getMeetings(ResultSet rs) throws SQLException {
+    public static ArrayList<Meeting> getMeetings(ResultSet rs, Connection conn) throws SQLException {
         ArrayList<Meeting> meetings = new ArrayList<>();
 
         int id, teacherId;
@@ -111,8 +111,10 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-
             Meeting newMeeting = new Meeting(id, teacherId, teacher_name,  name, established, occur, finish, classification, selectedClassification, status);
+            newMeeting.setStudents(getStudentsInPastMeetings(conn, id));
+            newMeeting.setContents(getMinutes(conn, id));
+
             meetings.add(newMeeting);
         }
 
