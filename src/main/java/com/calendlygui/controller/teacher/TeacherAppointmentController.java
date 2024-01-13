@@ -438,6 +438,9 @@ public class TeacherAppointmentController implements Initializable {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Meeting rowData = row.getItem();
                     currentMeeting = rowData;
+//                    for(Content c : rowData.getContents()){
+//                        System.out.println(c.getContent());
+//                    }
 
                     beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "HH:mm"));
                     endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getFinishDatetime(), "HH:mm"));
@@ -514,6 +517,7 @@ public class TeacherAppointmentController implements Initializable {
     private void showContent() {
         contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getDate()) + " " + Format.getDateFromTimestamp(data.getValue().getDate())));
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
+        //System.out.println(currentMeeting.getContents());
         ObservableList<Content> contents = FXCollections.observableArrayList(currentMeeting.getContents());
         contentTable.setItems(contents);
 

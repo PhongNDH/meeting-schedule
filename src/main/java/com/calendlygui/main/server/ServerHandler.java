@@ -144,14 +144,13 @@ public class ServerHandler {
     }
 
     static String handleViewScheduledMeetings(int tId) {
-
-//        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? or (" + STATUS + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ? or (" + STATUS + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
+//        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
-            ps.setString(2, READY);
-//            ps.setString(3, ACCEPT);
+            ps.setString(2, PENDING);
+            ps.setString(3, READY);
             System.out.println(ps);
 
             ResultSet rs = ps.executeQuery();

@@ -182,7 +182,7 @@ public class TeacherTimeslotController implements Initializable {
                     String[] info = response.split(COMMAND_DELIMITER);
                     if (Integer.parseInt(info[0]) == CREATE_SUCCESS) {
                         //CalendlyApplication.user = extractUserFromResponse(response);
-                        navigateToHomePage();
+                        navigateToAppointment();
                         System.out.println(TimeslotMessage.TIMESLOT_SUCCESS);
                     } else {
                         int code = Integer.parseInt(info[0]);
@@ -301,5 +301,10 @@ public class TeacherTimeslotController implements Initializable {
     private void navigateToHomePage() throws IOException {
         if (CalendlyApplication.user == null) return;
         Controller.navigateToOtherStage(meetingCreationButton, "teacher.fxml", "Teacher");
+    }
+
+    private void navigateToAppointment() {
+        if (CalendlyApplication.user == null) return;
+        Controller.navigateToOtherStage(meetingCreationButton, "teacher-appointment.fxml", "Appointment");
     }
 }
