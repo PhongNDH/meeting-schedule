@@ -91,6 +91,7 @@ public class ConstantValue {
 
     //Message types
     public static final String SQL_EXCEPTION = "SQL Exception";
+    public static final String PARSE_EXCEPTION = "Parse Exception";
     public static final String UPDATE_DONE = "Update successfully";
 
     ////

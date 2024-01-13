@@ -3,9 +3,7 @@ package com.calendlygui.main.server;
 import com.calendlygui.database.Authenticate;
 import com.calendlygui.utils.Validate;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException;
 
 import static com.calendlygui.constant.ConstantValue.*;
 import static com.calendlygui.main.server.Server.ConnectionHandler.out;
@@ -15,7 +13,7 @@ import static com.calendlygui.utils.Helper.createResponse;
 
 public class Manipulate {
 
-    public static void register(String[] registerInfo, PrintWriter out) throws IOException {
+    public static void register(String[] registerInfo, PrintWriter out) {
         if (registerInfo.length == 6) {
             if ((!registerInfo[4].equals("false") && !registerInfo[4].equals("true") || !registerInfo[5].equals("false") && !registerInfo[5].equals("true")) && !Validate.checkEmailFormat(registerInfo[1])) {
                 out.println(INCORRECT_FORMAT);
@@ -49,7 +47,7 @@ public class Manipulate {
     }
 
     //TEACHER FUNCTIONS
-    public static void createMeeting(String[] data) throws ParseException {
+    public static void createMeeting(String[] data) {
         if (data.length == 7) {
             int tId = Integer.parseInt(data[1]);
             String name = data[2];
@@ -67,17 +65,19 @@ public class Manipulate {
     }
 
 
-    public static void editMeeting(String[] data) throws ParseException {
-        if (data.length == 8) {
+    public static void editMeeting(String[] data) {
+        if (data.length == 10) {
             int id = Integer.parseInt(data[1]);
             String name = data[2];
             String date = data[3];
             String begin = data[4];
             String end = data[5];
             String status = data[6];
-            String selectedClassification = data[7];
+            String classification = data[7];
+            String selectedClassification = data[8];
+            int tId = Integer.parseInt(data[9]);
 
-            String result = handleEditMeeting(id, name, date, begin, end, status, selectedClassification);
+            String result = handleEditMeeting(id, name, date, begin, end, status, classification, selectedClassification, tId);
             System.out.println("Result: " + result);
             out.println(result);
         } else {
@@ -85,7 +85,7 @@ public class Manipulate {
         }
     }
 
-    public static void viewByDate(String[] data) throws ParseException {
+    public static void viewByDate(String[] data) {
         if (data.length == 3) {
             int tId = Integer.parseInt(data[1]);
             String date = data[2];
@@ -98,11 +98,11 @@ public class Manipulate {
         }
     }
 
-    public static void viewNoFilter(String[] data) {
+    public static void viewScheduledMeetings(String[] data) {
         if (data.length == 2) {
             int tId = Integer.parseInt(data[1]);
 
-            String result = handleViewMeetings(tId);
+            String result = handleViewScheduledMeetings(tId);
             System.out.println("Result: " + result);
             out.println(result);
         } else {
@@ -140,7 +140,7 @@ public class Manipulate {
 
     //STUDENT FUNCTIONS
     public static void viewAvailableSlots(String[] data) {
-        if(data.length == 2){
+        if (data.length == 2) {
             int sId = Integer.parseInt(data[1]);
             String result = handleViewAvailableSlots(sId);
             System.out.println("Result: " + result);
@@ -192,7 +192,7 @@ public class Manipulate {
     }
 
     public static void viewScheduled(String[] data) {
-        if(data.length == 2){
+        if (data.length == 2) {
             int sId = Integer.parseInt(data[1]);
 
             String result = handleViewScheduled(sId);

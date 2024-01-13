@@ -23,13 +23,13 @@ public class Helper {
         return new Timestamp(formatter.parse(date + " " + time).getTime());
     }
 
-    public static Date[] convertToDate(String date, String startTime, String endTime) throws ParseException {
+    public static Timestamp[] convertToTimestamp(String date, String startTime, String endTime) throws ParseException {
 
         // Parse the input strings to LocalDateTime
         Date startDateTime = formatter.parse(date + " " + startTime + ":00");
         Date endDateTime = formatter.parse(date + " " + endTime + ":00");
 
-        return new Date[]{startDateTime, endDateTime};
+        return new Timestamp[]{new Timestamp(startDateTime.getTime()), new Timestamp(endDateTime.getTime())};
     }
 
     public static String convertFromDateToString(Timestamp timestamp) {
