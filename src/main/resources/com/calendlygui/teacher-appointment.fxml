@@ -197,7 +197,7 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <Pane fx:id="detailPane" layoutX="40.0" layoutY="124.0" prefHeight="407.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;">
+            <Pane fx:id="detailPane" layoutX="40.0" layoutY="124.0" prefHeight="407.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
                <children>
                   <Button fx:id="editButton" layoutX="68.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#editMeeting" prefHeight="30.0" prefWidth="130.0" style="-fx-font-weight: bold;" styleClass="edit-button" stylesheets="@../../style/teacher.css" text="Edit" textFill="WHITE" />
                   <Text layoutX="86.0" layoutY="157.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Created date" />
