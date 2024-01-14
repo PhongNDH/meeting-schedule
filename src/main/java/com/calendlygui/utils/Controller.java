@@ -81,7 +81,7 @@ public class Controller {
         Timestamp registerDatetime = CalendlyApplication.user.getRegisterDatetime();
         Date registerDate = new Date(registerDatetime.getTime());
         LocalDate localDate = registerDate.toInstant().atZone(systemDefault()).toLocalDate();
-        registerDatetimeTextfield.setText(localDate.getDayOfMonth() + "/" + localDate.getMonthValue() + "/" + localDate.getYear());
+        registerDatetimeTextfield.setText(Format.getStringFormatFromTimestamp(registerDatetime, "dd/MM/yyyy"));
         if (gender.equals("Male")) {
             if (role.equals("Student")) {
                 avatarImage.setImage(new Image(Objects.requireNonNull(Controller.class.getResource("/assets/avatar/male2.png")).toExternalForm()));

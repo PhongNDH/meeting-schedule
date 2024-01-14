@@ -312,6 +312,10 @@ public class TeacherAppointmentController implements Initializable {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
                                 break;
                             }
+                            case DUPLICATE_SCHEDULE:{
+                                showErrorFromServerToUIAndConsole(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
+                                break;
+                            }
                         }
                     }
                 }
@@ -395,6 +399,9 @@ public class TeacherAppointmentController implements Initializable {
             }
             case GeneralMessage.SERVER_WRONG -> {
                 errorText.setText(GeneralMessage.SERVER_WRONG);
+            }
+            case TimeslotMessage.TIMESLOT_TIME_CONFLICT -> {
+                errorText.setText(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
             }
             default -> {
                 Controller.setTextToEmpty(errorText);
@@ -513,6 +520,9 @@ public class TeacherAppointmentController implements Initializable {
     }
 
     private void showContent() {
+//        for (Content c : currentMeeting.getContents()){
+//            System.out.println(c.getDate());
+//        }
         contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getDate(),"HH:mm dd/MM/yyyy")));
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
         //System.out.println(currentMeeting.getContents());
