@@ -98,5 +98,5 @@ public class ConstantValue {
     public static final int MAX_TIME_WAITING = 14;
 
     public static final int TIMESLOT_MIN_DURATION = 15;
-    public static final int TIMESLOT_MAX_DURATION = 30;
+    public static final int TIMESLOT_MAX_DURATION = 60;
 }

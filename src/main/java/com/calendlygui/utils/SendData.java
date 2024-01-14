@@ -72,10 +72,11 @@ public class SendData {
         out.println(request);
     }
 
-    public static void editMeeting(PrintWriter out, int id, String name, String dateTime, String begin, String end, String status, String selectedClassification) {
+    public static void editMeeting(PrintWriter out, int id, String name, String dateTime, String begin, String end, String status, String classification, String selectedClassification, int tId) {
         request = createRequest(TEACHER_EDIT_MEETING,
-                new ArrayList<>(List.of(String.valueOf(id), name, dateTime, begin, end, status, selectedClassification)));
+                new ArrayList<>(List.of(String.valueOf(id), name, dateTime, begin, end, status, classification, selectedClassification, String.valueOf(tId))));
         out.println(request);
+
 //        while (true) {
 //            response = in.readLine();
 //            if (response != null) {
@@ -107,7 +108,7 @@ public class SendData {
 //        }
     }
 
-    public static void viewHistory(PrintWriter out, int tId) throws IOException, ParseException {
+    public static void viewHistory(PrintWriter out, int tId) {
         // TEACHER_VIEW_HISTORY  teacher_id
         request = createRequest(TEACHER_VIEW_HISTORY, new ArrayList<>(List.of(String.valueOf(tId))));
         out.println(request);

@@ -159,11 +159,12 @@
             <children>
                 <TableView fx:id="meetingTable" layoutX="40.0" layoutY="181.0" prefHeight="298.0" prefWidth="570.0">
                     <columns>
-                        <TableColumn fx:id="teacherTableColumn" prefWidth="103.33331298828125" text="Teacher" />
-                        <TableColumn fx:id="dateTableColumn" prefWidth="100.00003051757812" text="Date" />
-                        <TableColumn fx:id="beginTableColumn" prefWidth="124.66668701171875" text="Begin" />
-                        <TableColumn fx:id="endTableColumn" prefWidth="109.33331298828125" text="End" />
-                        <TableColumn fx:id="typeTableColumn" prefWidth="132.66668701171875" text="Classification" />
+                        <TableColumn fx:id="teacherTableColumn" prefWidth="94.0" text="Teacher" />
+                        <TableColumn fx:id="dateTableColumn" prefWidth="80.66665649414062" text="Date" />
+                        <TableColumn fx:id="beginTableColumn" prefWidth="50.6666259765625" text="Begin" />
+                        <TableColumn fx:id="endTableColumn" prefWidth="50.6666259765625" text="End" />
+                        <TableColumn fx:id="typeTableColumn" prefWidth="83.3333740234375" text="Classification" />
+                  <TableColumn fx:id="meetingNameTableColumn" prefWidth="208.66668701171875" text="Name" />
                     </columns>
                 </TableView>
             <Pane fx:id="detailPane" layoutX="40.0" layoutY="120.0" prefHeight="393.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">

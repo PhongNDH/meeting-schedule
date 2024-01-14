@@ -14,5 +14,7 @@ public class GeneralMessage {
     public static final String STUDENT_JOIN_MEETING_SUCCESS = "Join meeting successfully";
 
     public static final String TEACHER_ADD_CONTENT_SUCCESS = "Add content successfully";
+
+    public static final String TEACHER_UPDATE_MEETING_SUCCESS = "Update meeting successfully";
 }
 

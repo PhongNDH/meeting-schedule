@@ -224,7 +224,7 @@ public class TeacherAppointmentController implements Initializable {
     void closeDialog(MouseEvent event) {
         detailPane.setVisible(false);
         currentMeeting = null;
-        Controller.setTextToEmpty(errorText,contentErrorText,beginEditedErrorText, endEditedErrorText, durationDateEditedErrorText, occurDateEditedErrorText,nameEditedErrorText);
+        Controller.setTextToEmpty(errorText, contentErrorText, beginEditedErrorText, endEditedErrorText, durationDateEditedErrorText, occurDateEditedErrorText, nameEditedErrorText);
     }
 
     @FXML
@@ -234,34 +234,28 @@ public class TeacherAppointmentController implements Initializable {
         String beginTime = beginTextField.getText();
         String endTime = endTextField.getText();
         String classification = typeCombobox.getValue().toLowerCase();
-        String selectedClassification = selectedTypeTextField.getText().toLowerCase();
-        String status = statusTextField.getText();
+        String selectedClassification = Objects.equals(selectedTypeTextField.getText(), "Not yet") ? "" : selectedTypeTextField.getText().toLowerCase();
+        String status = statusTextField.getText().toLowerCase();
 
         if (dealWithErrorMessageFromUI(occurDate, beginTime, endTime, meetingName)) {
-//            try {
-//                SendData.editMeeting(out, currentMeeting.getId(),meetingName, Format.getStringFormatFromLocalDate(occurDate), beginTime, endTime, status, selectedClassification);
-//            } catch (IOException | ClassNotFoundException e) {
-//                System.out.println(e.getMessage());
-//            }
-
-            System.out.println("Start to edit");
+            SendData.editMeeting(out, currentMeeting.getId(), meetingName, Format.getStringFormatFromLocalDate(occurDate), beginTime, endTime, status, classification, selectedClassification, CalendlyApplication.user.getId());
         }
     }
 
     @FXML
     void addContent(MouseEvent event) {
-        if(contentTextArea.getText().isEmpty()){
+        if (contentTextArea.getText().isEmpty()) {
             contentErrorText.setText(GeneralMessage.REQUIRED_FIELD);
-        }else{
+        } else {
             contentErrorText.setText("");
-            SendData.addContent(out,currentMeeting.getId(), contentTextArea.getText());
+            SendData.addContent(out, currentMeeting.getId(), contentTextArea.getText());
         }
     }
 
     @FXML
     void closeContentPane(MouseEvent event) {
         contentPane.setVisible(false);
-        Controller.setTextToEmpty(errorText,contentErrorText);
+        Controller.setTextToEmpty(errorText, contentErrorText);
     }
 
     @FXML
@@ -302,15 +296,13 @@ public class TeacherAppointmentController implements Initializable {
                         meetings = extractMeetingsFromResponse(response);
                         for (Meeting meeting : meetings) System.out.println(meeting);
                         initializeScheduleMeeting();
-                    }
-                    else if (code == UPDATE_SUCCESS){
-
-                    }
-                    else if (code == CREATE_SUCCESS){
+                    } else if (code == UPDATE_SUCCESS) {
+                        System.out.println(GeneralMessage.TEACHER_UPDATE_MEETING_SUCCESS);
+                        navigateToAppointment(editButton);
+                    } else if (code == CREATE_SUCCESS) {
                         System.out.println(GeneralMessage.TEACHER_ADD_CONTENT_SUCCESS);
                         navigateToAppointment(addContentButton);
-                    }
-                    else {
+                    } else {
                         switch (code) {
                             case SQL_ERROR: {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.SERVER_WRONG);
@@ -337,8 +329,8 @@ public class TeacherAppointmentController implements Initializable {
 
     private boolean dealWithErrorMessageFromUI(LocalDate meetingTime, String beginTime, String endTime, String meetingName) {
         boolean isBeginAcceptable = false;
-        boolean isEndAcceptable= false;
-        boolean isDateAcceptable= false;
+        boolean isEndAcceptable = false;
+        boolean isDateAcceptable = false;
         boolean isNameAcceptable = false;
         boolean isDurationAcceptable = false;
 
@@ -414,9 +406,9 @@ public class TeacherAppointmentController implements Initializable {
         showScheduledMeeting();
         Controller.changeFormatForDatepicker(filterDatetime);
         Controller.changeFormatForDatepicker(occurDatePicker);
-        filterCombobox.setValue("All");
+//        filterCombobox.setValue("All");
         filterDatetime.setVisible(false);
-        filterCombobox();
+        filter();
         showMeetingByDate();
     }
 
@@ -482,7 +474,8 @@ public class TeacherAppointmentController implements Initializable {
         });
     }
 
-    private void filterCombobox() {
+    private void filter() {
+        filterCombobox.setValue("All");
         filterCombobox.setOnAction(e -> {
             String selectedFilter = filterCombobox.getValue();
             switch (selectedFilter) {
@@ -515,7 +508,7 @@ public class TeacherAppointmentController implements Initializable {
     }
 
     private void showContent() {
-        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getDate()) + " " + Format.getDateFromTimestamp(data.getValue().getDate())));
+        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getDate(),"HH:mm dd/MM/yyyy")));
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
         //System.out.println(currentMeeting.getContents());
         ObservableList<Content> contents = FXCollections.observableArrayList(currentMeeting.getContents());

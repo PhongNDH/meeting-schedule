@@ -87,6 +87,9 @@ public class StudentTimeslotController implements Initializable {
     private TableColumn<Meeting, String> typeTableColumn;
 
     @FXML
+    private TableColumn<Meeting, String> meetingNameTableColumn;
+
+    @FXML
     void logout(MouseEvent event) {
         if (CalendlyApplication.user != null) {
             CalendlyApplication.user = null;
@@ -196,6 +199,8 @@ public class StudentTimeslotController implements Initializable {
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(),"HH:mm")));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "HH:mm")));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getClassification())));
+        meetingNameTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+
 
         SendData.viewAvailableSlots(out, CalendlyApplication.user.getId());
 

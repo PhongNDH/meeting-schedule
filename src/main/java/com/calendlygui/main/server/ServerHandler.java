@@ -40,7 +40,8 @@ public class ServerHandler {
                 Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
                 Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
 
-                if (occur.before(alreadyOccur) && finish.after(alreadyFinish)
+                if (occur.equals(alreadyOccur)
+                        || occur.before(alreadyOccur) && finish.after(alreadyFinish)
                         || occur.after(alreadyOccur) && occur.before(alreadyFinish))
                     return String.valueOf(DUPLICATE_SCHEDULE);
             }
@@ -94,26 +95,16 @@ public class ServerHandler {
             checkPs.setInt(4, id);
             System.out.println(checkPs);
 
-            ResultSet checkRs = checkPs.executeQuery();
-            while (checkRs.next()) {
-                Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
-                Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
-
-                if (occur.equals(alreadyOccur)
-                        || occur.before(alreadyOccur) && finish.after(alreadyFinish)
-                        || occur.after(alreadyOccur) && occur.before(alreadyFinish))
-                    return String.valueOf(DUPLICATE_SCHEDULE);
-            }
-
-            //if ok then update
             String updateQuery = "update " + MEETING +
                     " set " + NAME + " = ?, " +
                     MEETING_OCCUR + " = ?, " +
                     MEETING_FINISH + " = ?, " +
                     STATUS + " = ?, " +
-                    CLASSIFICATION + " = ?, " +
-                    SELECTED_CLASSIFICATION + " = ?" +
-                    " where " + ID + " = ?" +
+                    CLASSIFICATION + " = ?";
+            if (!selectedClassification.equals(""))
+                updateQuery += ", " + SELECTED_CLASSIFICATION + " = ?";
+
+            updateQuery += " where " + ID + " = ?" +
                     " returning " + ESTABLISH_DATETIME;
 
             PreparedStatement ps = conn.prepareStatement(updateQuery);
@@ -122,8 +113,10 @@ public class ServerHandler {
             ps.setTimestamp(3, finish);
             ps.setString(4, status);
             ps.setString(5, classification);
-            ps.setString(6, selectedClassification);
-            ps.setInt(7, id);
+            if (!selectedClassification.isEmpty()) {
+                ps.setString(6, selectedClassification);
+                ps.setInt(7, id);
+            } else ps.setInt(6, id);
 
             System.out.println(ps);
 

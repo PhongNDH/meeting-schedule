@@ -219,9 +219,10 @@
                            </font>
                         </Text>
                         <TextArea fx:id="contentTextArea" layoutX="50.0" layoutY="254.0" prefHeight="46.0" prefWidth="343.0" />
-                        <Button fx:id="closeContentButton" layoutX="269.0" layoutY="326.0" mnemonicParsing="false" onMouseClicked="#closeContentPane" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="close-button" stylesheets="@../../style/teacher.css" text="Close" />
-                        <Button fx:id="addContentButton" layoutX="71.0" layoutY="326.0" mnemonicParsing="false" onMouseClicked="#addContent" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="add-button" stylesheets="@../../style/teacher.css" text="Add" />
+                        <Button fx:id="closeContentButton" layoutX="269.0" layoutY="330.0" mnemonicParsing="false" onMouseClicked="#closeContentPane" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="close-button" stylesheets="@../../style/teacher.css" text="Close" />
+                        <Button fx:id="addContentButton" layoutX="71.0" layoutY="330.0" mnemonicParsing="false" onMouseClicked="#addContent" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="add-button" stylesheets="@../../style/teacher.css" text="Add" />
                         <TextArea fx:id="currentContentTextArea" editable="false" layoutX="50.0" layoutY="171.0" prefHeight="46.0" prefWidth="343.0" />
+                        <Text fx:id="contentErrorText" fill="RED" layoutX="50.0" layoutY="313.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="342.9999999999999" />
                      </children>
                   </Pane>
                   <ImageView fitHeight="15.0" fitWidth="15.0" layoutX="75.0" layoutY="344.0" pickOnBounds="true" preserveRatio="true">
@@ -253,6 +254,7 @@
                   </Pane>
                </children>
             </Pane>
+            <Text fx:id="errorText" fill="RED" layoutX="40.0" layoutY="511.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="570.0" />
          </children></Pane>
     </children>
 </AnchorPane>
