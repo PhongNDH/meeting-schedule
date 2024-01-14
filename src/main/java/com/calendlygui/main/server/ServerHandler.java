@@ -36,15 +36,7 @@ public class ServerHandler {
             checkPs.setInt(3, tId);
 
             ResultSet checkRs = checkPs.executeQuery();
-            while (checkRs.next()) {
-                Timestamp alreadyOccur = checkRs.getTimestamp(MEETING_OCCUR);
-                Timestamp alreadyFinish = checkRs.getTimestamp(MEETING_FINISH);
-
-                if (occur.equals(alreadyOccur)
-                        || occur.before(alreadyOccur) && finish.after(alreadyFinish)
-                        || occur.after(alreadyOccur) && occur.before(alreadyFinish))
-                    return String.valueOf(DUPLICATE_SCHEDULE);
-            }
+            if(checkDuplicateMeetingTime(occur, finish, checkRs)) return String.valueOf(DUPLICATE_SCHEDULE);
 
             //if not duplicate then can insert
             String insertQuery = "insert into " + MEETING + "(" +
@@ -85,6 +77,8 @@ public class ServerHandler {
             Timestamp[] convertedTime = convertToTimestamp(date, begin, end);
             Timestamp occur = convertedTime[0];
             Timestamp finish = convertedTime[1];
+            System.out.println("Desired Occur: " + occur);
+            System.out.println("Desired Finish: " + finish + "\n");
 
             //check other meeting from that teacher to see if duplicated, exclude from the meeting itself
             String checkQuery = "select * from " + MEETING + " where " + MEETING_OCCUR + " between ? and ? and " + MEETING_TEACHER_ID + " = ? and " + ID + " != ?";
@@ -94,6 +88,10 @@ public class ServerHandler {
             checkPs.setInt(3, tId);
             checkPs.setInt(4, id);
             System.out.println(checkPs);
+
+            Timestamp alreadyOccur, alreadyFinish;
+            ResultSet checkRs = checkPs.executeQuery();
+            if(checkDuplicateMeetingTime(occur, finish, checkRs)) return String.valueOf(DUPLICATE_SCHEDULE);
 
             String updateQuery = "update " + MEETING +
                     " set " + NAME + " = ?, " +

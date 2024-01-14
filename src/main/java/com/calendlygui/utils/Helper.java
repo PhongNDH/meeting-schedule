@@ -295,7 +295,7 @@ public class Helper {
 
             if (desiredOccur.equals(scheduledOccur)
                     || (desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
-                    || (desiredOccur.after(scheduledOccur) && desiredFinish.before(scheduledFinish)))
+                    || (desiredOccur.after(scheduledOccur) && desiredOccur.before(scheduledFinish)))
                 return true;
         }
         return false;
