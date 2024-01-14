@@ -279,6 +279,9 @@ public class StudentTimeslotController implements Initializable {
             case GeneralMessage.NOT_UP_TO_DATE -> {
                 meetingDetailErrorText.setText(GeneralMessage.NOT_UP_TO_DATE);
             }
+            case TimeslotMessage.TIMESLOT_TIME_CONFLICT -> {
+                meetingDetailErrorText.setText(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
+            }
             default -> {
                 Controller.setTextToEmpty(errorText, meetingDetailErrorText);
             }

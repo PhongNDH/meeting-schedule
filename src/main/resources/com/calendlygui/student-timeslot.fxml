@@ -212,7 +212,7 @@
                   </Text>
                </children>
             </Pane>
-            <Text fx:id="errorText" fill="RED" layoutX="40.0" layoutY="501.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="569.9999999999999" />
+            <Text fx:id="meetingDetailErrorText" fill="RED" layoutX="40.0" layoutY="501.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="569.9999999999999" />
             </children></Pane>
     </children>
 </AnchorPane>

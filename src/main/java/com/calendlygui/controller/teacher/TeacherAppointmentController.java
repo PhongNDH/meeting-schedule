@@ -475,7 +475,12 @@ public class TeacherAppointmentController implements Initializable {
     }
 
     private void filter() {
+
+        filterDatetime.setVisible(false);
+//        ObservableList<Meeting> initData = FXCollections.observableArrayList(meetings);
+//        meetingTable.setItems(initData);
         filterCombobox.setValue("All");
+
         filterCombobox.setOnAction(e -> {
             String selectedFilter = filterCombobox.getValue();
             switch (selectedFilter) {

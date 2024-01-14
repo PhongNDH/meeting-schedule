@@ -50,7 +50,7 @@ public class Helper {
         return code + COMMAND_DELIMITER + message;
     }
 
-    public static String createResponseWithUser(int code, int id, String name, String email, String time, String isTeacher, String gender){
+    public static String createResponseWithUser(int code, int id, String name, String email, String time, String isTeacher, String gender) {
         return code + COMMAND_DELIMITER + id + COMMAND_DELIMITER + name + COMMAND_DELIMITER + email + COMMAND_DELIMITER + time + COMMAND_DELIMITER + isTeacher + COMMAND_DELIMITER + gender;
     }
 
@@ -69,14 +69,14 @@ public class Helper {
                     .append(meeting.getStatus()).append(DOUBLE_LINE_BREAK)
                     .append(meeting.getSelectedClassification()).append(DOUBLE_LINE_BREAK);
 
-            for(Content content: meeting.getContents()){
+            for (Content content : meeting.getContents()) {
                 data.append(content.getDate()).append(FIELD_DELIMITER).append(content.getContent()).append(LINE_BREAK);
             }
 
-            if(!meeting.getContents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
+            if (!meeting.getContents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
             data.append(DOUBLE_LINE_BREAK);
 
-            for(User student: meeting.getStudents()){
+            for (User student : meeting.getStudents()) {
                 data
                         .append(student.getId()).append(FIELD_DELIMITER)
                         .append(student.getUsername()).append(FIELD_DELIMITER)
@@ -86,7 +86,7 @@ public class Helper {
                         .append(student.getGender()).append(LINE_BREAK);
             }
 
-            if(!meeting.getStudents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
+            if (!meeting.getStudents().isEmpty()) data.delete(data.length() - LINE_BREAK.length(), data.length());
         }
         return String.valueOf(code) + data;
     }
@@ -111,7 +111,7 @@ public class Helper {
             classification = rs.getString(CLASSIFICATION);
             selectedClassification = rs.getString(SELECTED_CLASSIFICATION);
 
-            Meeting newMeeting = new Meeting(id, teacherId, teacher_name,  name, established, occur, finish, classification, selectedClassification, status);
+            Meeting newMeeting = new Meeting(id, teacherId, teacher_name, name, established, occur, finish, classification, selectedClassification, status);
             newMeeting.setStudents(getStudentsInPastMeetings(conn, id));
             newMeeting.setContents(getMinutes(conn, id));
 
@@ -140,24 +140,24 @@ public class Helper {
                     meetingInfo[8]);
 
 //            List of minutes: meetingInfo[9]
-            if(meetingInfo.length >= 11 && !Objects.equals(meetingInfo[10], "")){
+            if (meetingInfo.length >= 11 && !Objects.equals(meetingInfo[10], "")) {
                 ArrayList<Content> contents = new ArrayList<>();
                 String contentField = meetingInfo[10];
                 String[] contentStrings = contentField.split(LINE_BREAK);
-                for(String minuteString: contentStrings){
+                for (String minuteString : contentStrings) {
                     String[] minuteData = minuteString.split(FIELD_DELIMITER);
-                    contents.add(new Content(minuteData[1],new Timestamp((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(minuteData[0])).getTime())));
+                    contents.add(new Content(minuteData[1], new Timestamp((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(minuteData[0])).getTime())));
                 }
 
                 newMeeting.setContents(contents);
             }
 
 //            List of minutes: meetingInfo[10]
-            if(meetingInfo.length == 12 && !Objects.equals(meetingInfo[11], "")){
+            if (meetingInfo.length == 12 && !Objects.equals(meetingInfo[11], "")) {
                 ArrayList<User> students = new ArrayList<>();
                 String studentField = meetingInfo[11];
                 String[] studentStrings = studentField.split(LINE_BREAK);
-                for(String studentString: studentStrings){
+                for (String studentString : studentStrings) {
                     String[] studentData = studentString.split(FIELD_DELIMITER);
                     students.add(new User(
                             Integer.parseInt(studentData[0]),
@@ -179,7 +179,7 @@ public class Helper {
 
     public static User extractUserFromResponse(String response) throws ParseException {
         String[] data = response.split(COMMAND_DELIMITER);
-        if(data.length == 7){
+        if (data.length == 7) {
             return new User(
                     Integer.parseInt(data[1]),
                     data[2],
@@ -232,32 +232,32 @@ public class Helper {
 
         ResultSet rs = ps.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             studentIDs.add(rs.getInt(STUDENT_ID));
         }
 
         System.out.println("Students: " + studentIDs.size());
 
-        if(!studentIDs.isEmpty()) return getUsers(conn, new ArrayList<>(studentIDs));
+        if (!studentIDs.isEmpty()) return getUsers(conn, new ArrayList<>(studentIDs));
         else return new ArrayList<>();
     }
 
     public static ArrayList<User> getUsers(Connection conn, ArrayList<Integer> studentIDs) throws SQLException {
         ArrayList<User> users = new ArrayList<>();
 
-        for(int id: studentIDs) System.out.println(id);
+        for (int id : studentIDs) System.out.println(id);
 
         String userQuery = "select * from " + USERS;
-        for(int i = 1; i <= studentIDs.size(); i++) {
-            if(i == 1) userQuery += " where " + ID + " = ?";
+        for (int i = 1; i <= studentIDs.size(); i++) {
+            if (i == 1) userQuery += " where " + ID + " = ?";
             else userQuery += " or " + ID + " = ?";
         }
 
         System.out.println(userQuery);
 
         PreparedStatement ps = conn.prepareStatement(userQuery);
-        for(int i = 1; i <= studentIDs.size(); i++){
-            ps.setInt(i, studentIDs.get(i-1));
+        for (int i = 1; i <= studentIDs.size(); i++) {
+            ps.setInt(i, studentIDs.get(i - 1));
         }
 
         System.out.println(ps);
@@ -289,11 +289,12 @@ public class Helper {
         //true means duplicated, false means available
 
         Timestamp scheduledOccur, scheduledFinish;
-        while (rs.next()){
+        while (rs.next()) {
             scheduledOccur = rs.getTimestamp(MEETING_OCCUR);
             scheduledFinish = rs.getTimestamp(MEETING_FINISH);
 
-            if((desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
+            if (desiredOccur.equals(scheduledOccur)
+                    || (desiredOccur.before(scheduledOccur) && desiredFinish.after(scheduledOccur))
                     || (desiredOccur.after(scheduledOccur) && desiredFinish.before(scheduledFinish)))
                 return true;
         }
