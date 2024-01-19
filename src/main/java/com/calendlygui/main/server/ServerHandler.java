@@ -278,23 +278,13 @@ public class ServerHandler {
             String checkDuplicateTimeQuery = "select * from " + PARTICIPATE + " where " + STUDENT_ID + " = ?";
             PreparedStatement checkDuplicatePs = conn.prepareStatement(checkDuplicateTimeQuery);
             checkDuplicatePs.setInt(1, sId);
+            System.out.println(checkDuplicatePs);
+
             ResultSet checkDuplicateRs = checkDuplicatePs.executeQuery();
             ArrayList<Integer> meetingIds = new ArrayList<>();
             while (checkDuplicateRs.next()) {
                 meetingIds.add(checkDuplicateRs.getInt(MEETING_ID));
             }
-
-            //Get meetings from ids
-            StringBuilder findScheduledTimeQuery = new StringBuilder("select * from " + MEETING);
-            for (int i = 0; i < meetingIds.size(); i++) {
-                if (i == 0) findScheduledTimeQuery.append(" where " + ID + " = ?");
-                else findScheduledTimeQuery.append(" or " + ID + " = ?");
-            }
-            PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery.toString());
-            for (int i = 0; i < meetingIds.size(); i++) {
-                findScheduledTimePs.setInt(i + 1, meetingIds.get(i));
-            }
-            ResultSet findScheduledTimeRs = findScheduledTimePs.executeQuery();
 
             //get desired meeting info
             String checkMeetingQuery = "select * from " + MEETING + " where " + ID + " = ?";
@@ -314,12 +304,29 @@ public class ServerHandler {
 
             //if an individual selected or a group selected but user want individual
             if (selectedClassification != null && (selectedClassification.equals(INDIVIDUAL)
-                    || selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL)))
+                    || (selectedClassification.equals(GROUP) && type.equals(INDIVIDUAL))))
                 return String.valueOf(NOT_UP_TO_DATE);
 
-            //if there already have meetings at that time
-            if (checkDuplicateMeetingTime(desiredOccur, desiredFinish, findScheduledTimeRs))
-                return String.valueOf(DUPLICATE_SCHEDULE);
+            //Get meetings from ids
+            if (!meetingIds.isEmpty()) {
+                StringBuilder findScheduledTimeQuery = new StringBuilder("select * from " + MEETING);
+                for (int i = 0; i < meetingIds.size(); i++) {
+                    if (i == 0) findScheduledTimeQuery.append(" where " + ID + " = ?");
+                    else findScheduledTimeQuery.append(" or " + ID + " = ?");
+                }
+                PreparedStatement findScheduledTimePs = conn.prepareStatement(findScheduledTimeQuery.toString());
+                for (int i = 0; i < meetingIds.size(); i++) {
+                    findScheduledTimePs.setInt(i + 1, meetingIds.get(i));
+                }
+                System.out.println(findScheduledTimePs);
+
+                ResultSet findScheduledTimeRs = findScheduledTimePs.executeQuery();
+
+                //if there already have meetings at that time
+                if (checkDuplicateMeetingTime(desiredOccur, desiredFinish, findScheduledTimeRs))
+                    return String.valueOf(DUPLICATE_SCHEDULE);
+            }
+
 
             //otherwise, schedule is available
             String participateQuery = "insert into " + PARTICIPATE + "(" + STUDENT_ID + ", " + MEETING_ID + ") values (?, ?) returning " + PARTICIPATE_DATETIME;
