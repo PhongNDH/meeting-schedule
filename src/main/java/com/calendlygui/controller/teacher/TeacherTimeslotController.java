@@ -25,6 +25,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 import static com.calendlygui.CalendlyApplication.in;
@@ -224,6 +225,9 @@ public class TeacherTimeslotController implements Initializable {
         boolean isEndAdmissible = false;
         boolean isDurationAdmissible = false;
 
+        String[] beginTimeStr = beginTime.split(":");
+        LocalDateTime beginLocalDateTime = LocalDateTime.of(meetingTime.getYear(), meetingTime.getMonthValue(), meetingTime.getDayOfMonth(),Integer.parseInt(beginTimeStr[0]), Integer.parseInt(beginTimeStr[1]) );
+
         if (meetingName.isEmpty()) {
             meetingNameErrorText.setText(GeneralMessage.REQUIRED_FIELD);
         } else {
@@ -233,7 +237,7 @@ public class TeacherTimeslotController implements Initializable {
 
         if (meetingTime == null) {
             datetimeErrorText.setText(GeneralMessage.REQUIRED_FIELD);
-        } else if (Format.getNumberOfDateFromNow(meetingTime) < 1) {
+        } else if (beginLocalDateTime.isBefore(LocalDateTime.now())) {
             datetimeErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_PAST);
         } else if (Format.getNumberOfDateFromNow(meetingTime) > MAX_TIME_WAITING) {
             datetimeErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_SURPASS);

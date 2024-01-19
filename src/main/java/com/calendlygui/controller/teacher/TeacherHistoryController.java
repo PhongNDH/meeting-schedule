@@ -244,31 +244,6 @@ public class TeacherHistoryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        meetings.add(new Meeting(1, "First Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-//                Format.createTimestamp(2023, 12, 26, 8, 30),
-//                Format.createTimestamp(2023, 12, 26, 8, 50), "Individuals", "Done", new ArrayList<>() {
-//            {
-//                add(new Content(1, 1, "Content 1", Format.createTimestamp(2023, 12, 25, 8, 30)));
-//                add(new Content(2, 1, "Content 2", Format.createTimestamp(2023, 12, 26, 8, 30)));
-//            }
-//        }));
-//
-//        meetings.add(new Meeting(2, "Second Meeting", Format.createTimestamp(2023, 12, 25, 8, 30),
-//                Format.createTimestamp(2023, 12, 26, 8, 30),
-//                Format.createTimestamp(2023, 12, 26, 8, 50), "Not yet", "Cancelled", new ArrayList<>())
-//        );
-//        meetings.add(new Meeting(3, "Third Meeting", Format.createTimestamp(2023, 12, 27, 8, 30),
-//                Format.createTimestamp(2024, 1, 5, 6, 20),
-//                Format.createTimestamp(2024, 1, 5, 6, 50), "Individual", "Done", new ArrayList<>() {
-//            {
-//                add(new Content(3, 3, "Content 3", Format.createTimestamp(2023, 12, 28, 9, 30)));
-//                add(new Content(4, 3, "Content 4", Format.createTimestamp(2023, 12, 29, 15, 19)));
-//            }
-//        }));
-//
-//        students.add(new User("Josko","josko@gmail.com",false,true));
-//        students.add(new User("Cazorla","cakop@gmail.com",false,true));
-//        students.add(new User("Marinai","maler@gmail.com",false,false));
         try {
             CalendlyApplication.client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
             out = new PrintWriter(CalendlyApplication.client.getOutputStream(), true);
@@ -350,11 +325,11 @@ public class TeacherHistoryController implements Initializable {
     }
 
     private void showHistory(){
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getOccurDatetime())));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getFinishDatetime())));
-        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getDateFromTimestamp(data.getValue().getOccurDatetime())));
-        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSelectedClassification()));
-        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(),"HH:mm")));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"HH:mm")));
+        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification()) ));
+        dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "dd/MM/yyyy")));
+        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
