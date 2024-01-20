@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -338,6 +339,10 @@ public class TeacherAppointmentController implements Initializable {
         boolean isNameAcceptable = false;
         boolean isDurationAcceptable = false;
 
+        String[] beginTimeStr = beginTime.split(":");
+        LocalDateTime beginLocalDateTime = LocalDateTime.of(meetingTime.getYear(), meetingTime.getMonthValue(), meetingTime.getDayOfMonth(),Integer.parseInt(beginTimeStr[0]), Integer.parseInt(beginTimeStr[1]) );
+
+
         if (meetingName.isEmpty()) {
             nameEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
         } else {
@@ -347,7 +352,7 @@ public class TeacherAppointmentController implements Initializable {
 
         if (meetingTime == null) {
             occurDateEditedErrorText.setText(GeneralMessage.REQUIRED_FIELD);
-        } else if (Format.getNumberOfDateFromNow(meetingTime) < 1) {
+        } else if (beginLocalDateTime.isBefore(LocalDateTime.now())) {
             occurDateEditedErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_PAST);
         } else if (Format.getNumberOfDateFromNow(meetingTime) > MAX_TIME_WAITING) {
             occurDateEditedErrorText.setText(TimeslotMessage.TIMESLOT_DATETIME_SURPASS);
