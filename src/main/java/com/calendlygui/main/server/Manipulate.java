@@ -98,11 +98,11 @@ public class Manipulate {
         }
     }
 
-    public static void viewScheduledMeetings(String[] data) {
+    public static void viewUnscheduledAndHappeningMeetings(String[] data) {
         if (data.length == 2) {
             int tId = Integer.parseInt(data[1]);
 
-            String result = handleViewScheduledMeetings(tId);
+            String result = handleTeacherViewUnscheduledAndHappeningMeetings(tId);
             System.out.println("Result: " + result);
             out.println(result);
         } else {

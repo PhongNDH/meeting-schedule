@@ -41,8 +41,7 @@ public class ConstantValue {
     public static final String MEETING_FINISH = "finish";
     public static final String STATUS = "status";
     public static final String PENDING = "pending";
-    public static final String READY = "ready";
-    public static final String DONE = "done";
+    public static final String READY = "accept";
     public static final String GROUP = "group";
     public static final String INDIVIDUAL = "individual";
     public static final String CLASSIFICATION = "classification";
