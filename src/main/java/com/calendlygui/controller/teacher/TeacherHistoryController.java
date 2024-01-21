@@ -45,8 +45,6 @@ public class TeacherHistoryController implements Initializable {
 
     private Meeting currentMeeting = null;
 
-    private List<User> students = new ArrayList<>();
-
     @FXML
     private Button appointmentButton;
 
@@ -368,7 +366,7 @@ public class TeacherHistoryController implements Initializable {
         studentGenderTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGender() ? "Male" : "Female"));
         studentEmailTableColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEmail()));
 
-        ObservableList<User> users = FXCollections.observableArrayList(students);
+        ObservableList<User> users = FXCollections.observableArrayList(currentMeeting.getStudents());
 
         studentTable.setItems(users);
     }
