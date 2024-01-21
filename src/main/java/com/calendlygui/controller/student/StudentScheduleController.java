@@ -179,7 +179,7 @@ public class StudentScheduleController implements Initializable {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
-        Controller.navigateToOtherStage(timeslotButton, "student-timeslot.fxml", "Time slots");
+        Controller.navigateToOtherStage(timeslotButton, "student-timeslot.fxml", "New meeting");
     }
 
     @FXML
@@ -368,7 +368,6 @@ public class StudentScheduleController implements Initializable {
 
     private void navigateToTimeslotPage() throws IOException {
         if (CalendlyApplication.user == null) return;
-        //Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "Time slots");
     }
 
     private void navigateToScheduledPage() throws IOException {

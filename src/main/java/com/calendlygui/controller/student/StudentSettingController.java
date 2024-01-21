@@ -78,7 +78,7 @@ public class StudentSettingController {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
-        Controller.navigateToOtherStage(timeslotButton,"student-timeslot.fxml","Time slots");
+        Controller.navigateToOtherStage(timeslotButton,"student-timeslot.fxml","New meeting");
 
     }
 }

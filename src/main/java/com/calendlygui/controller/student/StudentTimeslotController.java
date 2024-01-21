@@ -335,6 +335,6 @@ public class StudentTimeslotController implements Initializable {
 
     private void navigateToTimeslotPage() throws IOException {
         if (CalendlyApplication.user == null) return;
-        Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "Time slots");
+        Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "New meeting");
     }
 }

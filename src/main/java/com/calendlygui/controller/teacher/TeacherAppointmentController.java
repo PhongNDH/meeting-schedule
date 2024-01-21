@@ -218,7 +218,7 @@ public class TeacherAppointmentController implements Initializable {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
-        Controller.navigateToOtherStage(timeslotButton, "teacher-timeslot.fxml", "Time Slots");
+        Controller.navigateToOtherStage(timeslotButton, "teacher-timeslot.fxml", "New meeting");
     }
 
     @FXML
