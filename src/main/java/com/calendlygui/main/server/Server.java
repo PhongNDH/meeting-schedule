@@ -109,7 +109,7 @@ public class Server implements Runnable {
             else if (data[0].contains(TEACHER_CREATE_MEETING))          Manipulate.createMeeting(data);
             else if (data[0].contains(TEACHER_EDIT_MEETING))            Manipulate.editMeeting(data);
             else if (data[0].contains(TEACHER_VIEW_MEETING_BY_DATE))    Manipulate.viewByDate(data);
-            else if (data[0].contains(TEACHER_VIEW_MEETING))            Manipulate.viewScheduledMeetings(data);
+            else if (data[0].contains(TEACHER_VIEW_MEETING))            Manipulate.viewUnscheduledAndHappeningMeetings(data);
             else if (data[0].contains(TEACHER_ENTER_CONTENT))           Manipulate.addMinute(data);
             else if (data[0].contains(TEACHER_VIEW_HISTORY))            Manipulate.viewHistory(data);
 

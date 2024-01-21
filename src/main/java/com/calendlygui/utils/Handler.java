@@ -141,7 +141,8 @@ public class Handler implements Runnable {
                             break;
                         }
                         case "7": {
-                            handleViewPastMeetings(in, out, 100);
+                            //history
+                            handleViewPastMeetings(in, out, 118);
                             break;
                         }
 
