@@ -173,6 +173,7 @@ public class StudentTimeslotController implements Initializable {
     void closeDialog(MouseEvent event) {
         Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
         classificationCombobox.getItems().clear();
+        meetingDetailErrorText.setText("");
         currentMeeting = null;
         detailPane.setVisible(false);
     }
