@@ -3,7 +3,6 @@ package com.calendlygui.controller.student;
 import com.calendlygui.CalendlyApplication;
 import com.calendlygui.constant.ConstantValue;
 import com.calendlygui.constant.GeneralMessage;
-import com.calendlygui.constant.TimeslotMessage;
 import com.calendlygui.model.entity.Meeting;
 import com.calendlygui.utils.Controller;
 import com.calendlygui.utils.Format;
@@ -26,12 +25,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 import static com.calendlygui.CalendlyApplication.in;
 import static com.calendlygui.CalendlyApplication.out;
@@ -246,7 +246,10 @@ public class StudentScheduleController implements Initializable {
                         //navigateToHomePage();
                         meetings = extractMeetingsFromResponse(response);
                         for(Meeting meeting: meetings) System.out.println(meeting);
-                        filterCombobox.setValue("All");
+                        try{
+                            filterCombobox.setValue("All");
+                        }catch(Exception ignored){}
+
                         filterDatetime.setVisible(false);
                         showScheduledMeeting();
                         filterCombobox();
@@ -304,7 +307,6 @@ public class StudentScheduleController implements Initializable {
                             .toList();
                     ObservableList<Meeting> dataByWeek = FXCollections.observableArrayList(meetingsByWeek);
                     meetingTable.setItems(dataByWeek);
-
             }
         });
     }
@@ -328,7 +330,7 @@ public class StudentScheduleController implements Initializable {
         beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "HH:mm")));
         endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"HH:mm")));
         typeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
-        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
+        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(specifyStatus(data.getValue().getFinishDatetime(), data.getValue().getStatus())));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
@@ -347,7 +349,7 @@ public class StudentScheduleController implements Initializable {
                     nameTextField.setText(rowData.getName());
                     createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(),"dd/MM/yyyy"));
                     classificationTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getSelectedClassification()));
-                    statusTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getStatus()));
+                    statusTextField.setText(specifyStatus(rowData.getFinishDatetime(), rowData.getStatus()));
                     detailPane.setVisible(true);
                 }
             });
@@ -376,6 +378,12 @@ public class StudentScheduleController implements Initializable {
 
     private void navigateToTimeslotPage() throws IOException {
         if (CalendlyApplication.user == null) return;
+    }
+
+    private String specifyStatus(Timestamp timestamp, String status){
+        LocalDateTime localDateTime = timestamp.toLocalDateTime();
+        if(localDateTime.isBefore(LocalDateTime.now())) return "Done";
+        return Format.writeFirstCharacterInUppercase(status);
     }
 
     private void navigateToScheduledPage(Button button) throws IOException {

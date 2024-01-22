@@ -321,7 +321,7 @@ public class TeacherAppointmentController implements Initializable {
                                 showErrorFromServerToUIAndConsole(GeneralMessage.UNKNOWN_ERROR);
                                 break;
                             }
-                            case DUPLICATE_SCHEDULE:{
+                            case DUPLICATE_SCHEDULE: {
                                 showErrorFromServerToUIAndConsole(TimeslotMessage.TIMESLOT_TIME_CONFLICT);
                                 break;
                             }
@@ -348,7 +348,7 @@ public class TeacherAppointmentController implements Initializable {
         boolean isDurationAcceptable = false;
 
         String[] beginTimeStr = beginTime.split(":");
-        LocalDateTime beginLocalDateTime = LocalDateTime.of(meetingTime.getYear(), meetingTime.getMonthValue(), meetingTime.getDayOfMonth(),Integer.parseInt(beginTimeStr[0]), Integer.parseInt(beginTimeStr[1]) );
+        LocalDateTime beginLocalDateTime = LocalDateTime.of(meetingTime.getYear(), meetingTime.getMonthValue(), meetingTime.getDayOfMonth(), Integer.parseInt(beginTimeStr[0]), Integer.parseInt(beginTimeStr[1]));
 
 
         if (meetingName.isEmpty()) {
@@ -499,7 +499,10 @@ public class TeacherAppointmentController implements Initializable {
         filterDatetime.setVisible(false);
 //        ObservableList<Meeting> initData = FXCollections.observableArrayList(meetings);
 //        meetingTable.setItems(initData);
-        filterCombobox.setValue("All");
+        try {
+            filterCombobox.setValue("All");
+        } catch (Exception ignored) {
+        }
 
         filterCombobox.setOnAction(e -> {
             String selectedFilter = filterCombobox.getValue();
@@ -536,7 +539,7 @@ public class TeacherAppointmentController implements Initializable {
 //        for (Content c : currentMeeting.getContents()){
 //            System.out.println(c.getDate());
 //        }
-        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getDate(),"HH:mm dd/MM/yyyy")));
+        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getDate(), "HH:mm dd/MM/yyyy")));
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
         //System.out.println(currentMeeting.getContents());
         ObservableList<Content> contents = FXCollections.observableArrayList(currentMeeting.getContents());
@@ -553,6 +556,11 @@ public class TeacherAppointmentController implements Initializable {
             return row;
         });
     }
+
+//    private void specifyStatus(Timestamp timestamp){
+//        LocalDateTime localDateTime = LocalDateTime.
+//
+//    }
 
     private void navigateToAppointmentPage(Button button) {
         if (CalendlyApplication.user == null) return;
