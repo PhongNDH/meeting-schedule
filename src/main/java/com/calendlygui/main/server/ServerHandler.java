@@ -248,7 +248,9 @@ public class ServerHandler {
             System.out.println("Scheduled: " + scheduledMeetingIds.size());
 
             //query available slots and exclude those above
-            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " +  MEETING_OCCUR + " > CURRENT_TIMESTAMP";
+//            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " +  MEETING_OCCUR + " > CURRENT_TIMESTAMP and " + SELECTED_CLASSIFICATION + " != ?";
+            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " +  MEETING_OCCUR + " > CURRENT_TIMESTAMP and ("  + STATUS + " = ? or (" + STATUS + " = ? and " + SELECTED_CLASSIFICATION + " = ?))";
+//            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " +  MEETING_OCCUR + " > CURRENT_TIMESTAMP";
             for (int i = 0; i < scheduledMeetingIds.size(); i++) {
                 query += " and m." + ID + " != ?";
             }
@@ -256,6 +258,7 @@ public class ServerHandler {
             ps.setString(1, PENDING);
             ps.setString(2, READY);
             ps.setString(3, GROUP);
+//            ps.setString(4, INDIVIDUAL);
             for (int i = 0; i < scheduledMeetingIds.size(); i++) {
                 ps.setInt(i + 4, scheduledMeetingIds.get(i));
             }
