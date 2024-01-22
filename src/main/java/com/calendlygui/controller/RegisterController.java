@@ -85,7 +85,7 @@ public class RegisterController implements Initializable {
 
     @FXML
     void close(MouseEvent event) {
-
+        Controller.closeApplication(closeButton);
     }
 
     @FXML

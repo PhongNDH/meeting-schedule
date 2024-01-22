@@ -136,8 +136,7 @@ public class ServerHandler {
 
     static String handleTeacherViewUnscheduledAndHappeningMeetings(int tId) {
 
-        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and (" + MEETING_OCCUR + " > CURRENT_TIMESTAMP or (" + MEETING_OCCUR + " < CURRENT_TIMESTAMP and " + MEETING_FINISH + " > CURRENT_TIMESTAMP))";
-        //String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
+        String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + MEETING_FINISH + " > CURRENT_TIMESTAMP";        //String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + MEETING_TEACHER_ID + " = ? and " + STATUS + " = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, tId);
@@ -249,7 +248,7 @@ public class ServerHandler {
             System.out.println("Scheduled: " + scheduledMeetingIds.size());
 
             //query available slots and exclude those above
-            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " + STATUS + " = ? or (" + STATUS + " = ? and " + SELECTED_CLASSIFICATION + " = ? and " + MEETING_OCCUR + " > CURRENT_TIMESTAMP)";
+            String query = "select m.*, u." + NAME + " as " + TEACHER_NAME + " from " + MEETING + " m join " + USERS + " u on m." + MEETING_TEACHER_ID + " = u." + ID + " where " +  MEETING_OCCUR + " > CURRENT_TIMESTAMP";
             for (int i = 0; i < scheduledMeetingIds.size(); i++) {
                 query += " and m." + ID + " != ?";
             }

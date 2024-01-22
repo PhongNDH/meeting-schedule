@@ -59,6 +59,13 @@ public class Controller {
         });
     }
 
+    public static void closeApplication(Button button){
+        Platform.runLater(() -> {
+            Stage stage = (Stage) button.getScene().getWindow();
+            stage.close();
+        });
+    }
+
     public static void setTextToEmpty(Text... texts) {
         for (Text txt : texts) {
             txt.setText("");

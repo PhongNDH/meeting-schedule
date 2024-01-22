@@ -73,13 +73,16 @@ public class TeacherHistoryController implements Initializable {
     private Button addContentButton;
 
     @FXML
+    private Button contentButton;
+
+    @FXML
     private Button closeContentButton;
 
     @FXML
-    private Button  closeStudentPaneButton;
+    private Button closeStudentPaneButton;
 
     @FXML
-    private Button  studentButton;
+    private Button studentButton;
 
     @FXML
     private TableView<Meeting> historyTable;
@@ -322,12 +325,12 @@ public class TeacherHistoryController implements Initializable {
         }
     }
 
-    private void showHistory(){
-        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(),"HH:mm")));
-        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(),"HH:mm")));
-        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification()) ));
+    private void showHistory() {
+        beginTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "HH:mm")));
+        endTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getFinishDatetime(), "HH:mm")));
+        selectedTypeTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Objects.equals(data.getValue().getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(data.getValue().getSelectedClassification())));
         dateTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getOccurDatetime(), "dd/MM/yyyy")));
-        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.writeFirstCharacterInUppercase(data.getValue().getStatus())));
+        statusTableColumn.setCellValueFactory(data -> new SimpleStringProperty(specifyStatus(data.getValue().getStudents())));
 
         ObservableList<Meeting> data = FXCollections.observableArrayList(meetings);
 
@@ -336,19 +339,20 @@ public class TeacherHistoryController implements Initializable {
         historyTable.setRowFactory(ht -> {
             TableRow<Meeting> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if(event.getClickCount() == 2 && !row.isEmpty()) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Meeting rowData = row.getItem();
                     currentMeeting = rowData;
-                    beginTextField.setText(Format.getTimeFromTimestamp(rowData.getOccurDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getOccurDatetime()));
+                    beginTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "dd/MM/yyyy HH:mm"));
                     nameTextField.setText(rowData.getName());
-                    endTextField.setText(Format.getTimeFromTimestamp(rowData.getFinishDatetime()) +  " " +Format.getDateFromTimestamp(rowData.getFinishDatetime()));
-                    createdTextField.setText(Format.getDateFromTimestamp(rowData.getEstablishedDatetime()));
-                    selectedTypeTextField.setText(rowData.getSelectedClassification());
-                    statusTextField.setText(rowData.getStatus());
+                    endTextField.setText(Format.getStringFormatFromTimestamp(rowData.getOccurDatetime(), "dd/MM/yyyy HH:mm"));
+                    createdTextField.setText(Format.getStringFormatFromTimestamp(rowData.getEstablishedDatetime(),"dd/MM/yyyy"));
+                    selectedTypeTextField.setText(Objects.equals(rowData.getSelectedClassification(), "null") ? "Not yet" : Format.writeFirstCharacterInUppercase(rowData.getSelectedClassification()));
+                    statusTextField.setText(Format.writeFirstCharacterInUppercase(rowData.getStatus()));
                     detailPane.setVisible(true);
 
-                    if(Objects.equals(rowData.getStatus(), "Cancelled")){
+                    if (currentMeeting.getStudents().isEmpty()) {
                         studentButton.setDisable(true);
+                        contentButton.setDisable(true);
                     }
 
                     showContents();
@@ -373,7 +377,7 @@ public class TeacherHistoryController implements Initializable {
 
     private void showContents() {
         contentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getContent()));
-        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getTimeFromTimestamp(data.getValue().getDate())+" " +Format.getDateFromTimestamp(data.getValue().getDate())));
+        contentCreatedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(Format.getStringFormatFromTimestamp(data.getValue().getDate(), "dd/MM/yyyy HH:mm")));
 
         ObservableList<Content> contents = FXCollections.observableArrayList(currentMeeting.getContents());
 
@@ -382,7 +386,7 @@ public class TeacherHistoryController implements Initializable {
         contentTable.setRowFactory(ct -> {
             TableRow<Content> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Content content = row.getItem();
                     currentContentTextArea.setText(content.getContent());
                 }
@@ -394,5 +398,10 @@ public class TeacherHistoryController implements Initializable {
     private void navigateToHistoryPage() {
         if (CalendlyApplication.user == null) return;
         Controller.navigateToOtherStage(addContentButton, "teacher-history.fxml", "History");
+    }
+
+    private String specifyStatus(List<User> students) {
+        if (!students.isEmpty()) return "Done";
+        else return "Canceled";
     }
 }

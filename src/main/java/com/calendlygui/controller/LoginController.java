@@ -14,6 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -30,7 +31,7 @@ import static com.calendlygui.utils.Helper.extractUserFromResponse;
 
 public class LoginController implements Initializable {
     @FXML
-    private Button CloseButton;
+    private Button closeButton;
 
     @FXML
     private Text emailText;
@@ -55,7 +56,7 @@ public class LoginController implements Initializable {
 
     @FXML
     void close(MouseEvent event) {
-
+        Controller.closeApplication(closeButton);
     }
 
     @FXML

@@ -109,7 +109,6 @@ public class Authenticate {
         } else {
             return String.valueOf(INVALID_PASSWORD);
         }
-
         return createResponseWithUser(AUTHENTICATE_SUCCESS, id, username, email, registerDatetime.toString(), String.valueOf(isTeacher), String.valueOf(gender));
     }
 }
