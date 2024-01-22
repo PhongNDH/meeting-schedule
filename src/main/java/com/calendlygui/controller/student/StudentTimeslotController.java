@@ -170,6 +170,14 @@ public class StudentTimeslotController implements Initializable {
     private Text meetingDetailErrorText;
 
     @FXML
+    private Button reloadButton;
+
+    @FXML
+    void reload(MouseEvent event) throws IOException {
+        navigateToTimeslotPage(reloadButton);
+    }
+
+    @FXML
     void closeDialog(MouseEvent event) {
         Controller.setTextFieldToEmpty(teacherTextField,beginTextField,endTextField,createdTextField, nameTextField);
         classificationCombobox.getItems().clear();
@@ -229,7 +237,7 @@ public class StudentTimeslotController implements Initializable {
                     }
                     else if(code == UPDATE_SUCCESS){
                         System.out.println(GeneralMessage.STUDENT_JOIN_MEETING_SUCCESS);
-                        navigateToTimeslotPage();
+                        navigateToTimeslotPage(joinButton);
                     }
                     else {
                         switch (code) {
@@ -334,8 +342,8 @@ public class StudentTimeslotController implements Initializable {
         Controller.navigateToOtherStage(joinButton, "teacher.fxml", "Teacher");
     }
 
-    private void navigateToTimeslotPage() throws IOException {
+    private void navigateToTimeslotPage(Button button) throws IOException {
         if (CalendlyApplication.user == null) return;
-        Controller.navigateToOtherStage(joinButton, "student-timeslot.fxml", "New meeting");
+        Controller.navigateToOtherStage(button, "student-timeslot.fxml", "New meeting");
     }
 }

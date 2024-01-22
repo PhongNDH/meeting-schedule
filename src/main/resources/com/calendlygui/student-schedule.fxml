@@ -178,6 +178,15 @@
                </children>
             </Pane>
             <Text fx:id="errorText" fill="RED" layoutX="70.0" layoutY="525.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="510.00000000000006" />
+            <Button fx:id="reloadButton" layoutX="600.0" layoutY="115.0" mnemonicParsing="false" onMouseClicked="#reload" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: black;" styleClass="reload-button" stylesheets="@../../style/general.css" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/reload.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             </children></Pane>
     </children>
 </AnchorPane>

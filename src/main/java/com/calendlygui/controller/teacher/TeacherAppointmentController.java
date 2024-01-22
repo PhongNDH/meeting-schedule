@@ -178,6 +178,14 @@ public class TeacherAppointmentController implements Initializable {
     @FXML
     private Text contentErrorText;
 
+    @FXML
+    private Button reloadButton;
+
+    @FXML
+    void reload(MouseEvent event) throws IOException {
+        navigateToAppointmentPage(reloadButton);
+    }
+
 
     @FXML
     void logout(MouseEvent event) {
@@ -299,10 +307,10 @@ public class TeacherAppointmentController implements Initializable {
                         initializeScheduleMeeting();
                     } else if (code == UPDATE_SUCCESS) {
                         System.out.println(GeneralMessage.TEACHER_UPDATE_MEETING_SUCCESS);
-                        navigateToAppointment(editButton);
+                        navigateToAppointmentPage(editButton);
                     } else if (code == CREATE_SUCCESS) {
                         System.out.println(GeneralMessage.TEACHER_ADD_CONTENT_SUCCESS);
-                        navigateToAppointment(addContentButton);
+                        navigateToAppointmentPage(addContentButton);
                     } else {
                         switch (code) {
                             case SQL_ERROR: {
@@ -546,7 +554,7 @@ public class TeacherAppointmentController implements Initializable {
         });
     }
 
-    private void navigateToAppointment(Button button) {
+    private void navigateToAppointmentPage(Button button) {
         if (CalendlyApplication.user == null) return;
         Controller.navigateToOtherStage(button, "teacher-appointment.fxml", "Appointment");
     }

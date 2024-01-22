@@ -76,6 +76,9 @@ public class TeacherHistoryController implements Initializable {
     private Button contentButton;
 
     @FXML
+    private Button reloadButton;
+
+    @FXML
     private Button closeContentButton;
 
     @FXML
@@ -205,6 +208,11 @@ public class TeacherHistoryController implements Initializable {
         Controller.navigateToOtherStage(timeslotButton, "teacher-timeslot.fxml", "New meeting");
     }
 
+    @FXML
+    void reload(MouseEvent event) throws IOException {
+        navigateToHistoryPage(reloadButton);
+    }
+
 
     @FXML
     void openContentPane(MouseEvent event) {
@@ -277,7 +285,7 @@ public class TeacherHistoryController implements Initializable {
                         showHistory();
                     } else if (code == CREATE_SUCCESS) {
                         System.out.println(GeneralMessage.TEACHER_ADD_CONTENT_SUCCESS);
-                        navigateToHistoryPage();
+                        navigateToHistoryPage(addContentButton);
                     } else {
                         switch (code) {
                             case SQL_ERROR: {
@@ -395,9 +403,9 @@ public class TeacherHistoryController implements Initializable {
         });
     }
 
-    private void navigateToHistoryPage() {
+    private void navigateToHistoryPage(Button button) {
         if (CalendlyApplication.user == null) return;
-        Controller.navigateToOtherStage(addContentButton, "teacher-history.fxml", "History");
+        Controller.navigateToOtherStage(button, "teacher-history.fxml", "History");
     }
 
     private String specifyStatus(List<User> students) {

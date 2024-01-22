@@ -124,6 +124,9 @@ public class StudentScheduleController implements Initializable {
     private TableColumn<Meeting, String> statusTableColumn;
 
     @FXML
+    private Button reloadButton;
+
+    @FXML
     private TextField teacherTextField;
 
     @FXML
@@ -188,6 +191,11 @@ public class StudentScheduleController implements Initializable {
     }
 
     @FXML
+    void reload(MouseEvent event) throws IOException {
+        navigateToScheduledPage(reloadButton);
+    }
+
+    @FXML
     void closeDialog(MouseEvent event) {
         detailPane.setVisible(false);
         currentMeeting = null;
@@ -245,7 +253,7 @@ public class StudentScheduleController implements Initializable {
                     }
                     else if(Integer.parseInt(info[0]) == UPDATE_SUCCESS){
                         System.out.println(GeneralMessage.STUDENT_CANCEL_MEETING_SUCCESS);
-                        navigateToScheduledPage();
+                        navigateToScheduledPage(cancelButton);
                     }
                     else {
                         int code = Integer.parseInt(info[0]);
@@ -370,9 +378,9 @@ public class StudentScheduleController implements Initializable {
         if (CalendlyApplication.user == null) return;
     }
 
-    private void navigateToScheduledPage() throws IOException {
+    private void navigateToScheduledPage(Button button) throws IOException {
         if (CalendlyApplication.user == null) return;
-        Controller.navigateToOtherStage(cancelButton, "student-schedule.fxml", "Appointment");
+        Controller.navigateToOtherStage(button, "student-schedule.fxml", "Appointment");
     }
 
 }
