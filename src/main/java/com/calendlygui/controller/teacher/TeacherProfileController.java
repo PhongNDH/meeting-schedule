@@ -27,6 +27,9 @@ public class TeacherProfileController implements Initializable {
     private Button historyButton;
 
     @FXML
+    private Button logoutButton;
+
+    @FXML
     private Button homeButton;
 
     @FXML
@@ -90,7 +93,15 @@ public class TeacherProfileController implements Initializable {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
-        Controller.navigateToOtherStage(timeslotButton,"teacher-timeslot.fxml","Time Slots");
+        Controller.navigateToOtherStage(timeslotButton,"teacher-timeslot.fxml","New meeting");
+    }
+
+    @FXML
+    void logout(MouseEvent event) {
+        if(CalendlyApplication.user != null){
+            CalendlyApplication.user = null;
+        }
+        Controller.navigateToOtherStage(logoutButton, "login.fxml","Login");
     }
 
     public void initialize(URL url, ResourceBundle resourceBundle) {

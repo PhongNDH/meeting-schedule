@@ -1,15 +1,15 @@
-package com.calendlygui.model;
+package com.calendlygui.model.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class User implements Serializable {
+    int id;
     String username;
     String email;
     Timestamp registerDatetime;
     boolean isTeacher;
     boolean gender;
-    String mode;
 
     public String getUsername() {
         return username;
@@ -47,28 +47,39 @@ public class User implements Serializable {
         return gender;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setGender(boolean gender) {
         this.gender = gender;
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
     }
 
     public User() {
     }
 
-    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender, String mode) {
+    public User(String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender) {
         this.username = username;
         this.email = email;
         this.registerDatetime = registerDatetime;
         this.isTeacher = isTeacher;
         this.gender = gender;
-        this.mode = mode;
+    }
+
+    public User(int id, String username, String email, Timestamp registerDatetime, boolean isTeacher, boolean gender) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.registerDatetime = registerDatetime;
+        this.isTeacher = isTeacher;
+        this.gender = gender;
+    }
+
+    public User(String username, String email, boolean isTeacher, boolean gender) {
+        this.username = username;
+        this.email = email;
+        this.isTeacher = isTeacher;
+        this.gender = gender;
     }
 
     @Override

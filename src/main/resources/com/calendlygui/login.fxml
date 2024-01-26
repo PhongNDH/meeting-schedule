@@ -64,7 +64,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <Button fx:id="CloseButton" layoutX="41.0" layoutY="428.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="26.0" prefWidth="232.0" style="-fx-background-color: grey; -fx-font-weight: 800;" styleClass="login-close-button" stylesheets="@../../style/authentication.css" text="Close" textFill="WHITE">
+            <Button fx:id="closeButton" layoutX="41.0" layoutY="428.0" mnemonicParsing="false" onMouseClicked="#close" prefHeight="26.0" prefWidth="232.0" style="-fx-background-color: grey; -fx-font-weight: 800;" styleClass="login-close-button" stylesheets="@../../style/authentication.css" text="Close" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>

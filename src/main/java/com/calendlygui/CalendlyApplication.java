@@ -1,60 +1,67 @@
 package com.calendlygui;
 
 import com.calendlygui.constant.ConstantValue;
-import com.calendlygui.controller.RegisterController;
-import com.calendlygui.model.User;
+import com.calendlygui.model.entity.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
-import java.net.InetAddress;
+import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.calendlygui.constant.ConstantValue.*;
+import static com.calendlygui.utils.Helper.createRequest;
 
 public class CalendlyApplication extends Application {
     public static User user = null;
     public static Socket client;
+
     public static PrintWriter out;
+
+    public static BufferedReader in;
+
     public static ObjectInputStream inObject;
+    public static ObjectOutputStream outObject;
+
+    private String response;
+    private String request;
+    ArrayList<String> data = new ArrayList<>();
 
     @Override
     public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(CalendlyApplication.class.getResource("login.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
-
             //RegisterController registerController = fxmlLoader.getController();
-            stage.setTitle("Register");
+            stage.setTitle("Login");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     public static void main(String[] args) {
-        try {
-            client = new Socket(InetAddress.getByName(ConstantValue.HOST_ADDRESS), ConstantValue.PORT);
-            out = new PrintWriter(client.getOutputStream(), true);
-            inObject = new ObjectInputStream(client.getInputStream());
-        } catch (IOException e) {
-            System.out.println("Error: " + e);
-            throw new RuntimeException(e);
-        }
         launch();
     }
 
     public static void shutdown() {
         try {
-            out.close();
-            inObject.close();
+            if (inObject != null) {
+                inObject.close();
+            }
+            if (outObject != null) {
+                outObject.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (in != null) {
+                in.close();
+            }
             if (!client.isClosed()) {
                 client.close();
             }

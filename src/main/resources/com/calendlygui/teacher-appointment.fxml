@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,7 +26,7 @@
                     <children>
                         <ImageView fitHeight="99.0" fitWidth="132.0" layoutX="75.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../assets/logo/logo5.png" />
+                                <Image url="@../../assets/logo/logo8.png" />
                             </image>
                         </ImageView>
                         <Text fill="WHITE" layoutX="85.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Calendly">
@@ -43,26 +51,11 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="timeslotButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#navigateToTimeslot" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Time slots">
+                <Button fx:id="timeslotButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#navigateToTimeslot" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    New meeting">
                     <graphic>
                         <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../../assets/icon/schedule.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <padding>
-                        <Insets left="50.0" />
-                    </padding>
-                </Button>
-                <Button fx:id="studentListButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#navigateToStudentList" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Student">
-                    <graphic>
-                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../../assets/icon/student.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -118,29 +111,130 @@
                         <Insets left="50.0" />
                     </padding>
                 </Button>
-                <Button fx:id="settingButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onMouseClicked="#navigateToSetting" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Setting">
-                    <graphic>
-                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../../assets/icon/settings.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <padding>
-                        <Insets left="50.0" />
-                    </padding>
-                </Button>
+            <Button fx:id="logoutButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="422.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="35.0" prefWidth="250.0" style="-fx-font-weight: bold;" styleClass="menu-button" stylesheets="@../../style/student.css" text="    Logout">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/logout.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+            </Button>
             </children></VBox>
         <Pane layoutX="250.0" prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: #fff59d;">
             <children>
-                <Text layoutX="196.0" layoutY="162.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Appointment">
-                    <font>
-                        <Font size="44.0" />
-                    </font>
-                </Text>
+            <TableView fx:id="meetingTable" layoutX="40.0" layoutY="209.0" prefHeight="301.0" prefWidth="570.0">
+               <columns>
+                  <TableColumn fx:id="dateTableColumn" prefWidth="95.0" text="Date" />
+                  <TableColumn fx:id="beginTableColumn" prefWidth="85.0" text="Begin" />
+                  <TableColumn fx:id="endTableColumn" prefWidth="85.0" text="End" />
+                  <TableColumn fx:id="typeTableColumn" prefWidth="90.0" text="Classification" />
+                  <TableColumn fx:id="selectedTypeTableColumn" prefWidth="135.33331298828125" text="Selected Classification" />
+                  <TableColumn fx:id="statusTableColumn" prefWidth="79.3333740234375" text="Status" />
+               </columns>
+            </TableView>
+            <Pane prefHeight="100.0" prefWidth="650.0" style="-fx-background-color: #9f7b48;">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" layoutX="561.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/logo/logo9.png" />
+                     </image>
+                  </ImageView>
+                  <Text fill="WHITE" layoutX="256.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Appointment">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+            <DatePicker fx:id="filterDatetime" layoutX="386.0" layoutY="144.0" />
+            <ComboBox fx:id="filterCombobox" layoutX="203.0" layoutY="144.0" prefWidth="150.0">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="All" />
+                     <String fx:value="By date" />
+                  </FXCollections>
+               </items>
+            </ComboBox>
+            <Text layoutX="118.0" layoutY="163.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Filter">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
+            <Pane fx:id="detailPane" layoutX="40.0" layoutY="124.0" prefHeight="407.0" prefWidth="570.0" style="-fx-background-color: #eee7de; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
+               <children>
+                  <Button fx:id="editButton" layoutX="68.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#editMeeting" prefHeight="30.0" prefWidth="130.0" style="-fx-font-weight: bold;" styleClass="edit-button" stylesheets="@../../style/teacher.css" text="Edit" textFill="WHITE" />
+                  <Text layoutX="86.0" layoutY="157.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Created date" />
+                  <TextField fx:id="beginTextField" editable="false" layoutX="86.0" layoutY="231.0" prefHeight="25.0" prefWidth="153.0" />
+                  <TextField fx:id="endTextField" editable="false" layoutX="351.0" layoutY="231.0" prefHeight="25.0" prefWidth="153.0" />
+                  <Text layoutX="86.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Begin" />
+                  <Button fx:id="closeButton" layoutX="219.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="30.0" prefWidth="130.0" style="-fx-font-weight: bold;" styleClass="close-button" stylesheets="@../../style/student.css" text="Close" textFill="WHITE" />
+                  <Text layoutX="86.0" layoutY="297.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Classification" />
+                  <Text layoutX="215.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Meeting Detail" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="85.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Name" />
+                  <TextField fx:id="nameTextField" editable="false" layoutX="181.0" layoutY="43.0" prefHeight="25.0" prefWidth="323.0" />
+                  <TextField fx:id="createdTextField" editable="false" layoutX="86.0" layoutY="161.0" prefHeight="25.0" prefWidth="153.0" />
+                  <Text layoutX="353.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="End" />
+                  <Text layoutX="353.0" layoutY="297.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Selected Classification" />
+                  <TextField fx:id="selectedTypeTextField" editable="false" layoutX="351.0" layoutY="301.0" prefHeight="25.0" prefWidth="153.0" />
+                  <Text layoutX="353.0" layoutY="157.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Status" />
+                  <TextField fx:id="statusTextField" editable="false" layoutX="351.0" layoutY="161.0" prefHeight="25.0" prefWidth="153.0" />
+                  <Button fx:id="contentButton" layoutX="372.0" layoutY="355.0" mnemonicParsing="false" onMouseClicked="#openContentPane" prefHeight="30.0" prefWidth="130.0" style="-fx-font-weight: bold;" styleClass="content-button" stylesheets="@../../style/teacher.css" text="Content" textFill="WHITE" />
+                  <DatePicker fx:id="occurDatePicker" editable="false" layoutX="182.0" layoutY="95.0" prefHeight="25.0" prefWidth="323.0" />
+                  <ComboBox fx:id="typeCombobox" layoutX="85.0" layoutY="301.0" prefHeight="25.0" prefWidth="153.0" />
+                  <Text layoutX="87.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Occur date" />
+                  <Pane fx:id="contentPane" layoutX="63.0" layoutY="7.0" prefHeight="379.0" prefWidth="444.0" style="-fx-background-color: #f7f9e5; -fx-background-radius: 5; -fx-border-color: black; -fx-border-radius: 5;" visible="false">
+                     <children>
+                        <Text layoutX="184.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Content" textAlignment="CENTER">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Text>
+                        <TableView fx:id="contentTable" layoutX="50.0" layoutY="37.0" prefHeight="119.0" prefWidth="343.0">
+                          <columns>
+                            <TableColumn fx:id="contentCreatedDateColumn" prefWidth="101.33328247070312" text="Created date" />
+                            <TableColumn fx:id="contentColumn" prefWidth="240.33334350585938" text="Content" />
+                          </columns>
+                        </TableView>
+                        <Text layoutX="165.0" layoutY="249.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Add new content">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                        <TextArea fx:id="contentTextArea" layoutX="50.0" layoutY="254.0" prefHeight="46.0" prefWidth="343.0" />
+                        <Button fx:id="closeContentButton" layoutX="264.0" layoutY="328.0" mnemonicParsing="false" onMouseClicked="#closeContentPane" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="close-button" stylesheets="@../../style/teacher.css" text="Close" />
+                        <Button fx:id="addContentButton" layoutX="66.0" layoutY="328.0" mnemonicParsing="false" onMouseClicked="#addContent" prefHeight="25.0" prefWidth="113.0" style="-fx-font-weight: bold;" styleClass="add-button" stylesheets="@../../style/teacher.css" text="Add" />
+                        <TextArea fx:id="currentContentTextArea" editable="false" layoutX="50.0" layoutY="171.0" prefHeight="46.0" prefWidth="343.0" />
+                        <Text fx:id="contentErrorText" fill="RED" layoutX="49.0" layoutY="313.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="343.00000000000006" />
+                     </children>
+                  </Pane>
+                  <Text fx:id="nameEditedErrorText" fill="RED" layoutX="182.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="323.0" />
+                  <Text fx:id="occurDateEditedErrorText" fill="RED" layoutX="182.0" layoutY="133.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="323.0" />
+                  <Text fx:id="beginEditedErrorText" fill="RED" layoutX="86.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.0" />
+                  <Text fx:id="endEditedErrorText" fill="RED" layoutX="351.0" layoutY="268.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.0" />
+                  <Text fx:id="durationDateEditedErrorText" fill="RED" layoutX="86.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="418.33331298828125" />
+               </children>
+            </Pane>
+            <Text fx:id="errorText" fill="RED" layoutX="40.0" layoutY="523.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="570.0" />
+            <Button fx:id="reloadButton" layoutX="600.0" layoutY="115.0" mnemonicParsing="false" onMouseClicked="#reload" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: black;" styleClass="reload-button" stylesheets="@../../style/general.css" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/icon/reload.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             </children></Pane>
     </children>
 </AnchorPane>

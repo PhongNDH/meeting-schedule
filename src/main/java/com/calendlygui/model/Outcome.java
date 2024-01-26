@@ -1,5 +1,7 @@
 package com.calendlygui.model;
 
+import com.calendlygui.model.entity.User;
+
 import java.io.Serializable;
 
 public class Outcome implements Serializable {

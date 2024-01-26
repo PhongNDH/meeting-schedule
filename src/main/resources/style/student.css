@@ -19,3 +19,35 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
+
+/*Time slot*/
+.join-button{
+    -fx-background-color:green;
+    -fx-font-size: 13;
+}
+.join-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-cursor: hand;
+}
+.close-button{
+    -fx-background-color:black;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.close-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}
+
+.cancel-button{
+    -fx-background-color:red;
+    -fx-font-size: 13;
+}
+.cancel-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-cursor: hand;
+}

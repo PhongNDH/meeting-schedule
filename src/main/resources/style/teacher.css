@@ -1,0 +1,68 @@
+.button{
+    -fx-background-color:green;
+    -fx-font-size: 15;
+}
+.button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 15;
+}
+
+.close-button{
+    -fx-background-color:black;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.close-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}
+
+.edit-button{
+    -fx-background-color:blue;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.edit-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}
+
+.content-button{
+    -fx-background-color:orange;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.content-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}
+
+.add-button{
+    -fx-background-color:green;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.add-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}
+
+.student-button{
+    -fx-background-color:purple;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+}
+.student-button:hover{
+    -fx-opacity: 0.8;
+    -fx-font-size: 13;
+    -fx-text-fill:white;
+    -fx-cursor: hand;
+}

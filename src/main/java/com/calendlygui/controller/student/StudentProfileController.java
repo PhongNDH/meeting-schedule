@@ -36,6 +36,9 @@ public class StudentProfileController implements Initializable {
     private Button scheduleButton;
 
     @FXML
+    private Button logoutButton;
+
+    @FXML
     private Button settingButton;
 
     @FXML
@@ -98,8 +101,16 @@ public class StudentProfileController implements Initializable {
 
     @FXML
     void navigateToTimeslot(MouseEvent event) {
-        Controller.navigateToOtherStage(timeslotButton, "student-timeslot.fxml", "Time slots");
+        Controller.navigateToOtherStage(timeslotButton, "student-timeslot.fxml", "New meeting");
 
+    }
+
+    @FXML
+    void logout(MouseEvent event) {
+        if (CalendlyApplication.user != null) {
+            CalendlyApplication.user = null;
+        }
+        Controller.navigateToOtherStage(logoutButton, "login.fxml", "Login");
     }
 
 

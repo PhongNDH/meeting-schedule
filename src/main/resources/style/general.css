@@ -1,0 +1,8 @@
+.reload-button {
+    -fx-background-color:  black;
+    -fx-text-fill: white;
+}
+.reload-button:hover {
+    -fx-opacity: 0.8;
+    -fx-cursor: hand;
+}
